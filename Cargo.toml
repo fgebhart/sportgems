@@ -1,5 +1,5 @@
 [package]
-name = "pyrust-example"
+name = "sportgems"
 version = "0.1.0"
 authors = ["Fabian Gebhart <...>"]
 
@@ -7,5 +7,5 @@ authors = ["Fabian Gebhart <...>"]
 pyo3 = { version="0.2.3", features=["extension-module"] }
 
 [lib]
-name = "pyrust_example"
+name = "sportgems"
 crate-type = ["cdylib"]

@@ -18,7 +18,7 @@ install_requires = []
 tests_require = install_requires + ['pytest', 'pytest-benchmark']
 
 setup(
-    name='pyrust-example',
+    name='sportgems',
     version='0.1.0',
     classifiers=[
         'License :: OSI Approved :: MIT License',
@@ -29,8 +29,8 @@ setup(
         'Operating System :: POSIX',
         'Operating System :: MacOS :: MacOS X',
     ],
-    packages=['pyrust_example'],
-    rust_extensions=[RustExtension('pyrust_example._pyrust_example', 'Cargo.toml')],
+    packages=['sportgems'],
+    rust_extensions=[RustExtension('sportgems._sportgems', 'Cargo.toml')],
     install_requires=install_requires,
     tests_require=tests_require,
     setup_requires=setup_requires,
