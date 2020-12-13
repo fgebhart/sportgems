@@ -5,6 +5,6 @@
 Cargo.lock
 build/
 dist/
-pyrust_example.egg-info/
+sportgems.egg-info/
 __pycache__/
 venv/
