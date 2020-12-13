@@ -1,0 +1,10 @@
+
+/target/
+**/*.rs.bk
+*.so
+Cargo.lock
+build/
+dist/
+pyrust_example.egg-info/
+__pycache__/
+venv/
