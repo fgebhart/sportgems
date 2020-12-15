@@ -66,7 +66,7 @@ mod test {
         };
         assert_eq!(
             calculate_distance(coordinate_a, coordinate_b),
-            173291.21920647446
+            173291.21920642233
         );
 
         // only longitude is differing
@@ -80,7 +80,7 @@ mod test {
         };
         assert_eq!(
             calculate_distance(coordinate_a, coordinate_b),
-            7448.684105058203
+            7448.684105664539
         );
 
         // only latitude is differing
@@ -94,7 +94,7 @@ mod test {
         };
         assert_eq!(
             calculate_distance(coordinate_a, coordinate_b),
-            11131.884502167246
+            11131.884502572964
         );
     }
 }
