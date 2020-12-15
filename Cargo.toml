@@ -5,7 +5,9 @@ authors = ["Fabian Gebhart <...>"]
 edition = "2018"
 
 [dependencies]
-pyo3 = { version="0.2.3", features=["extension-module"] }
+rayon = "1.0.2"
+pyo3 = { path = "../..", features = ["extension-module"] }
+
 
 [lib]
 name = "sportgems"

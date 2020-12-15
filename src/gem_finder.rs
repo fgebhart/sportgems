@@ -18,6 +18,8 @@ impl GemFinder {
     }
     pub fn find_gems(&mut self) -> (u32, u32) {
         self.compute_vector_of_distances();
+        let total_distance = self.distances.values.last();
+        // if self.fastest_distance as f64 > total_distance {}
         let result = (138, 547);
         result
     }
