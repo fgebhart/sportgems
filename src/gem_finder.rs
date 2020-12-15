@@ -56,6 +56,6 @@ mod test {
 
         // now compute the distances
         finder.compute_vector_of_distances();
-        assert_eq!(finder.distances.values, vec!(0.0, 7448.684105058203));
+        assert_eq!(finder.distances.values, vec!(0.0, 7448.684105664539));
     }
 }
