@@ -1,5 +1,13 @@
 use crate::geo;
 
+pub struct Section {
+    pub start_index: u32,
+    pub end_index: u32,
+    pub distance: f64,
+    pub duration: f64,
+    pub velocity: f64,
+}
+
 pub struct GemFinder {
     pub fastest_distance: u32,
     pub coordinates: Vec<(f64, f64)>,
@@ -43,6 +51,12 @@ impl GemFinder {
             distance += geo::calculate_distance(coordinate, next_coordinate);
             self.distances.values.push(distance);
         }
+    }
+    pub fn search_section(&mut self) -> (u32, u32) {
+        let mut curr_sec: Section;
+        let mut fastest_sec: Section;
+        // while curr_sec.end_index < self.distances.values.len() {}
+        (123, 456)
     }
 }
 
