@@ -1,14 +1,12 @@
 [package]
 name = "sportgems"
 version = "0.1.0"
-authors = ["Fabian Gebhart <...>"]
 edition = "2018"
-
-[dependencies]
-rayon = "1.0.2"
-pyo3 = { path = "../..", features = ["extension-module"] }
-
 
 [lib]
 name = "sportgems"
 crate-type = ["cdylib"]
+
+[dependencies.pyo3]
+version = "0.12.4"
+features = ["extension-module"]
