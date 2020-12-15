@@ -2,6 +2,7 @@
 name = "sportgems"
 version = "0.1.0"
 authors = ["Fabian Gebhart <...>"]
+edition = "2018"
 
 [dependencies]
 pyo3 = { version="0.2.3", features=["extension-module"] }

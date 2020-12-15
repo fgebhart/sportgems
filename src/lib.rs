@@ -1,7 +1,7 @@
 extern crate pyo3;
 
 mod gem_finder;
-
+pub mod geo;
 
 use pyo3::prelude::*;
 use crate::gem_finder::GemFinder;

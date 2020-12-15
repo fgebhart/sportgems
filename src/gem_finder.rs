@@ -1,4 +1,4 @@
-// mod geo;
+use crate::geo;
 
 
 #[derive(Debug)]
@@ -27,7 +27,7 @@ impl GemFinder {
     pub fn get_vector_of_distances(&mut self) {
         let distance: f64 = 0.0;
         self.distances = vec!(distance);
-        // geo::to_rad();
+        let rad: f64 = geo::to_rad(180.0);
         return;
     }
 }
