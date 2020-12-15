@@ -1,5 +1,4 @@
-from sportgems import example_fn
+from sportgems import find_gems
 
-result = example_fn([1,2,3], [(1.2, 5.2), (0.7, 5.3)])
+result = find_gems(1000, [1,2,3], [(1.2, 5.2), (0.7, 5.3)])
 print(f"got result: {result}")
-assert result == (1,2)
