@@ -1,0 +1,19 @@
+name: Python
+
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install sportgems
+        run: python setup.py install
+
+      - name: Run sportgems.find_gems
+        run: |
+          python -m pip list
+          python sportgems/example.py
