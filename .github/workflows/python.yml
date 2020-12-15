@@ -11,9 +11,9 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install sportgems
-        run: python setup.py install
+        run: python3 setup.py install
 
       - name: Run sportgems.find_gems
         run: |
-          python -m pip list
-          python sportgems/example.py
+          python3 -m pip list
+          python3 sportgems/example.py
