@@ -18,5 +18,11 @@ RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -
 
 # install rust
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
-
 ENV PATH="/root/.cargo/bin:${PATH}"
+
+COPY requirements.txt /sportgems/requirements.txt
+WORKDIR /sportgems
+
+# install pip packages
+RUN pip3 install -r /sportgems/requirements.txt
+RUN pip3 install -e .
