@@ -1,6 +1,7 @@
 import sys
 
 from setuptools import setup
+from sportgems import __version__
 
 try:
     from setuptools_rust import RustExtension
@@ -19,10 +20,10 @@ tests_require = install_requires + ['pytest', 'pytest-benchmark']
 
 setup(
     name='sportgems',
-    version='0.1.0',
+    author="Fabian Gebhart",
+    version=__version__,
     classifiers=[
         'License :: OSI Approved :: MIT License',
-        'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Programming Language :: Python',
         'Programming Language :: Rust',
@@ -30,8 +31,10 @@ setup(
         'Operating System :: MacOS :: MacOS X',
     ],
     packages=['sportgems'],
+    url="https://github.com/fgebhart/sportgems",
     rust_extensions=[RustExtension('sportgems._sportgems', 'Cargo.toml')],
     install_requires=install_requires,
+    python_requires=">=3.8",
     tests_require=tests_require,
     setup_requires=setup_requires,
     include_package_data=True,
