@@ -30,8 +30,6 @@ def track():
         track.coordinates.append(next_coordinate)
     for i in range(len(track.coordinates)):
         track.times.append(i)
-    print(f"times: {track.times}")
-    print(f"coordinates: {track.coordinates}")
     assert len(track.times) == len(track.coordinates)
     return track
 

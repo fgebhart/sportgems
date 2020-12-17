@@ -20,7 +20,6 @@ fn find_gems(
 }
 
 #[pymodule]
-/// A Python module implemented in Rust.
 fn _sportgems(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(find_gems))?;
 

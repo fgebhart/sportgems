@@ -97,7 +97,11 @@ impl GemFinder {
                 curr_sec.start_index += 1;
             }
         }
-        (fastest_sec.start_index, fastest_sec.end_index, fastest_sec.velocity)
+        (
+            fastest_sec.start_index,
+            fastest_sec.end_index,
+            fastest_sec.velocity,
+        )
     }
 }
 
