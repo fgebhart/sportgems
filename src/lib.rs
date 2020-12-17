@@ -27,4 +27,3 @@ fn _sportgems(_py: Python, m: &PyModule) -> PyResult<()> {
 
     Ok(())
 }
-
