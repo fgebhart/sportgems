@@ -9,8 +9,8 @@ import pytest
 def track():
     @dataclass
     class Track:
-        times: []
-        coordinates: []
+        times: list
+        coordinates: list
     
     track = Track(times=[], coordinates=[])
     start_coordinate = (48.0, 8.0)
@@ -37,4 +37,3 @@ def test_find_gems(track):
     # print(f"coordinates: {track.coordinates}")
     fastest_1km = find_gems(1000, track.times, track.coordinates)
     assert fastest_1km == (99, 112, 77.35165539317262)
-

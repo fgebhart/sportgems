@@ -1,6 +1,5 @@
 name: Python
 
-
 on: push
 
 jobs:
@@ -17,9 +16,9 @@ jobs:
 
       - name: Install sportgems
         run: |
-          python3 setup.py install
+          python3 -m pip install -r requirements.txt
+          python3 -m pip install -e .
 
-      - name: Run sportgems.find_gems
+      - name: Test sportgems
         run: |
-          python3 -m pip list
-          python3 sportgems/example.py
+          pytest tests/ -v
