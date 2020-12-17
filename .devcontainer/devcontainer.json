@@ -3,7 +3,7 @@
 {
 	"name": "Ubuntu",
 	"build": {
-		"dockerfile": "Dockerfile",
+		"dockerfile": "../Dockerfile",
 		// Update 'VARIANT' to pick an Ubuntu version: focal, bionic
 		"args": { "VARIANT": "focal" }
 	},
@@ -20,6 +20,7 @@
 		"streetsidesoftware.code-spell-checker",
 		"rust-lang.rust",
 		"matklad.rust-analyzer",
+		"ms-toolsai.jupyter",
 		"ms-python.python",
 	]
 

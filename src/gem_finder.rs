@@ -25,7 +25,7 @@ impl GemFinder {
             distances: geo::Distances { values: vec![] },
         }
     }
-    pub fn find_gems(&mut self) -> (u32, u32) {
+    pub fn find_gems(&mut self) -> (u32, u32, f64) {
         assert!(
             self.coordinates.len() == self.times.values.len(),
             "Length of coordinates and times must be equal."
@@ -33,7 +33,7 @@ impl GemFinder {
         self.compute_vector_of_distances();
         let total_distance = self.distances.values.last().unwrap().clone();
         if self.fastest_distance as f64 > total_distance {
-            return (0, 0);
+            return (0, 0, 0.0);
         } else {
             self.search_section()
         }
@@ -56,7 +56,7 @@ impl GemFinder {
             self.distances.values.push(distance);
         }
     }
-    pub fn search_section(&mut self) -> (u32, u32) {
+    pub fn search_section(&mut self) -> (u32, u32, f64) {
         let mut curr_sec: Section = Section {
             start_index: 0,
             end_index: 0,
@@ -73,8 +73,8 @@ impl GemFinder {
         };
         while curr_sec.end_index < self.distances.values.len() as u32 - 1 {
             println!("{:?}", curr_sec);
-            // build up section to have length of fastest_distance
             if curr_sec.distance < self.fastest_distance as f64 {
+                // build up section to have length of fastest_distance
                 curr_sec.end_index += 1;
                 curr_sec.distance = self.distances.values[curr_sec.end_index as usize]
                     - self.distances.values[curr_sec.start_index as usize]
@@ -85,16 +85,19 @@ impl GemFinder {
                 curr_sec.duration = self.times.values[curr_sec.end_index as usize]
                     - self.times.values[curr_sec.start_index as usize];
                 curr_sec.velocity = curr_sec.distance / curr_sec.duration;
-                // set fastest section to current section in case current section is faster
-                if curr_sec.velocity > fastest_sec.velocity {
-                    fastest_sec = curr_sec.clone();
+                // update fastest section only in case the current
+                // distance is not larger than the required distance + 1%
+                if curr_sec.distance <= (self.fastest_distance as f64) * 1.01 {
+                    if curr_sec.velocity > fastest_sec.velocity {
+                        fastest_sec = curr_sec.clone();
+                    }
                 }
                 // now move the start index further, end index will also
-                // be movedif section gets smaller than fastest_distance
+                // be moved if section gets smaller than fastest_distance
                 curr_sec.start_index += 1;
             }
         }
-        (fastest_sec.start_index, fastest_sec.end_index)
+        (fastest_sec.start_index, fastest_sec.end_index, fastest_sec.velocity)
     }
 }
 
@@ -116,6 +119,6 @@ mod test {
         // test case where fastest distance is greater than the
         // total distance, see above: 10000 > 7448
         let gem = finder.find_gems();
-        assert_eq!(gem, (0, 0));
+        assert_eq!(gem, (0, 0, 0.0));
     }
 }

@@ -16,6 +16,9 @@ RUN apt-get install -y python3-dev \
 # install oh-my-zsh
 RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
 
+RUN echo "alias python=python3" >> ~/.zshrc
+RUN echo "alias pip=pip3" >> ~/.zshrc
+
 # install rust
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
@@ -25,4 +28,8 @@ WORKDIR /sportgems
 
 # install pip packages
 RUN pip3 install -r /sportgems/requirements.txt
+
+COPY . /sportgems
+WORKDIR /sportgems
+
 RUN pip3 install -e .
