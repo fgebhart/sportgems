@@ -36,10 +36,10 @@ def track():
 
 def test_find_gems(track):
     # search for the fastest 1km (=1000m) with the above created track
-    fastest_1km = find_gems(1000, track.times, track.coordinates)
-    start_index = fastest_1km[0]
-    end_index = fastest_1km[1]
-    velocity_found = fastest_1km[2]
+    result = find_gems(1000, track.times, track.coordinates)
+    start_index = result[0]
+    end_index = result[1]
+    velocity_found = result[2]
     assert start_index == 131
     assert end_index == 184
     assert int(velocity_found) == 18
