@@ -22,7 +22,7 @@ def requirements_from_txt(path_to_txt):
     return [req for req in reqs if not req.startswith("#")]
 
 
-with open("Readme.md", "r") as fh:
+with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup_requires = ['setuptools-rust>=0.6.0']
