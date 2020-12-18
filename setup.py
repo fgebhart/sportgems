@@ -2,7 +2,6 @@ import os
 import sys
 
 from setuptools import setup
-from sportgems import __version__
 
 try:
     from setuptools_rust import RustExtension
@@ -14,6 +13,8 @@ except ImportError:
         raise SystemExit(errno)
     else:
         from setuptools_rust import RustExtension
+
+from sportgems import __version__
 
 
 def requirements_from_txt(path_to_txt):
