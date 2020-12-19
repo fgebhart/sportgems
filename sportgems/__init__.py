@@ -1,3 +1,3 @@
-from ._sportgems import find_gems
+from .sportgems import find_gems
 
 __all__ = ['find_gems']
