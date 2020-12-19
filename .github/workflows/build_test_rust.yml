@@ -30,7 +30,9 @@ jobs:
       run: maturin build
     
     - name: Install sportgems wheel
-      run: pip install target/wheels/sportgems*.whl
+      run: |
+        ls -l target/wheels/
+        pip install target/wheels/sportgems*.whl
 
     - name: Test sportgems
       run: |
