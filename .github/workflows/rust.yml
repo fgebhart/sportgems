@@ -17,3 +17,16 @@ jobs:
       
     - name: Run tests
       run: cargo test --verbose
+    
+    - name: Install python dependencies for building
+      run: python -m pip install --upgrade pip maturin wheel
+
+    - name: Build python wheel
+      run: maturin build
+    
+    - name: Install sportgems wheel
+      run: pip install target/wheels/sportgems*.whl
+
+    - name: Test sportgems
+      run: |
+        pytest tests/ -v
