@@ -32,4 +32,4 @@ RUN pip3 install -r /sportgems/requirements.txt
 COPY . /sportgems
 WORKDIR /sportgems
 
-RUN pip3 install -e .
+RUN maturin build
