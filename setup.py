@@ -3,8 +3,8 @@ import sys
 
 from setuptools import setup
 
-__version__ = "0.1.0"
 
+__version__ = "0.1.0"
 
 try:
     from setuptools_rust import RustExtension
@@ -47,7 +47,7 @@ setup(
         'Operating System :: POSIX',
         'Operating System :: MacOS :: MacOS X',
     ],
-    python_requires=">=3.8",
+    python_requires=">=3.7",
     packages=['sportgems'],
     rust_extensions=[RustExtension('sportgems._sportgems', 'Cargo.toml')],
     install_requires=install_requires,
