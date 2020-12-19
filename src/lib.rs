@@ -20,7 +20,7 @@ fn find_gems(
 }
 
 #[pymodule]
-fn _sportgems(_py: Python, m: &PyModule) -> PyResult<()> {
+fn sportgems(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(find_gems))?;
 
     Ok(())
