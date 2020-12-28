@@ -38,15 +38,17 @@ The result will be a tuple consisting of `(int, int, float)` where
 * the last element is the found velocity
 In the above example this would lead to
 ```python
-start_index = result[0]
-end_index = result[1]
-velocity = result[2]
+found_section = result[0]
+start_index = result[1]
+end_index = result[2]
+velocity = result[3]
 
-print(f"The fastest {int(fastest_1km / 1000)}km is from index {start_index} to {end_index} with a velocity of {velocity}m/s.")
+print(f"Found fastest {int(fastest_1km / 1000)}km: ")
+print(f"Fastest section ranges from index {start_index} to {end_index} with a velocity of {velocity}m/s.")
 ```
 which prints
 ```
-The fastest 1.0km is from index 1 to 2 with a velocity of 743.0908195788583m/s.
+The fastest 1km is from index 1 to 2 with a velocity of 743.0908195788583m/s.
 ```
 
 ## How does it work?
