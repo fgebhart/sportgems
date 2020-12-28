@@ -25,7 +25,7 @@ impl GemFinder {
             distances: geo::Distances { values: vec![] },
         }
     }
-    pub fn find_gems(&mut self) -> (u32, u32, f64) {
+    pub fn find_gems(&mut self) -> (bool, u32, u32, f64) {
         assert!(
             self.coordinates.len() == self.times.values.len(),
             "Length of coordinates and times must be equal."
@@ -33,7 +33,7 @@ impl GemFinder {
         self.compute_vector_of_distances();
         let total_distance = self.distances.values.last().unwrap().clone();
         if self.fastest_distance as f64 > total_distance {
-            return (0, 0, 0.0);
+            return (false, 0, 0, 0.0);
         } else {
             self.search_section()
         }
@@ -56,7 +56,7 @@ impl GemFinder {
             self.distances.values.push(distance);
         }
     }
-    pub fn search_section(&mut self) -> (u32, u32, f64) {
+    pub fn search_section(&mut self) -> (bool, u32, u32, f64) {
         let mut curr_sec: Section = Section {
             start_index: 0,
             end_index: 0,
@@ -98,6 +98,7 @@ impl GemFinder {
             }
         }
         (
+            true,
             fastest_sec.start_index,
             fastest_sec.end_index,
             fastest_sec.velocity,
@@ -123,6 +124,6 @@ mod test {
         // test case where fastest distance is greater than the
         // total distance, see above: 10000 > 7448
         let gem = finder.find_gems();
-        assert_eq!(gem, (0, 0, 0.0));
+        assert_eq!(gem, (false, 0, 0, 0.0));
     }
 }

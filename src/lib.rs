@@ -13,7 +13,7 @@ fn find_gems(
     fastest_distance: u32,
     times: Vec<f64>,
     coordinates: Vec<(f64, f64)>,
-) -> PyResult<(u32, u32, f64)> {
+) -> PyResult<(bool, u32, u32, f64)> {
     let mut finder = GemFinder::new(fastest_distance, coordinates, times);
     let result = finder.find_gems();
     Ok(result)
