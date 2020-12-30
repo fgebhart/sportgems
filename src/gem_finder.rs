@@ -72,7 +72,7 @@ impl GemFinder {
             velocity: 0.0,
         };
         while curr_sec.end_index < self.distances.values.len() as u32 - 1 {
-            println!("{:?}", curr_sec);
+            // println!("{:?}", curr_sec);
             if curr_sec.distance < self.fastest_distance as f64 {
                 // build up section to have length of fastest_distance
                 curr_sec.end_index += 1;
