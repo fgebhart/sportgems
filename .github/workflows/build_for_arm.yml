@@ -51,19 +51,7 @@ jobs:
           # publicly in your project's package repository, so it is vital that
           # no secrets are present in the container state or logs.
           install: |
-            case "${{ matrix.distro }}" in
-              ubuntu*|jessie|stretch|buster)
-                apt-get update -q -y
-                apt-get install -q -y git
-                ;;
-              fedora*)
-                dnf -y update
-                dnf -y install git which
-                ;;
-              alpine*)
-                apk update
-                apk add git
-                ;;
+            apt-get install -q -y git python3.8 python3-pip
             esac
 
           # Produce a binary artifact and place it in the mounted volume
@@ -71,8 +59,7 @@ jobs:
             cp $(which git) "/artifacts/${artifact_name}"
             echo "Produced artifact at /artifacts/${artifact_name}"
             ls -l /usr/bin/
-            which python
-            apt install python3-pip
+            python --version
 
       - name: Show the artifact
         # Items placed in /artifacts in the container will be in
