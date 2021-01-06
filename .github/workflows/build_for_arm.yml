@@ -12,7 +12,7 @@ jobs:
         id: runcmd
         with:
           arch: armv7
-          distro: ubuntu18.04
+          distro: buster
 
           # Not required, but speeds up builds by storing container images in
           # a GitHub package registry.
@@ -22,6 +22,7 @@ jobs:
           run: |
             uname -a
             echo ::set-output name=uname::$(uname -a)
+            apt-get update && apt-get install curl
             curl https://sh.rustup.rs -sSf | sh
             rustup target add armv7-unknown-linux-gnueabihf
             sudo apt-get install gcc-4.7-multilib-arm-linux-gnueabihf
