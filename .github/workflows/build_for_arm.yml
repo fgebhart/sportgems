@@ -12,8 +12,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - arch: aarch64
-            distro: ubuntu18.04
           - arch: armv6
             distro: buster
           - arch: armv7
@@ -72,6 +70,9 @@ jobs:
           run: |
             cp $(which git) "/artifacts/${artifact_name}"
             echo "Produced artifact at /artifacts/${artifact_name}"
+            ls -l /usr/bin/
+            which python
+            apt install python3-pip
 
       - name: Show the artifact
         # Items placed in /artifacts in the container will be in
