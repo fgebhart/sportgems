@@ -3,8 +3,8 @@ FROM ubuntu:latest
 # set apt to noninteractive mode  (for installing firefox)
 ENV DEBIAN_FRONTEND='noninteractive'
 # install sqlite3 package for the use of djangos db shell
-RUN apt-get update
-RUN apt-get install -y python3-dev \
+RUN apt-get update && \
+    apt-get install -y python3-dev \
                        python3-pip \
                        vim \
                        git \
