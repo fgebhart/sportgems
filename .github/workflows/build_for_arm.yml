@@ -8,13 +8,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          target: armv7-unknown-linux-gnueabihf
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          use-cross: true
-          command: build
-          args: --target armv7-unknown-linux-gnueabihf
+      - name: Get Python
+        run: |
+          wget https://www.python.org/ftp/python/3.8.6/Python-3.8.6.tgz
+          tar -xvzf Python-3.8.6.tgz
+      - name: Build Python for ARM
+        env:
+            HOSTPYTHON: /tmp/depsBuild/pythonhost/python
+            CONFIGURE_PREFIX: /tmp/python
+            BUILT_ARM_PYTHON: /tmp/Python-3.8.6
+        run: |
+          CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ AR=arm-linux-gnueabihf-ar \
+            RANLIB=arm-linux-gnueabihf-ranlib \
+            ./configure --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf \
+            --build=x86_64-linux-gnu --prefix=$CONFIGURE_PREFIX \
+            --disable-ipv6 ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no \
+            ac_cv_have_long_long_format=yes --enable-shared
+
+          make HOSTPYTHON=$HOSTPYTHON \
+            BLDSHARED="arm-linux-gnueabihf-gcc -shared" CROSS-COMPILE=arm-linux-gnueabihf- \
+            CROSS_COMPILE_TARGET=yes HOSTARCH=arm-linux BUILDARCH=arm-linux-gnueabihf
+
+          make altinstall HOSTPYTHON=$HOSTPYTHON \
+            BLDSHARED="arm-linux-gnueabihf-gcc -shared" CROSS-COMPILE=arm-linux-gnueabihf- \
+            CROSS_COMPILE_TARGET=yes HOSTARCH=arm-linux BUILDARCH=arm-linux-gnueabihf \
+            prefix=$BUILT_ARM_PYTHON
+
+      - name: Build ARM wheel
+        run: |
+          PYO3_CROSS_INCLUDE_DIR="$BUILT_ARM_PYTHON/include" PYO3_CROSS_LIB_DIR="$BUILT_ARM_PYTHON/_install/lib" maturin build --target=armv7-unknown-linux-gnueabihf --release
+
+      - name: Verify Target is present
+        run: |
+          ls -l target/sportgems-*-manylinux1_armv7l.whl
