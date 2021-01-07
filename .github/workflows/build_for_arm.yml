@@ -5,10 +5,14 @@ on: [push, pull_request]
 jobs:
   armv7_job:
     # The host should always be Linux
-    runs-on: ubuntu-18.04
-    name: Build on ubuntu-18.04 armv7
+    runs-on: ubuntu-latest
+    name: Build on ubuntu-latest armv7
     steps:
       - uses: actions/checkout@v2.1.0
+        name: Check Cargo Version
+        run: |
+          cargo --version
+
       - uses: uraimo/run-on-arch-action@v2.0.5
         name: Run commands
         id: runcmd
