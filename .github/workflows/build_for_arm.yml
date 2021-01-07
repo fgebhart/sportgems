@@ -14,6 +14,9 @@ jobs:
           wget https://www.python.org/ftp/python/3.8.6/Python-3.8.6.tgz
           tar -xvzf Python-3.8.6.tgz
       - name: Build Python for ARM
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
         env:
             HOSTPYTHON: /tmp/depsBuild/pythonhost/python
             CONFIGURE_PREFIX: /tmp/python
