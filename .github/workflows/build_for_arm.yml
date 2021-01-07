@@ -9,7 +9,7 @@ jobs:
     name: Build on ubuntu-latest armv7
     steps:
       - uses: actions/checkout@v2.1.0
-        name: Check Cargo Version
+      - name: Check Cargo Version
         run: |
           cargo --version
 
