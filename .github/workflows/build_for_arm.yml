@@ -31,6 +31,9 @@ jobs:
             source $HOME/.cargo/env
             rustup target add armv7-unknown-linux-gnueabihf
 
+            cargo build
+            ls -l target
+
       - name: Get the output
         # Echo the `uname` output parameter from the `runcmd` step
         run: |
