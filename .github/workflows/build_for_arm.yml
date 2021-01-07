@@ -28,7 +28,7 @@ jobs:
             ls -l
             wget https://static.rust-lang.org/rustup/dist/armv7-unknown-linux-gnueabihf/rustup-init
             chmod +x rustup-init
-            ./rustup-init
+            printf '%s\n' 1 | ./rustup-init
             ls -l
             rustup target add armv7-unknown-linux-gnueabihf
 
