@@ -1,8 +1,6 @@
-name: Build ARM
+name: ARMv7 build
 
 on: [push]
-
-name: ARMv7 build
 
 jobs:
   linux_arm7:
