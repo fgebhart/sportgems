@@ -24,7 +24,8 @@ jobs:
           run: |
             uname -a
             echo ::set-output name=uname::$(uname -a)
-            apt-get update && apt-get install -q -y wget python3-dev python-dev
+            apt-get update && apt-get install -q -y wget python3-dev python-dev python3.8
+            ls -l /usr/bin/
             wget https://static.rust-lang.org/rustup/dist/armv7-unknown-linux-gnueabihf/rustup-init
             chmod +x rustup-init
             printf '%s\n' 1 | ./rustup-init
