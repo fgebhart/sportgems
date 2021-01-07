@@ -34,7 +34,7 @@ jobs:
             
             rustup target add armv7-unknown-linux-gnueabihf
 
-            pip install maturin
+            pip3 install maturin
             maturin build
 
             ls -l target
