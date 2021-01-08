@@ -25,7 +25,9 @@ jobs:
       - name: fix lsb_release issue
         run: |
           cat /usr/bin/lsb_release
-          sudo rm /usr/bin/lsb_release
+          ls -l /usr/bin/python3
+          # sudo rm /usr/bin/lsb_release
+
       - name: Build Python for ARM
         env:
           HOSTPYTHON: /tmp/depsBuild/pythonhost/python
@@ -68,7 +70,6 @@ jobs:
 
       - name: Build using cargo
         run: |
-          cd $EXTRACTED_PYTHON
           PYO3_CROSS_INCLUDE_DIR="$TARGET_PYTHON/include" PYO3_CROSS_LIB_DIR="$TARGET_PYTHON/lib" cargo build --target=armv7-unknown-linux-gnueabihf --release
 
       - name: Build ARM wheel
