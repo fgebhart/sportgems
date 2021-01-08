@@ -17,14 +17,16 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
-      - name: Prepare
+      - name: Install apt packages
+        env:
+          DEBIAN_FRONTEND: noninteractive
         run: |
-          apt install gcc-arm-linux-gnueabihf
+          sudo apt update && sudo apt install gcc-arm-linux-gnueabihf
       - name: Build Python for ARM
         env:
-            HOSTPYTHON: /tmp/depsBuild/pythonhost/python
-            CONFIGURE_PREFIX: /tmp/python
-            BUILT_ARM_PYTHON: /tmp/Python-3.8.6
+          HOSTPYTHON: /tmp/depsBuild/pythonhost/python
+          CONFIGURE_PREFIX: /tmp/python
+          BUILT_ARM_PYTHON: /tmp/Python-3.8.6
         run: |
           cd $BUILT_ARM_PYTHON
           CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ AR=arm-linux-gnueabihf-ar \
@@ -45,7 +47,7 @@ jobs:
 
       - name: Build ARM wheel
         env:
-            BUILT_ARM_PYTHON: /tmp/Python-3.8.6
+          BUILT_ARM_PYTHON: /tmp/Python-3.8.6
         run: |
           PYO3_CROSS_INCLUDE_DIR="$BUILT_ARM_PYTHON/include" PYO3_CROSS_LIB_DIR="$BUILT_ARM_PYTHON/_install/lib" maturin build --target=armv7-unknown-linux-gnueabihf --release
 
