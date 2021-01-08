@@ -21,14 +21,15 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          sudo apt update && sudo apt install gcc-arm-linux-gnueabihf
+          sudo apt update && sudo apt install gcc-arm-linux-gnueabihf lsb-release
       - name: Build Python for ARM
         env:
           HOSTPYTHON: /tmp/depsBuild/pythonhost/python
           CONFIGURE_PREFIX: /tmp/python
-          BUILT_ARM_PYTHON: /tmp/Python-3.8.6
+          EXTRACTED_PYTHON: /tmp/Python-3.8.6
+          TARGET_PYTHON: /tmp/Python-3.8.6/target
         run: |
-          cd $BUILT_ARM_PYTHON
+          cd $EXTRACTED_PYTHON
           CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ AR=arm-linux-gnueabihf-ar \
             RANLIB=arm-linux-gnueabihf-ranlib \
             ./configure --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf \
@@ -43,13 +44,13 @@ jobs:
           make altinstall HOSTPYTHON=$HOSTPYTHON \
             BLDSHARED="arm-linux-gnueabihf-gcc -shared" CROSS-COMPILE=arm-linux-gnueabihf- \
             CROSS_COMPILE_TARGET=yes HOSTARCH=arm-linux BUILDARCH=arm-linux-gnueabihf \
-            prefix=$BUILT_ARM_PYTHON
+            prefix=$TARGET_PYTHON
 
       - name: Build ARM wheel
         env:
-          BUILT_ARM_PYTHON: /tmp/Python-3.8.6
+          TARGET_PYTHON: /tmp/Python-3.8.6/target
         run: |
-          PYO3_CROSS_INCLUDE_DIR="$BUILT_ARM_PYTHON/include" PYO3_CROSS_LIB_DIR="$BUILT_ARM_PYTHON/_install/lib" maturin build --target=armv7-unknown-linux-gnueabihf --release
+          PYO3_CROSS_INCLUDE_DIR="$TARGET_PYTHON/include" PYO3_CROSS_LIB_DIR="$TARGET_PYTHON/lib" maturin build --target=armv7-unknown-linux-gnueabihf --release
 
       - name: Verify Target is present
         run: |
