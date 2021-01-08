@@ -50,6 +50,10 @@ jobs:
             CROSS_COMPILE_TARGET=yes HOSTARCH=arm-linux BUILDARCH=arm-linux-gnueabihf \
             prefix=$TARGET_PYTHON
 
+      - name: Install maturin
+        run: |
+          pip3 install maturin
+
       - name: Build ARM wheel
         env:
           TARGET_PYTHON: /tmp/Python-3.8.6/target
@@ -58,4 +62,5 @@ jobs:
 
       - name: Verify Target is present
         run: |
+          ls -l target/wheels
           ls -l target/sportgems-*-manylinux1_armv7l.whl
