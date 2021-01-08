@@ -21,7 +21,7 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          sudo apt update && sudo apt install python3 python3-pip wget
+          sudo apt update && sudo apt install gcc-arm-linux-gnueabihf python3 python3-pip wget
       - name: fix lsb_release issue
         run: |
           cat /usr/bin/lsb_release
@@ -65,6 +65,10 @@ jobs:
       - name: Build for host platform
         run: |
           maturin build
+
+      - name: Build using cargo
+        run: |
+          cargo build --target=armv7-unknown-linux-gnueabihf --release
 
       - name: Build ARM wheel
         env:
