@@ -27,7 +27,8 @@ jobs:
           cat /usr/bin/lsb_release
           ls -l /usr/bin/python3
           # sudo rm /usr/bin/lsb_release
-          sudo ln -s /usr/bin/python3.6 /usr/bin/python3
+          sudo rm /usr/bin/python3
+          sudo ln -s /usr/bin/python3.8 /usr/bin/python3
           ls -l /usr/bin/python3
 
       - name: Build Python for ARM
