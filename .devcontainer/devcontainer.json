@@ -10,7 +10,9 @@
 
 	// Set *default* container specific settings.json values on container create.
 	"settings": { 
-		"terminal.integrated.shell.linux": "/bin/bash"
+		"python.pythonPath": "/tmp/venv/bin/python",
+		"python.terminal.activateEnvironment": true,
+		"terminal.integrated.shellArgs.linux": ["--init-file", ".vscode/terminal.sh"],
 	},
 
 	// Add the IDs of extensions you want installed when the container is created.
@@ -19,7 +21,6 @@
 		"anjali.clipboard-history",
 		"streetsidesoftware.code-spell-checker",
 		"rust-lang.rust",
-		"ms-toolsai.jupyter",
 		"ms-python.python",
 	]
 
