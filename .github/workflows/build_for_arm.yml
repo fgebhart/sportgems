@@ -60,11 +60,15 @@ jobs:
         run: |
           pip3 install maturin wheel
 
+      - name: Build for host platform
+        run: |
+          maturin build
+
       - name: Build ARM wheel
         env:
           TARGET_PYTHON: /tmp/Python-3.8.6/target
         run: |
-          PYO3_CROSS_INCLUDE_DIR="$TARGET_PYTHON/include" PYO3_CROSS_LIB_DIR="$TARGET_PYTHON/lib" maturin build --target=armv7-unknown-linux-gnueabihf --release  --manylinux=off
+          PYO3_CROSS_INCLUDE_DIR="$TARGET_PYTHON/include" PYO3_CROSS_LIB_DIR="$TARGET_PYTHON/lib" maturin build --target=armv7-unknown-linux-gnueabihf --release --manylinux=off
 
       - name: Verify Target is present
         run: |
