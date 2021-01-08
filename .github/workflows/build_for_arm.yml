@@ -68,6 +68,7 @@ jobs:
 
       - name: Build using cargo
         run: |
+          cd $EXTRACTED_PYTHON
           PYO3_CROSS_INCLUDE_DIR="$TARGET_PYTHON/include" PYO3_CROSS_LIB_DIR="$TARGET_PYTHON/lib" cargo build --target=armv7-unknown-linux-gnueabihf --release
 
       - name: Build ARM wheel
