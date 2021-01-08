@@ -1,8 +1,8 @@
 FROM ubuntu:latest
 
-# set apt to noninteractive mode  (for installing firefox)
+# set apt to noninteractive mode  (for installing tzdata)
 ENV DEBIAN_FRONTEND='noninteractive'
-# install sqlite3 package for the use of djangos db shell
+
 RUN apt-get update && \
     apt-get install -y python3-dev \
                        python3-pip \
@@ -11,7 +11,12 @@ RUN apt-get update && \
                        build-essential \
                        zsh \
                        wget \
-                       curl
+                       curl \
+                       tzdata
+
+RUN echo "Europe/Berlin" > /etc/timezone && \
+    ln -fs /usr/share/zoneinfo/`cat /etc/timezone` /etc/localtime && \
+    dpkg-reconfigure -f noninteractive tzdata
 
 # install oh-my-zsh
 RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
