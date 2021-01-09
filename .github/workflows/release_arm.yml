@@ -1,14 +1,16 @@
 name: Release ARMv7
 
-on: [push]
+on:
+  release:
+    types: [published]
 
 jobs:
   build_arm7:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      
-      - name: Install apt Packages
+
+      - name: Install Dependencies
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
@@ -20,14 +22,14 @@ jobs:
                                                   virtualenv \
                                                   python3-pip \
 
-      - name: Set up Virtual Environment and Install Maturin
+      - name: Set up Venv
         run: |
           virtualenv -p python3.8 venv
           source venv/bin/activate
           python --version
           pip install maturin
 
-      - name: Download, Install and Configure Rust
+      - name: Install Rust
         run: |
           wget https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init
           chmod +x rustup-init
@@ -40,18 +42,16 @@ jobs:
           echo '[target.armv7-unknown-linux-gnueabihf]
           linker = "arm-linux-gnueabihf-gcc"' > ~/.cargo/config
 
-      - name: Download and Unpack Python
+      - name: Download Python
         run: |
           wget https://www.python.org/ftp/python/3.8.6/Python-3.8.6.tgz
           tar -xvzf Python-3.8.6.tgz
 
-      - name: fix lsb_release issue
+      - name: Remove lsb_release
         run: |
-          cat /usr/bin/lsb_release
-          ls -l /usr/bin/python3.8
           sudo rm /usr/bin/lsb_release
 
-      - name: Build Python 3.8 for ARM
+      - name: Build Python for ARM
         env:
           TARGET_PYTHON: /tmp/Python-3.8
         run: |
@@ -72,7 +72,7 @@ jobs:
               CROSS_COMPILE_TARGET=yes HOSTARCH=arm-linux BUILDARCH=arm-linux-gnueabihf \
               prefix=$TARGET_PYTHON
 
-      - name: Cross Compile & Publish to PyPI
+      - name: Cross Compile & Publish
         env:
           TARGET_PYTHON: /tmp/Python-3.8
           MATURIN_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
@@ -83,4 +83,4 @@ jobs:
           maturin publish --username ${{ secrets.PYPI_USERNAME }} \
                           --no-sdist \
                           --target=armv7-unknown-linux-gnueabihf \
-                          --manylinux=off \
+                          --manylinux=off
