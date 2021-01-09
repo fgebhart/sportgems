@@ -15,17 +15,12 @@ jobs:
         run: |
           export DEBIAN_FRONTEND='noninteractive'
           sudo apt update && sudo apt install -y  gcc-arm-linux-gnueabihf \
-                                        wget \
-                                        make \
-                                        vim \
-                                        python3.8 \
-                                        python3-pip \
-                                        virtualenv \
-                                        python3-dev \
-                                        python3-setuptools \
-                                        python3-wheel \
-                                        virtualenv \
-                                        python3-pip \
+                                                  wget \
+                                                  python3.8 \
+                                                  python3-pip \
+                                                  python3-dev \
+                                                  virtualenv \
+                                                  python3-pip \
 
       - name: Set up Virtual Environment and Install Maturin
         run: |
