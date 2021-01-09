@@ -1,7 +1,7 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.140.1/containers/ubuntu
 {
-	"name": "Ubuntu",
+	"name": "Sportgems",
 	"build": {
 		"dockerfile": "../Dockerfile",
 		// Update 'VARIANT' to pick an Ubuntu version: focal, bionic
@@ -10,7 +10,9 @@
 
 	// Set *default* container specific settings.json values on container create.
 	"settings": { 
-		"terminal.integrated.shell.linux": "/bin/bash"
+		"python.pythonPath": "/tmp/venv/bin/python",
+		"python.terminal.activateEnvironment": true,
+		"terminal.integrated.shellArgs.linux": ["--init-file", "entrypoint.sh"],
 	},
 
 	// Add the IDs of extensions you want installed when the container is created.
@@ -19,8 +21,6 @@
 		"anjali.clipboard-history",
 		"streetsidesoftware.code-spell-checker",
 		"rust-lang.rust",
-		"matklad.rust-analyzer",
-		"ms-toolsai.jupyter",
 		"ms-python.python",
 	]
 

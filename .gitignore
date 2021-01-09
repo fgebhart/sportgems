@@ -11,3 +11,4 @@ venv/
 dist/
 sportgems.egg-info/
 .pytest_cache/
+spike/
