@@ -1,10 +1,9 @@
-name: Build ARMv7
+name: Release ARMv7
 
 on: [push]
 
 jobs:
   build_arm7:
-    name: Build ARMv7
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -85,5 +84,3 @@ jobs:
                           --no-sdist \
                           --target=armv7-unknown-linux-gnueabihf \
                           --manylinux=off \
-                          --release
-
