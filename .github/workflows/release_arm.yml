@@ -72,7 +72,7 @@ jobs:
               CROSS_COMPILE_TARGET=yes HOSTARCH=arm-linux BUILDARCH=arm-linux-gnueabihf \
               prefix=$TARGET_PYTHON
 
-      - name: Cross Compile & Publish to PyPi
+      - name: Cross Compile & Publish to PyPI
         env:
           TARGET_PYTHON: /tmp/Python-3.8
           MATURIN_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
