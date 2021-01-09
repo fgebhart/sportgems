@@ -26,29 +26,6 @@ jobs:
                                         python3-wheel \
                                         virtualenv \
                                         python3-pip \
-                                        git \
-                                        cmake \
-                                        libssl-dev \
-                                        autoconf \
-                                        automake \
-                                        build-essential \
-                                        zlib1g-dev \
-                                        libbz2-dev \
-                                        liblzma-dev \
-                                        libncurses5-dev \
-                                        libreadline6-dev \
-                                        libsqlite3-dev \
-                                        libgdbm-dev \
-                                        lzma \
-                                        lzma-dev \
-                                        curl \
-                                        g++ \
-                                        unzip \
-                                        sqlite3 \
-                                        openssl \
-                                        tcl8.6-dev \
-                                        tk8.6-dev \
-                                        libreadline-dev
 
       - name: Set up Virtual Environment and Install Maturin
         run: |
@@ -110,5 +87,5 @@ jobs:
       - name: Verify Target is present
         run: |
           ls -l target/wheels
-          ls -l target/sportgems-*-cp38-cp38-linux_armv7l.whl
+          ls -l target/wheels/sportgems-*-cp38-cp38-linux_armv7l.whl
 
