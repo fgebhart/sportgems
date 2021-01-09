@@ -14,7 +14,7 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           export DEBIAN_FRONTEND='noninteractive'
-          apt update && apt install -y  gcc-arm-linux-gnueabihf \
+          sudo apt update && sudo apt install -y  gcc-arm-linux-gnueabihf \
                                         wget \
                                         make \
                                         vim \
@@ -92,12 +92,12 @@ jobs:
           make altinstall HOSTPYTHON=$HOME/raspberry/depsBuild/pythonhost/python \
               BLDSHARED="arm-linux-gnueabihf-gcc -shared" CROSS-COMPILE=arm-linux-gnueabihf- \
               CROSS_COMPILE_TARGET=yes HOSTARCH=arm-linux BUILDARCH=arm-linux-gnueabihf \
-              prefix=$HOME/Python-3.6-rpi/_install
+              prefix=$HOME/Python-3.8-rpi/_install
 
       - name: Cross Compile
         run: |
-          export PYO3_CROSS_INCLUDE_DIR="$HOME/Python-3.6-rpi/_install/include"
-          export PYO3_CROSS_LIB_DIR="$HOME/Python-3.6-rpi/_install/lib"
+          export PYO3_CROSS_INCLUDE_DIR="$HOME/Python-3.8-rpi/_install/include"
+          export PYO3_CROSS_LIB_DIR="$HOME/Python-3.8-rpi/_install/lib"
           maturin build --target=armv7-unknown-linux-gnueabihf --manylinux=off --release
 
       - name: Verify Target is present
