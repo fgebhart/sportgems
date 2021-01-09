@@ -8,28 +8,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Get Host Info
+        run: |
+          cat /etc/os-release
+          uname -a
       - name: Get Python
         run: |
           cd /tmp
           wget https://www.python.org/ftp/python/3.8.6/Python-3.8.6.tgz
           tar -xvzf Python-3.8.6.tgz
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
+
       - name: Install apt packages
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          sudo apt update && sudo apt install gcc-arm-linux-gnueabihf python3 python3-pip wget
-      - name: fix lsb_release issue
+          apt update && apt install -y gcc-arm-linux-gnueabihf python3 python3-pip wget virtualenv python3-dev python3-setuptools python3-wheel
+      
+      - name: setup venv
         run: |
-          cat /usr/bin/lsb_release
-          ls -l /usr/bin/python3
-          # sudo rm /usr/bin/lsb_release
-          sudo rm /usr/bin/python3
-          sudo ln -s /usr/bin/python3.8 /usr/bin/python3
-          ls -l /usr/bin/python3
+          ls -l /usr/bin/python*
+          virtualenv -p python3 venv
+          source venv/bin/activate
+          python --version
 
       - name: Build Python for ARM
         env:
@@ -38,6 +38,12 @@ jobs:
           EXTRACTED_PYTHON: /tmp/Python-3.8.6
           TARGET_PYTHON: /tmp/Python-3.8.6/target
         run: |
+          pwd
+          ls -l
+          ls -l /usr/bin/python*
+          ln -s /usr/bin/python3 /usr/bin/python
+          ls -l /usr/bin/python*
+          python --version
           cd $EXTRACTED_PYTHON
           CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ AR=arm-linux-gnueabihf-ar \
             RANLIB=arm-linux-gnueabihf-ranlib \
