@@ -102,6 +102,7 @@ jobs:
 
       - name: Cross Compile
         run: |
+          source venv/bin/activate
           export PYO3_CROSS_INCLUDE_DIR="$HOME/Python-3.8-rpi/_install/include"
           export PYO3_CROSS_LIB_DIR="$HOME/Python-3.8-rpi/_install/lib"
           maturin build --target=armv7-unknown-linux-gnueabihf --manylinux=off --release
