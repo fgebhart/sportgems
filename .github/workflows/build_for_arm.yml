@@ -8,86 +8,100 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Get Host Info
-        run: |
-          cat /etc/os-release
-          uname -a
-      - name: Get Python
-        run: |
-          cd /tmp
-          wget https://www.python.org/ftp/python/3.8.6/Python-3.8.6.tgz
-          tar -xvzf Python-3.8.6.tgz
-
+      
       - name: Install apt packages
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          apt update && apt install -y gcc-arm-linux-gnueabihf python3 python3-pip wget virtualenv python3-dev python3-setuptools python3-wheel
-      
-      - name: setup venv
+          export DEBIAN_FRONTEND='noninteractive'
+          apt update && apt install -y  gcc-arm-linux-gnueabihf \
+                                        wget \
+                                        make \
+                                        vim \
+                                        python3.8 \
+                                        python3-pip \
+                                        virtualenv \
+                                        python3-dev \
+                                        python3-setuptools \
+                                        python3-wheel \
+                                        virtualenv \
+                                        python3-pip \
+                                        git \
+                                        cmake \
+                                        libssl-dev \
+                                        autoconf \
+                                        automake \
+                                        build-essential \
+                                        zlib1g-dev \
+                                        libbz2-dev \
+                                        liblzma-dev \
+                                        libncurses5-dev \
+                                        libreadline6-dev \
+                                        libsqlite3-dev \
+                                        libgdbm-dev \
+                                        lzma \
+                                        lzma-dev \
+                                        curl \
+                                        g++ \
+                                        unzip \
+                                        sqlite3 \
+                                        openssl \
+                                        tcl8.6-dev \
+                                        tk8.6-dev \
+                                        libreadline-dev
+
+      - name: Set up venv
         run: |
-          ls -l /usr/bin/python*
-          virtualenv -p python3 venv
+          virtualenv -p python3.8 venv
           source venv/bin/activate
           python --version
+          pip install maturin
 
-      - name: Build Python for ARM
-        env:
-          HOSTPYTHON: /tmp/depsBuild/pythonhost/python
-          CONFIGURE_PREFIX: /tmp/python
-          EXTRACTED_PYTHON: /tmp/Python-3.8.6
-          TARGET_PYTHON: /tmp/Python-3.8.6/target
-        run: |
-          pwd
-          ls -l
-          ls -l /usr/bin/python*
-          ln -s /usr/bin/python3 /usr/bin/python
-          ls -l /usr/bin/python*
-          python --version
-          cd $EXTRACTED_PYTHON
-          CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ AR=arm-linux-gnueabihf-ar \
-            RANLIB=arm-linux-gnueabihf-ranlib \
-            ./configure --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf \
-            --build=x86_64-linux-gnu --prefix=$CONFIGURE_PREFIX \
-            --disable-ipv6 ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no \
-            ac_cv_have_long_long_format=yes --enable-shared
-
-          make HOSTPYTHON=$HOSTPYTHON \
-            BLDSHARED="arm-linux-gnueabihf-gcc -shared" CROSS-COMPILE=arm-linux-gnueabihf- \
-            CROSS_COMPILE_TARGET=yes HOSTARCH=arm-linux BUILDARCH=arm-linux-gnueabihf
-
-          make altinstall HOSTPYTHON=$HOSTPYTHON \
-            BLDSHARED="arm-linux-gnueabihf-gcc -shared" CROSS-COMPILE=arm-linux-gnueabihf- \
-            CROSS_COMPILE_TARGET=yes HOSTARCH=arm-linux BUILDARCH=arm-linux-gnueabihf \
-            prefix=$TARGET_PYTHON
-
-      - name: Install latest rust
+      - name: install rust
         run: |
           wget https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init
           chmod +x rustup-init
           printf '%s\n' 1 | ./rustup-init
           source $HOME/.cargo/env
+          rustup default nightly
+          rustc -V
           rustup target add armv7-unknown-linux-gnueabihf
+          mkdir -p ~/.cargo
+          echo '[target.armv7-unknown-linux-gnueabihf]
+          linker = "arm-linux-gnueabihf-gcc"' > ~/.cargo/config
 
-      - name: Install maturin
+      - name: get python
         run: |
-          pip3 install maturin wheel
+          wget https://www.python.org/ftp/python/3.8.6/Python-3.8.6.tgz
+          tar -xvzf Python-3.8.6.tgz
+          cd Python-3.8.6
 
-      - name: Build for host platform
+      - name: Build Python for ARM
         run: |
-          maturin build
+          CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ AR=arm-linux-gnueabihf-ar \
+              RANLIB=arm-linux-gnueabihf-ranlib \
+              ./configure --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf \
+              --build=x86_64-linux-gnu --prefix=$HOME/rapsberry/depsBuild/python \
+              --disable-ipv6 ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no \
+              ac_cv_have_long_long_format=yes --enable-shared
 
-      - name: Build using cargo
-        run: |
-          PYO3_CROSS_INCLUDE_DIR="$TARGET_PYTHON/include" PYO3_CROSS_LIB_DIR="$TARGET_PYTHON/lib" cargo build --target=armv7-unknown-linux-gnueabihf --release
+          make HOSTPYTHON=$HOME/raspberry/depsBuild/pythonhost/python \
+              BLDSHARED="arm-linux-gnueabihf-gcc -shared" CROSS-COMPILE=arm-linux-gnueabihf- \
+              CROSS_COMPILE_TARGET=yes HOSTARCH=arm-linux BUILDARCH=arm-linux-gnueabihf
 
-      - name: Build ARM wheel
-        env:
-          TARGET_PYTHON: /tmp/Python-3.8.6/target
+          make altinstall HOSTPYTHON=$HOME/raspberry/depsBuild/pythonhost/python \
+              BLDSHARED="arm-linux-gnueabihf-gcc -shared" CROSS-COMPILE=arm-linux-gnueabihf- \
+              CROSS_COMPILE_TARGET=yes HOSTARCH=arm-linux BUILDARCH=arm-linux-gnueabihf \
+              prefix=$HOME/Python-3.6-rpi/_install
+
+      - name: Cross Compile
         run: |
-          PYO3_CROSS_INCLUDE_DIR="$TARGET_PYTHON/include" PYO3_CROSS_LIB_DIR="$TARGET_PYTHON/lib" maturin build --target=armv7-unknown-linux-gnueabihf --release --manylinux=off
+          export PYO3_CROSS_INCLUDE_DIR="$HOME/Python-3.6-rpi/_install/include"
+          export PYO3_CROSS_LIB_DIR="$HOME/Python-3.6-rpi/_install/lib"
+          maturin build --target=armv7-unknown-linux-gnueabihf --manylinux=off --release
 
       - name: Verify Target is present
         run: |
           ls -l target/wheels
-          ls -l target/sportgems-*-manylinux1_armv7l.whl
+          ls -l target/sportgems-*-cp38-cp38-linux_armv7l.whl
+
