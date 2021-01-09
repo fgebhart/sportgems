@@ -17,7 +17,6 @@ jobs:
           sudo apt update && sudo apt install -y  gcc-arm-linux-gnueabihf \
                                                   wget \
                                                   python3.8 \
-                                                  python3-pip \
                                                   python3-dev \
                                                   virtualenv \
                                                   python3-pip \
@@ -53,7 +52,9 @@ jobs:
           ls -l /usr/bin/python3.8
           sudo rm /usr/bin/lsb_release
 
-      - name: Build Python for ARM
+      - name: Build Python 3.8 for ARM
+        env:
+          TARGET_PYTHON: /tmp/Python-3.8
         run: |
           cd Python-3.8.6
           CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ AR=arm-linux-gnueabihf-ar \
@@ -70,13 +71,15 @@ jobs:
           make altinstall HOSTPYTHON=$HOME/raspberry/depsBuild/pythonhost/python \
               BLDSHARED="arm-linux-gnueabihf-gcc -shared" CROSS-COMPILE=arm-linux-gnueabihf- \
               CROSS_COMPILE_TARGET=yes HOSTARCH=arm-linux BUILDARCH=arm-linux-gnueabihf \
-              prefix=$HOME/Python-3.8-rpi/_install
+              prefix=$TARGET_PYTHON
 
       - name: Cross Compile
+        env:
+          TARGET_PYTHON: /tmp/Python-3.8
         run: |
           source venv/bin/activate
-          export PYO3_CROSS_INCLUDE_DIR="$HOME/Python-3.8-rpi/_install/include"
-          export PYO3_CROSS_LIB_DIR="$HOME/Python-3.8-rpi/_install/lib"
+          export PYO3_CROSS_INCLUDE_DIR="$TARGET_PYTHON/include"
+          export PYO3_CROSS_LIB_DIR="$TARGET_PYTHON/lib"
           maturin build --target=armv7-unknown-linux-gnueabihf --manylinux=off --release
 
       - name: Verify Target is present
