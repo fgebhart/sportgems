@@ -79,8 +79,7 @@ jobs:
         run: |
           cat /usr/bin/lsb_release
           ls -l /usr/bin/python3.8
-          sudo ln -s /usr/bin/python3 /usr/bin/python3.8
-          ls -l /usr/bin/python3
+          sudo rm /usr/bin/lsb_release
 
       - name: Build Python for ARM
         run: |
