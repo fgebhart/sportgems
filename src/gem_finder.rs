@@ -1,6 +1,4 @@
 use crate::geo;
-use crate::test_data;
-use crate::test_helper;
 
 
 #[derive(Debug, Clone)]
@@ -115,6 +113,9 @@ impl GemFinder {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::test_data;
+    use crate::test_helper;
+
 
     #[test]
     fn test_gem_finder_initialization() {
