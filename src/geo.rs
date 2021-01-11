@@ -21,12 +21,15 @@ pub fn calculate_distance(coordinate1: Coordinate, coordinate2: Coordinate) -> f
     if coordinate1.lat == coordinate2.lat && coordinate1.lon == coordinate2.lon {
         return 0.0;
     } else {
-        let distance: f64;
-        distance = (to_rad(coordinate1.lat).sin() * to_rad(coordinate2.lat).sin()
+        let mut distance = (to_rad(coordinate1.lat).sin() * to_rad(coordinate2.lat).sin()
             + to_rad(coordinate1.lat).cos()
                 * to_rad(coordinate2.lat).cos()
                 * (to_rad(coordinate1.lon - coordinate2.lon)).cos())
         .acos();
+        // ensure distance is not null
+        if distance.is_nan() {
+            distance = 0.0;
+        }
         // multiply by earth radius (nominal "zero tide" equatorial) in centimeter
         return distance * 6378100.0;
     }
@@ -96,5 +99,18 @@ mod test {
             calculate_distance(coordinate_a, coordinate_b),
             11131.884502572964
         );
+    }
+
+    #[test]
+    fn test_edge_case() {
+        let coordinate_a: Coordinate = Coordinate {
+            lat: 49.09024318680168,
+            lon: 7.9677597898989925,
+        };
+        let coordinate_b: Coordinate = Coordinate {
+            lat: 49.09024335443974,
+            lon: 7.967759286984802,
+        };
+        assert_eq!(calculate_distance(coordinate_a, coordinate_b), 0.0);
     }
 }
