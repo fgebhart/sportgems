@@ -1,6 +1,5 @@
 use crate::geo;
 
-
 #[derive(Debug, Clone)]
 pub struct Section {
     pub start_index: u32,
@@ -15,6 +14,15 @@ pub struct GemFinder {
     pub coordinates: Vec<(f64, f64)>,
     pub times: geo::Times,
     pub distances: geo::Distances,
+}
+
+pub fn get_velocity(distance: f64, time: f64) -> f64 {
+    let velocity: f64 = distance / time;
+    if !velocity.is_normal() {
+        return 0.0;
+    } else {
+        return velocity;
+    }
 }
 
 impl GemFinder {
@@ -85,7 +93,7 @@ impl GemFinder {
                     - self.distances.values[curr_sec.start_index as usize];
                 curr_sec.duration = self.times.values[curr_sec.end_index as usize]
                     - self.times.values[curr_sec.start_index as usize];
-                curr_sec.velocity = curr_sec.distance / curr_sec.duration;
+                curr_sec.velocity = get_velocity(curr_sec.distance, curr_sec.duration);
                 // update fastest section only in case the current
                 // distance is not larger than the required distance + 1%
                 if curr_sec.distance <= (self.fastest_distance as f64) * 1.01 {
@@ -101,12 +109,16 @@ impl GemFinder {
                 }
             }
         }
-        (
-            true,
-            fastest_sec.start_index,
-            fastest_sec.end_index,
-            fastest_sec.velocity,
-        )
+        if fastest_sec.velocity == 0.0 || fastest_sec.start_index == fastest_sec.end_index {
+            (false, 0, 0, 0.0)
+        } else {
+            (
+                true,
+                fastest_sec.start_index,
+                fastest_sec.end_index,
+                fastest_sec.velocity,
+            )
+        }
     }
 }
 
@@ -116,6 +128,17 @@ mod test {
     use crate::test_data;
     use crate::test_helper;
 
+    #[test]
+    fn test_get_velocity() {
+        assert_eq!(get_velocity(16.0, 2.0), 8.0);
+        assert_eq!(get_velocity(5.0, 1.0), 5.0);
+        // division by zero should return zero
+        assert_eq!(get_velocity(3.0, 0.0), 0.0);
+        // in case either of the inputs is NAN we expect also 0.0
+        assert_eq!(get_velocity(f64::NAN, 7.0), 0.0);
+        assert_eq!(get_velocity(4.0, f64::NAN), 0.0);
+        assert_eq!(get_velocity(f64::NAN, f64::NAN), 0.0);
+    }
 
     #[test]
     fn test_gem_finder_initialization() {
@@ -135,8 +158,30 @@ mod test {
     }
 
     #[test]
+    fn test_gem_finder_edge_case_no_change_in_time() {
+        // test case where coordinates are changing but time does not, this would lead to infinite velocity
+        let mut finder = GemFinder::new(1_000, vec![(48.0, 8.0), (48.0, 8.1)], vec![123.4, 123.4]);
+
+        // in this scenario we expect no valid section to be found
+        let gem = finder.find_gems();
+        test_helper::assert_gem_eq(gem, (false, 0, 0, 0.0), 1_000);
+    }
+
+    #[test]
+    fn test_gem_finder_edge_case_no_change_in_coordinates() {
+        // test case where coordinates are not changing but time does
+        let mut finder = GemFinder::new(1_000, vec![(48.0, 8.0), (48.0, 8.0)], vec![123.4, 124.5]);
+
+        // in this scenario we expect no valid section to be found
+        let gem = finder.find_gems();
+        test_helper::assert_gem_eq(gem, (false, 0, 0, 0.0), 1_000);
+    }
+
+    #[test]
     fn test_gem_finder_with_real_activity_data() {
-        let fastest_sections = vec![1000, 2000, 3000, 5000, 7500, 10_000, 20_000, 30_000, 50_000, 75_000];
+        let fastest_sections = vec![
+            1000, 2000, 3000, 5000, 7500, 10_000, 20_000, 30_000, 50_000, 75_000,
+        ];
 
         for section in fastest_sections {
             let data = test_data::get_test_data_a();
