@@ -2,6 +2,7 @@ extern crate pyo3;
 
 mod gem_finder;
 pub mod geo;
+pub mod fit_reader;
 pub mod test_data;
 pub mod test_helper;
 
@@ -10,20 +11,20 @@ use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 
 #[pyfunction]
-fn find_gems(
+fn find_fastest_section(
     _py: Python,
     fastest_distance: u32,
     times: Vec<f64>,
     coordinates: Vec<(f64, f64)>,
 ) -> PyResult<(bool, u32, u32, f64)> {
     let mut finder = GemFinder::new(fastest_distance, coordinates, times);
-    let result = finder.find_gems();
+    let result = finder.find_fastest_section();
     Ok(result)
 }
 
 #[pymodule]
 fn sportgems(_py: Python, m: &PyModule) -> PyResult<()> {
-    m.add_wrapped(wrap_pyfunction!(find_gems))?;
+    m.add_wrapped(wrap_pyfunction!(find_fastest_section))?;
 
     Ok(())
 }

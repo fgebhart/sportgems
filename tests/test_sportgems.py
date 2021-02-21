@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from sportgems import find_gems
+from sportgems import find_fastest_section
 
 import pytest
 
@@ -34,9 +34,9 @@ def track():
     return track
 
 
-def test_find_gems(track):
+def test_find_fastest_section(track):
     # search for the fastest 1km (=1000m) with the above created track
-    result = find_gems(1000, track.times, track.coordinates)
+    result = find_fastest_section(1000, track.times, track.coordinates)
     found_section = result[0]
     start_index = result[1]
     end_index = result[2]

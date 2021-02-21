@@ -1,3 +1,3 @@
-from .sportgems import find_gems
+from .sportgems import find_fastest_section
 
-__all__ = ['find_gems']
+__all__ = ['find_fastest_section']

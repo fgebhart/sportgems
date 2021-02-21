@@ -34,7 +34,7 @@ impl GemFinder {
             distances: geo::Distances { values: vec![] },
         }
     }
-    pub fn find_gems(&mut self) -> (bool, u32, u32, f64) {
+    pub fn find_fastest_section(&mut self) -> (bool, u32, u32, f64) {
         assert!(
             self.coordinates.len() == self.times.values.len(),
             "Length of coordinates and times must be equal."
@@ -153,8 +153,8 @@ mod test {
 
         // test case where fastest distance is greater than the
         // total distance, see above: 10000 > 7448
-        let gem = finder.find_gems();
-        test_helper::assert_gem_eq(gem, (false, 0, 0, 0.0), 10_000);
+        let fastest_section = finder.find_fastest_section();
+        test_helper::assert_gem_eq(fastest_section, (false, 0, 0, 0.0), 10_000);
     }
 
     #[test]
@@ -163,8 +163,8 @@ mod test {
         let mut finder = GemFinder::new(1_000, vec![(48.0, 8.0), (48.0, 8.1)], vec![123.4, 123.4]);
 
         // in this scenario we expect no valid section to be found
-        let gem = finder.find_gems();
-        test_helper::assert_gem_eq(gem, (false, 0, 0, 0.0), 1_000);
+        let fastest_section = finder.find_fastest_section();
+        test_helper::assert_gem_eq(fastest_section, (false, 0, 0, 0.0), 1_000);
     }
 
     #[test]
@@ -173,8 +173,8 @@ mod test {
         let mut finder = GemFinder::new(1_000, vec![(48.0, 8.0), (48.0, 8.0)], vec![123.4, 124.5]);
 
         // in this scenario we expect no valid section to be found
-        let gem = finder.find_gems();
-        test_helper::assert_gem_eq(gem, (false, 0, 0, 0.0), 1_000);
+        let fastest_section = finder.find_fastest_section();
+        test_helper::assert_gem_eq(fastest_section, (false, 0, 0, 0.0), 1_000);
     }
 
     #[test]
@@ -186,49 +186,49 @@ mod test {
         for section in fastest_sections {
             let data = test_data::get_test_data_a();
             let mut finder = GemFinder::new(section, data.coordinates, data.times);
-            let gem = finder.find_gems();
+            let fastest_section = finder.find_fastest_section();
 
             if section == 1000 {
-                test_helper::assert_gem_eq(gem, (true, 10305, 10338, 16.31533731368824), section);
+                test_helper::assert_gem_eq(fastest_section, (true, 10305, 10338, 16.31533731368824), section);
             } else if section == 2000 {
-                test_helper::assert_gem_eq(gem, (true, 1390, 1684, 3.948745372703419), section);
+                test_helper::assert_gem_eq(fastest_section, (true, 1390, 1684, 3.948745372703419), section);
             } else if section == 3000 {
-                test_helper::assert_gem_eq(gem, (true, 9726, 10336, 2.8213355836114853), section);
+                test_helper::assert_gem_eq(fastest_section, (true, 9726, 10336, 2.8213355836114853), section);
             } else if section == 5000 {
-                test_helper::assert_gem_eq(gem, (true, 9084, 10346, 2.2944182924032783), section);
+                test_helper::assert_gem_eq(fastest_section, (true, 9084, 10346, 2.2944182924032783), section);
             } else if section == 7500 {
-                test_helper::assert_gem_eq(gem, (true, 8044, 10358, 1.879004554704313), section);
+                test_helper::assert_gem_eq(fastest_section, (true, 8044, 10358, 1.879004554704313), section);
             } else if section == 10_000 {
-                test_helper::assert_gem_eq(gem, (true, 7225, 10335, 1.8593945485699441), section);
+                test_helper::assert_gem_eq(fastest_section, (true, 7225, 10335, 1.8593945485699441), section);
             } else if section == 20_000 {
-                test_helper::assert_gem_eq(gem, (true, 3004, 10335, 1.5720471824975961), section);
+                test_helper::assert_gem_eq(fastest_section, (true, 3004, 10335, 1.5720471824975961), section);
             } else if section == 30_000 {
-                test_helper::assert_gem_eq(gem, (true, 2, 11104, 1.5589405108912258), section);
+                test_helper::assert_gem_eq(fastest_section, (true, 2, 11104, 1.5589405108912258), section);
             } else if section == 50_000 {
-                test_helper::assert_gem_eq(gem, (false, 0, 0, 0.0), section);
+                test_helper::assert_gem_eq(fastest_section, (false, 0, 0, 0.0), section);
             }
 
             let data = test_data::get_test_data_b();
             let mut finder = GemFinder::new(section, data.coordinates, data.times);
-            let gem = finder.find_gems();
+            let fastest_section = finder.find_fastest_section();
             if section == 1000 {
-                test_helper::assert_gem_eq(gem, (true, 12272, 12357, 11.858366762516251), section);
+                test_helper::assert_gem_eq(fastest_section, (true, 12272, 12357, 11.858366762516251), section);
             } else if section == 2000 {
-                test_helper::assert_gem_eq(gem, (true, 12253, 12515, 7.595593534279891), section);
+                test_helper::assert_gem_eq(fastest_section, (true, 12253, 12515, 7.595593534279891), section);
             } else if section == 3000 {
-                test_helper::assert_gem_eq(gem, (true, 11911, 12482, 5.2618931609244335), section);
+                test_helper::assert_gem_eq(fastest_section, (true, 11911, 12482, 5.2618931609244335), section);
             } else if section == 5000 {
-                test_helper::assert_gem_eq(gem, (true, 7100, 8135, 4.835730327118072), section);
+                test_helper::assert_gem_eq(fastest_section, (true, 7100, 8135, 4.835730327118072), section);
             } else if section == 7500 {
-                test_helper::assert_gem_eq(gem, (true, 7061, 8746, 4.450157590659152), section);
+                test_helper::assert_gem_eq(fastest_section, (true, 7061, 8746, 4.450157590659152), section);
             } else if section == 10_000 {
-                test_helper::assert_gem_eq(gem, (true, 7064, 9448, 4.193920762256255), section);
+                test_helper::assert_gem_eq(fastest_section, (true, 7064, 9448, 4.193920762256255), section);
             } else if section == 20_000 {
-                test_helper::assert_gem_eq(gem, (true, 7088, 13945, 2.9169924813525343), section);
+                test_helper::assert_gem_eq(fastest_section, (true, 7088, 13945, 2.9169924813525343), section);
             } else if section == 30_000 {
-                test_helper::assert_gem_eq(gem, (true, 5710, 16325, 2.8257300722244794), section);
+                test_helper::assert_gem_eq(fastest_section, (true, 5710, 16325, 2.8257300722244794), section);
             } else if section == 50_000 {
-                test_helper::assert_gem_eq(gem, (false, 0, 0, 0.0), section);
+                test_helper::assert_gem_eq(fastest_section, (false, 0, 0, 0.0), section);
             }
         }
     }
