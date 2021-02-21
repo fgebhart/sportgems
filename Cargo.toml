@@ -29,6 +29,9 @@ classifier = [
 name = "sportgems"
 crate-type = ["cdylib"]
 
+[dependencies]
+fit = "0.5"
+
 [dependencies.pyo3]
 version = "0.12.4"
 features = ["extension-module"]
