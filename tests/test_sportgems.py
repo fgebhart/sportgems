@@ -37,11 +37,7 @@ def track():
 def test_find_fastest_section(track):
     # search for the fastest 1km (=1000m) with the above created track
     result = find_fastest_section(1000, track.times, track.coordinates)
-    found_section = result[0]
-    start_index = result[1]
-    end_index = result[2]
-    velocity_found = result[3]
-    assert found_section is True
-    assert start_index == 131
-    assert end_index == 184
-    assert int(velocity_found) == 18
+    assert result.valid_section is True
+    assert result.start_index == 131
+    assert result.end_index == 184
+    assert int(result.velocity) == 18
