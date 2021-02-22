@@ -1,6 +1,11 @@
 {
     "cSpell.words": [
         "manylinux",
-        "maturin"
+        "maturin",
+        "posix",
+        "pyclass",
+        "pyfunction",
+        "pymodule",
+        "pythonize"
     ]
 }

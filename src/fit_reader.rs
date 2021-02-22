@@ -10,18 +10,18 @@ pub struct FitData {
 
 pub fn parse_fit(path_to_fit: &str) -> FitData {
     let filepath = PathBuf::from(path_to_fit);
-    let f = Fit::new(&filepath);
+    let fit_file = Fit::new(&filepath);
     let mut payload = FitData { times: vec![], coordinates: vec![] };
     let mut time: f32;
     let mut lat: f32;
     let mut lon: f32;
-    for m in f {
+    for message in fit_file {
         // println!("------------------");
         // println!("{:?}", m.values);
         lat = f32::NAN;
         lon = f32::NAN;
         time = f32::NAN;
-        for record in m.values {
+        for record in message.values {
             // get latitude
             if record.field_num == 0 {
                 match record.value {
@@ -53,8 +53,10 @@ pub fn parse_fit(path_to_fit: &str) -> FitData {
         payload.times.push(time);
         payload.coordinates.push((lat, lon));
     }
-    // println!("times: {:?}", payload.times);
-    // println!("coordinates: {:?}", payload.coordinates);
+    println!("times: {:?}", payload.times);
+    println!("coordinates: {:?}", payload.coordinates);
+    println!("len times: {:?}", payload.times.len());
+    println!("len coordinates: {:?}", payload.coordinates.len());
     assert_eq!(payload.times.len(), payload.coordinates.len());
     return payload;
 }

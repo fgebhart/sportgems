@@ -22,32 +22,21 @@ pip install sportgems
 In order to search for gems 💎 in your activity, pass the coordinates as list of tuples of
 floats `(lat, lon)` and the timestamps as a list of floats as seconds since the Unix epoch:
 ```python
-from sportgems import find_gems
+from sportgems import find_fastest_section
 
 fastest_1km = 1000      # meter
 coordinates = [(48.123, 9.35), (48.123, 9.36), (48.123, 9.37), (48.123, 9.38)]
 times = [1608228953.8, 1608228954.8, 1608228955.8, 1608228956.8]
 
-result = find_gems(fastest_1km, times, coordinates)
+fastest_section = find_fastest_section(fastest_1km, times, coordinates)
 ```
-The result will be a tuple consisting of `(int, int, float)` where
-* the first element is the start index
-* the second element is the end index of the fastest section
-* the last element is the found velocity
-In the above example this would lead to
+The result will be a python object with the following attributes:
 ```python
-found_section = result[0]
-start_index = result[1]
-end_index = result[2]
-velocity = result[3]
+fastest_section.valid_section = True
+fastest_section.start_index = 1
+fastest_section.end_index = 2
+fastest_section.velocity = 743.0908195788583
 
-print(f"Found fastest {int(fastest_1km / 1000)}km: ")
-print(f"Fastest section ranges from index {start_index} to {end_index} with a velocity of {velocity}m/s.")
-```
-which prints
-```
-The fastest 1km is from index 1 to 2 with a velocity of 743.0908195788583m/s.
-```
 
 ## How does it work?
 

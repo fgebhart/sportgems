@@ -1,5 +1,13 @@
 use crate::geo;
 
+
+pub struct ResultSection {
+    pub valid_section: bool,
+    pub start_index: u32,
+    pub end_index: u32,
+    pub velocity: f64,
+}
+
 #[derive(Debug, Clone)]
 pub struct Section {
     pub start_index: u32,
@@ -34,7 +42,7 @@ impl GemFinder {
             distances: geo::Distances { values: vec![] },
         }
     }
-    pub fn find_fastest_section(&mut self) -> (bool, u32, u32, f64) {
+    pub fn find_fastest_section(&mut self) -> ResultSection {
         assert!(
             self.coordinates.len() == self.times.values.len(),
             "Length of coordinates and times must be equal."
@@ -42,7 +50,7 @@ impl GemFinder {
         self.compute_vector_of_distances();
         let total_distance = self.distances.values.last().unwrap().clone();
         if self.fastest_distance as f64 > total_distance {
-            return (false, 0, 0, 0.0);
+            return ResultSection { valid_section: false, start_index: 0, end_index: 0, velocity: 0.0 };
         } else {
             self.search_section()
         }
@@ -65,7 +73,7 @@ impl GemFinder {
             self.distances.values.push(distance);
         }
     }
-    pub fn search_section(&mut self) -> (bool, u32, u32, f64) {
+    pub fn search_section(&mut self) -> ResultSection {
         let mut curr_sec: Section = Section {
             start_index: 0,
             end_index: 0,
@@ -110,14 +118,9 @@ impl GemFinder {
             }
         }
         if fastest_sec.velocity == 0.0 || fastest_sec.start_index == fastest_sec.end_index {
-            (false, 0, 0, 0.0)
+            ResultSection { valid_section: false, start_index: 0, end_index: 0, velocity: 0.0 }
         } else {
-            (
-                true,
-                fastest_sec.start_index,
-                fastest_sec.end_index,
-                fastest_sec.velocity,
-            )
+            ResultSection { valid_section: true, start_index: fastest_sec.start_index, end_index: fastest_sec.end_index, velocity: fastest_sec.velocity }
         }
     }
 }
