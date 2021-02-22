@@ -4,7 +4,6 @@ mod gem_finder;
 pub mod geo;
 pub mod fit_reader;
 pub mod test_data;
-pub mod test_helper;
 
 use crate::gem_finder::GemFinder;
 use pyo3::prelude::*;
