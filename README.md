@@ -36,14 +36,13 @@ result.valid_section = True
 result.start_index = 1
 result.end_index = 2
 result.velocity = 743.0908195788583
-
+```
 
 ## How does it work?
 
 The following diagram illustrates how the core algorithm (implemented in `gem_finder.cpp`) works:
 
 <img src="https://i.imgur.com/Jwfyjsk.png" width="500">
-
 
 ## Running the tests
 
