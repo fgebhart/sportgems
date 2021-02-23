@@ -12,13 +12,13 @@ use pyo3::wrap_pyfunction;
 #[pyclass(name = "FastestSection", dict)]
 struct FastestSectionPy {
     #[pyo3(get)]
-    valid_section: bool,
+    pub valid_section: bool,
     #[pyo3(get)]
-    start_index: u32,
+    pub start_index: u32,
     #[pyo3(get)]
-    end_index: u32,
+    pub end_index: u32,
     #[pyo3(get)]
-    velocity: f64,
+    pub velocity: f64,
 }
 
 #[pyfunction]
