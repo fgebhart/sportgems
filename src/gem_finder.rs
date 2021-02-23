@@ -5,27 +5,27 @@ pub struct ResultSection {
     pub valid_section: bool,
     pub start_index: u32,
     pub end_index: u32,
-    pub velocity: f64,
+    pub velocity: f32,
 }
 
 #[derive(Debug, Clone)]
 pub struct Section {
     pub start_index: u32,
     pub end_index: u32,
-    pub distance: f64,
-    pub duration: f64,
-    pub velocity: f64,
+    pub distance: f32,
+    pub duration: f32,
+    pub velocity: f32,
 }
 
 pub struct GemFinder {
     pub fastest_distance: u32,
-    pub coordinates: Vec<(f64, f64)>,
+    pub coordinates: Vec<(f32, f32)>,
     pub times: geo::Times,
     pub distances: geo::Distances,
 }
 
-pub fn get_velocity(distance: f64, time: f64) -> f64 {
-    let velocity: f64 = distance / time;
+pub fn get_velocity(distance: f32, time: f32) -> f32 {
+    let velocity: f32 = distance / time;
     if !velocity.is_normal() {
         return 0.0;
     } else {
@@ -34,7 +34,7 @@ pub fn get_velocity(distance: f64, time: f64) -> f64 {
 }
 
 impl GemFinder {
-    pub fn new(fastest_distance: u32, coordinates: Vec<(f64, f64)>, times: Vec<f64>) -> GemFinder {
+    pub fn new(fastest_distance: u32, coordinates: Vec<(f32, f32)>, times: Vec<f32>) -> GemFinder {
         GemFinder {
             fastest_distance,
             coordinates,
@@ -49,14 +49,14 @@ impl GemFinder {
         );
         self.compute_vector_of_distances();
         let total_distance = self.distances.values.last().unwrap().clone();
-        if self.fastest_distance as f64 > total_distance {
+        if self.fastest_distance as f32 > total_distance {
             return ResultSection { valid_section: false, start_index: 0, end_index: 0, velocity: 0.0 };
         } else {
             self.search_section()
         }
     }
     pub fn compute_vector_of_distances(&mut self) {
-        let mut distance: f64 = 0.0;
+        let mut distance: f32 = 0.0;
         self.distances.values.push(distance);
 
         // loop through coordinates and calculate the distance from one coordinate to the next one
@@ -90,7 +90,7 @@ impl GemFinder {
         };
         while curr_sec.end_index < self.distances.values.len() as u32 - 1 {
             // println!("{:?}", curr_sec);
-            if curr_sec.distance < self.fastest_distance as f64 {
+            if curr_sec.distance < self.fastest_distance as f32 {
                 // build up section to have length of fastest_distance
                 curr_sec.end_index += 1;
                 curr_sec.distance = self.distances.values[curr_sec.end_index as usize]
@@ -104,7 +104,7 @@ impl GemFinder {
                 curr_sec.velocity = get_velocity(curr_sec.distance, curr_sec.duration);
                 // update fastest section only in case the current
                 // distance is not larger than the required distance + 1%
-                if curr_sec.distance <= (self.fastest_distance as f64) * 1.01 {
+                if curr_sec.distance <= (self.fastest_distance as f32) * 1.01 {
                     if curr_sec.velocity > fastest_sec.velocity {
                         fastest_sec = curr_sec.clone();
                     }
@@ -130,13 +130,13 @@ mod test {
     use super::*;
     use crate::test_data;
 
-    pub const TEST_PRECISION: f64 = 0.0001;
+    pub const TEST_PRECISION: f32 = 0.0001;
 
     pub fn assert_gem_eq(left: ResultSection, right: ResultSection, section: u32) {
         assert_eq!(left.valid_section, right.valid_section);
         assert_eq!(left.start_index, right.start_index);
         assert_eq!(left.end_index, right.end_index);
-        let diff: f64 = left.velocity - right.velocity;
+        let diff: f32 = left.velocity - right.velocity;
         assert!(diff.abs() <= TEST_PRECISION, "testing fastest {}", section);
     }
     
@@ -151,9 +151,9 @@ mod test {
         // division by zero should return zero
         assert_eq!(get_velocity(3.0, 0.0), 0.0);
         // in case either of the inputs is NAN we expect also 0.0
-        assert_eq!(get_velocity(f64::NAN, 7.0), 0.0);
-        assert_eq!(get_velocity(4.0, f64::NAN), 0.0);
-        assert_eq!(get_velocity(f64::NAN, f64::NAN), 0.0);
+        assert_eq!(get_velocity(f32::NAN, 7.0), 0.0);
+        assert_eq!(get_velocity(4.0, f32::NAN), 0.0);
+        assert_eq!(get_velocity(f32::NAN, f32::NAN), 0.0);
     }
 
     #[test]
