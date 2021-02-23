@@ -38,6 +38,12 @@ COPY entrypoint.sh /entrypoint.d/entrypoint.sh
 RUN virtualenv -p python3.8 /tmp/venv
 RUN /bin/bash -c 'source $VIRTUAL_ENV_PATH/bin/activate && pip install -r /tmp/requirements.txt'
 
+# add convenience aliases
+RUN echo "alias asdf='pwd'" >> /etc/zsh/zshrc
+RUN echo alias "alias cargotest='cargo test --no-default-features'" >> /etc/zsh/zshrc
+RUN echo "alias maturin-build-and-pip-install='maturin build && pip install --force pip install target/wheels/sportgems-*-cp38-cp38-manylinux*_x86_64.whl'" >> /etc/zsh/zshrc
+
+
 COPY . /sportgems
 WORKDIR /workspaces/sportgems
 
