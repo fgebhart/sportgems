@@ -1,31 +1,31 @@
 use crate::geo;
 
-
+#[derive(PartialEq, Debug)]
 pub struct ResultSection {
     pub valid_section: bool,
     pub start_index: u32,
     pub end_index: u32,
-    pub velocity: f32,
+    pub velocity: f64,
 }
 
 #[derive(Debug, Clone)]
 pub struct Section {
     pub start_index: u32,
     pub end_index: u32,
-    pub distance: f32,
-    pub duration: f32,
-    pub velocity: f32,
+    pub distance: f64,
+    pub duration: f64,
+    pub velocity: f64,
 }
 
 pub struct GemFinder {
     pub fastest_distance: u32,
-    pub coordinates: Vec<(f32, f32)>,
+    pub coordinates: Vec<(f64, f64)>,
     pub times: geo::Times,
     pub distances: geo::Distances,
 }
 
-pub fn get_velocity(distance: f32, time: f32) -> f32 {
-    let velocity: f32 = distance / time;
+pub fn get_velocity(distance: f64, time: f64) -> f64 {
+    let velocity: f64 = distance / time;
     if !velocity.is_normal() {
         return 0.0;
     } else {
@@ -34,7 +34,7 @@ pub fn get_velocity(distance: f32, time: f32) -> f32 {
 }
 
 impl GemFinder {
-    pub fn new(fastest_distance: u32, coordinates: Vec<(f32, f32)>, times: Vec<f32>) -> GemFinder {
+    pub fn new(fastest_distance: u32, coordinates: Vec<(f64, f64)>, times: Vec<f64>) -> GemFinder {
         GemFinder {
             fastest_distance,
             coordinates,
@@ -49,14 +49,19 @@ impl GemFinder {
         );
         self.compute_vector_of_distances();
         let total_distance = self.distances.values.last().unwrap().clone();
-        if self.fastest_distance as f32 > total_distance {
-            return ResultSection { valid_section: false, start_index: 0, end_index: 0, velocity: 0.0 };
+        if self.fastest_distance as f64 > total_distance {
+            return ResultSection {
+                valid_section: false,
+                start_index: 0,
+                end_index: 0,
+                velocity: 0.0,
+            };
         } else {
             self.search_section()
         }
     }
     pub fn compute_vector_of_distances(&mut self) {
-        let mut distance: f32 = 0.0;
+        let mut distance: f64 = 0.0;
         self.distances.values.push(distance);
 
         // loop through coordinates and calculate the distance from one coordinate to the next one
@@ -90,7 +95,7 @@ impl GemFinder {
         };
         while curr_sec.end_index < self.distances.values.len() as u32 - 1 {
             // println!("{:?}", curr_sec);
-            if curr_sec.distance < self.fastest_distance as f32 {
+            if curr_sec.distance < self.fastest_distance as f64 {
                 // build up section to have length of fastest_distance
                 curr_sec.end_index += 1;
                 curr_sec.distance = self.distances.values[curr_sec.end_index as usize]
@@ -104,7 +109,7 @@ impl GemFinder {
                 curr_sec.velocity = get_velocity(curr_sec.distance, curr_sec.duration);
                 // update fastest section only in case the current
                 // distance is not larger than the required distance + 1%
-                if curr_sec.distance <= (self.fastest_distance as f32) * 1.01 {
+                if curr_sec.distance <= (self.fastest_distance as f64) * 1.01 {
                     if curr_sec.velocity > fastest_sec.velocity {
                         fastest_sec = curr_sec.clone();
                     }
@@ -118,9 +123,19 @@ impl GemFinder {
             }
         }
         if fastest_sec.velocity == 0.0 || fastest_sec.start_index == fastest_sec.end_index {
-            ResultSection { valid_section: false, start_index: 0, end_index: 0, velocity: 0.0 }
+            ResultSection {
+                valid_section: false,
+                start_index: 0,
+                end_index: 0,
+                velocity: 0.0,
+            }
         } else {
-            ResultSection { valid_section: true, start_index: fastest_sec.start_index, end_index: fastest_sec.end_index, velocity: fastest_sec.velocity }
+            ResultSection {
+                valid_section: true,
+                start_index: fastest_sec.start_index,
+                end_index: fastest_sec.end_index,
+                velocity: fastest_sec.velocity,
+            }
         }
     }
 }
@@ -130,18 +145,21 @@ mod test {
     use super::*;
     use crate::test_data;
 
-    pub const TEST_PRECISION: f32 = 0.0001;
+    pub const TEST_PRECISION: f64 = 0.0001;
 
     pub fn assert_gem_eq(left: ResultSection, right: ResultSection, section: u32) {
         assert_eq!(left.valid_section, right.valid_section);
         assert_eq!(left.start_index, right.start_index);
         assert_eq!(left.end_index, right.end_index);
-        let diff: f32 = left.velocity - right.velocity;
+        let diff: f64 = left.velocity - right.velocity;
         assert!(diff.abs() <= TEST_PRECISION, "testing fastest {}", section);
     }
-    
+
     pub const INVALID_FASTEST_SECTION: ResultSection = ResultSection {
-         valid_section: false, start_index: 0, end_index: 0, velocity: 0.0,
+        valid_section: false,
+        start_index: 0,
+        end_index: 0,
+        velocity: 0.0,
     };
 
     #[test]
@@ -151,9 +169,9 @@ mod test {
         // division by zero should return zero
         assert_eq!(get_velocity(3.0, 0.0), 0.0);
         // in case either of the inputs is NAN we expect also 0.0
-        assert_eq!(get_velocity(f32::NAN, 7.0), 0.0);
-        assert_eq!(get_velocity(4.0, f32::NAN), 0.0);
-        assert_eq!(get_velocity(f32::NAN, f32::NAN), 0.0);
+        assert_eq!(get_velocity(f64::NAN, 7.0), 0.0);
+        assert_eq!(get_velocity(4.0, f64::NAN), 0.0);
+        assert_eq!(get_velocity(f64::NAN, f64::NAN), 0.0);
     }
 
     #[test]
@@ -170,7 +188,7 @@ mod test {
         // test case where fastest distance is greater than the
         // total distance, see above: 10000 > 7448
         let fastest_section = finder.find_fastest_section();
-        assert_gem_eq(fastest_section, INVALID_FASTEST_SECTION, 10_000);
+        assert_eq!(fastest_section, INVALID_FASTEST_SECTION);
     }
 
     #[test]
@@ -180,7 +198,7 @@ mod test {
 
         // in this scenario we expect no valid section to be found
         let fastest_section = finder.find_fastest_section();
-        assert_gem_eq(fastest_section, INVALID_FASTEST_SECTION, 1_000);
+        assert_eq!(fastest_section, INVALID_FASTEST_SECTION);
     }
 
     #[test]
@@ -190,7 +208,7 @@ mod test {
 
         // in this scenario we expect no valid section to be found
         let fastest_section = finder.find_fastest_section();
-        assert_gem_eq(fastest_section, INVALID_FASTEST_SECTION, 1_000);
+        assert_eq!(fastest_section, INVALID_FASTEST_SECTION);
     }
 
     #[test]
@@ -205,29 +223,93 @@ mod test {
             let fastest_section = finder.find_fastest_section();
 
             if section == 1000 {
-                assert_gem_eq(fastest_section, ResultSection {
-                    valid_section: true, start_index: 10305, end_index: 10338, velocity: 16.31533731368824, }, section);
+                assert_gem_eq(
+                    fastest_section,
+                    ResultSection {
+                        valid_section: true,
+                        start_index: 10305,
+                        end_index: 10338,
+                        velocity: 16.31533731368824,
+                    },
+                    section,
+                );
             } else if section == 2000 {
-                assert_gem_eq(fastest_section, ResultSection {
-                    valid_section: true, start_index: 1390, end_index: 1684, velocity: 3.948745372703419, }, section);
+                assert_gem_eq(
+                    fastest_section,
+                    ResultSection {
+                        valid_section: true,
+                        start_index: 1390,
+                        end_index: 1684,
+                        velocity: 3.948745372703419,
+                    },
+                    section,
+                );
             } else if section == 3000 {
-                assert_gem_eq(fastest_section, ResultSection {
-                    valid_section: true, start_index: 9726, end_index: 10336, velocity: 2.8213355836114853, }, section);
+                assert_gem_eq(
+                    fastest_section,
+                    ResultSection {
+                        valid_section: true,
+                        start_index: 9726,
+                        end_index: 10336,
+                        velocity: 2.8213355836114853,
+                    },
+                    section,
+                );
             } else if section == 5000 {
-                assert_gem_eq(fastest_section, ResultSection {
-                    valid_section: true, start_index: 9084, end_index: 10346, velocity: 2.2944182924032783, }, section);
+                assert_gem_eq(
+                    fastest_section,
+                    ResultSection {
+                        valid_section: true,
+                        start_index: 9084,
+                        end_index: 10346,
+                        velocity: 2.2944182924032783,
+                    },
+                    section,
+                );
             } else if section == 7500 {
-                assert_gem_eq(fastest_section, ResultSection {
-                    valid_section: true, start_index: 8044, end_index: 10358, velocity: 1.879004554704313, }, section);
+                assert_gem_eq(
+                    fastest_section,
+                    ResultSection {
+                        valid_section: true,
+                        start_index: 8044,
+                        end_index: 10358,
+                        velocity: 1.879004554704313,
+                    },
+                    section,
+                );
             } else if section == 10_000 {
-                assert_gem_eq(fastest_section, ResultSection {
-                    valid_section: true, start_index: 7225, end_index: 10335, velocity: 1.8593945485699441, }, section);
+                assert_gem_eq(
+                    fastest_section,
+                    ResultSection {
+                        valid_section: true,
+                        start_index: 7225,
+                        end_index: 10335,
+                        velocity: 1.8593945485699441,
+                    },
+                    section,
+                );
             } else if section == 20_000 {
-                assert_gem_eq(fastest_section, ResultSection {
-                    valid_section: true, start_index: 3004, end_index: 10335, velocity: 1.5720471824975961, }, section);
+                assert_gem_eq(
+                    fastest_section,
+                    ResultSection {
+                        valid_section: true,
+                        start_index: 3004,
+                        end_index: 10335,
+                        velocity: 1.5720471824975961,
+                    },
+                    section,
+                );
             } else if section == 30_000 {
-                assert_gem_eq(fastest_section, ResultSection {
-                    valid_section: true, start_index: 2, end_index: 11104, velocity: 1.5589405108912258, }, section);
+                assert_gem_eq(
+                    fastest_section,
+                    ResultSection {
+                        valid_section: true,
+                        start_index: 2,
+                        end_index: 11104,
+                        velocity: 1.5589405108912258,
+                    },
+                    section,
+                );
             } else if section == 50_000 {
                 assert_gem_eq(fastest_section, INVALID_FASTEST_SECTION, section);
             }
@@ -236,29 +318,93 @@ mod test {
             let mut finder = GemFinder::new(section, data.coordinates, data.times);
             let fastest_section = finder.find_fastest_section();
             if section == 1000 {
-                assert_gem_eq(fastest_section, ResultSection {
-                    valid_section: true, start_index: 12272, end_index: 12357, velocity: 11.858366762516251, }, section);
+                assert_gem_eq(
+                    fastest_section,
+                    ResultSection {
+                        valid_section: true,
+                        start_index: 12272,
+                        end_index: 12357,
+                        velocity: 11.858366762516251,
+                    },
+                    section,
+                );
             } else if section == 2000 {
-                assert_gem_eq(fastest_section, ResultSection {
-                    valid_section: true, start_index: 12253, end_index: 12515, velocity: 7.595593534279891, }, section);
+                assert_gem_eq(
+                    fastest_section,
+                    ResultSection {
+                        valid_section: true,
+                        start_index: 12253,
+                        end_index: 12515,
+                        velocity: 7.595593534279891,
+                    },
+                    section,
+                );
             } else if section == 3000 {
-                assert_gem_eq(fastest_section, ResultSection {
-                    valid_section: true, start_index: 11911, end_index: 12482, velocity: 5.2618931609244335, }, section);
+                assert_gem_eq(
+                    fastest_section,
+                    ResultSection {
+                        valid_section: true,
+                        start_index: 11911,
+                        end_index: 12482,
+                        velocity: 5.2618931609244335,
+                    },
+                    section,
+                );
             } else if section == 5000 {
-                assert_gem_eq(fastest_section, ResultSection {
-                    valid_section: true, start_index: 7100, end_index: 8135, velocity: 4.835730327118072, }, section);
+                assert_gem_eq(
+                    fastest_section,
+                    ResultSection {
+                        valid_section: true,
+                        start_index: 7100,
+                        end_index: 8135,
+                        velocity: 4.835730327118072,
+                    },
+                    section,
+                );
             } else if section == 7500 {
-                assert_gem_eq(fastest_section, ResultSection {
-                    valid_section: true, start_index: 7061, end_index: 8746, velocity: 4.450157590659152, }, section);
+                assert_gem_eq(
+                    fastest_section,
+                    ResultSection {
+                        valid_section: true,
+                        start_index: 7061,
+                        end_index: 8746,
+                        velocity: 4.450157590659152,
+                    },
+                    section,
+                );
             } else if section == 10_000 {
-                assert_gem_eq(fastest_section, ResultSection {
-                    valid_section: true, start_index: 7064, end_index: 9448, velocity: 4.193920762256255, }, section);
+                assert_gem_eq(
+                    fastest_section,
+                    ResultSection {
+                        valid_section: true,
+                        start_index: 7064,
+                        end_index: 9448,
+                        velocity: 4.193920762256255,
+                    },
+                    section,
+                );
             } else if section == 20_000 {
-                assert_gem_eq(fastest_section, ResultSection {
-                    valid_section: true, start_index: 7088, end_index: 13945, velocity: 2.9169924813525343, }, section);
+                assert_gem_eq(
+                    fastest_section,
+                    ResultSection {
+                        valid_section: true,
+                        start_index: 7088,
+                        end_index: 13945,
+                        velocity: 2.9169924813525343,
+                    },
+                    section,
+                );
             } else if section == 30_000 {
-                assert_gem_eq(fastest_section, ResultSection {
-                    valid_section: true, start_index: 5710, end_index: 16325, velocity: 2.8257300722244794, }, section);
+                assert_gem_eq(
+                    fastest_section,
+                    ResultSection {
+                        valid_section: true,
+                        start_index: 5710,
+                        end_index: 16325,
+                        velocity: 2.8257300722244794,
+                    },
+                    section,
+                );
             } else if section == 50_000 {
                 assert_gem_eq(fastest_section, INVALID_FASTEST_SECTION, section);
             }

@@ -1,23 +1,23 @@
-pub const PI: f32 = 3.14159265358979323846264338327950288f32;
+pub const PI: f64 = 3.14159265358979323846264338327950288f64;
 
 pub struct Coordinate {
-    pub lat: f32,
-    pub lon: f32,
+    pub lat: f64,
+    pub lon: f64,
 }
 
 pub struct Times {
-    pub values: Vec<f32>,
+    pub values: Vec<f64>,
 }
 
 pub struct Distances {
-    pub values: Vec<f32>,
+    pub values: Vec<f64>,
 }
 
-pub fn to_rad(degree: f32) -> f32 {
+pub fn to_rad(degree: f64) -> f64 {
     degree / 180.0 * PI
 }
 
-pub fn calculate_distance(coordinate1: Coordinate, coordinate2: Coordinate) -> f32 {
+pub fn calculate_distance(coordinate1: Coordinate, coordinate2: Coordinate) -> f64 {
     if coordinate1.lat == coordinate2.lat && coordinate1.lon == coordinate2.lon {
         return 0.0;
     } else {

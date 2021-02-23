@@ -1,6 +1,6 @@
 pub struct TestData {
-    pub coordinates: Vec<(f32, f32)>,
-    pub times: Vec<f32>,
+    pub coordinates: Vec<(f64, f64)>,
+    pub times: Vec<f64>,
 }
 
 pub fn get_test_data_a() -> TestData {

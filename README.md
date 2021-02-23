@@ -28,14 +28,14 @@ fastest_1km = 1000      # meter
 coordinates = [(48.123, 9.35), (48.123, 9.36), (48.123, 9.37), (48.123, 9.38)]
 times = [1608228953.8, 1608228954.8, 1608228955.8, 1608228956.8]
 
-fastest_section = find_fastest_section(fastest_1km, times, coordinates)
+result = find_fastest_section(fastest_1km, times, coordinates)
 ```
 The result will be a python object with the following attributes:
 ```python
-fastest_section.valid_section = True
-fastest_section.start_index = 1
-fastest_section.end_index = 2
-fastest_section.velocity = 743.0908195788583
+result.valid_section = True
+result.start_index = 1
+result.end_index = 2
+result.velocity = 743.0908195788583
 
 
 ## How does it work?
@@ -48,15 +48,15 @@ The following diagram illustrates how the core algorithm (implemented in `gem_fi
 ## Running the tests
 
 In order to run the rust unit tests simply run
-```bash
-cargo test
+```
+cargo test --no-default-features
 ```
 To run the python tests, you first need to install the requirements
-```bash
+```
 pip install -r requirements.txt
 ```
 and subsequently run the tests
-```bash
+```
 pytest tests/
 ```
 
