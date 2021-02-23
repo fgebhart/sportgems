@@ -56,10 +56,10 @@ pub fn parse_fit(path_to_fit: &str) -> FitData {
         payload.times.push(time);
         payload.coordinates.push((lat, lon));
     }
-    println!("times: {:?}", payload.times);
-    println!("coordinates: {:?}", payload.coordinates);
-    println!("len times: {:?}", payload.times.len());
-    println!("len coordinates: {:?}", payload.coordinates.len());
+    // println!("times: {:?}", payload.times);
+    // println!("coordinates: {:?}", payload.coordinates);
+    // println!("len times: {:?}", payload.times.len());
+    // println!("len coordinates: {:?}", payload.coordinates.len());
     assert_eq!(payload.times.len(), payload.coordinates.len());
     return payload;
 }
