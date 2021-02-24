@@ -1,3 +1,6 @@
+folium
 ipython
+jupyter
 maturin
+numpy
 pytest
