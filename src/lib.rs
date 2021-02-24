@@ -66,9 +66,33 @@ fn find_fastest_section_in_fit(
     .unwrap()
 }
 
+#[pyclass(name = "FitData", dict)]
+struct FitDataPy {
+    #[pyo3(get)]
+    pub times: Vec<f64>,
+    #[pyo3(get)]
+    pub coordinates: Vec<(f64, f64)>,
+}
+
+#[pyfunction]
+fn parse_fit_data(_py: Python, path_to_fit: &str) -> Py<FitDataPy> {
+    let fit_data: fit_reader::FitData = fit_reader::parse_fit(path_to_fit);
+    let gil = Python::acquire_gil();
+    let py = gil.python();
+    Py::new(
+        py,
+        FitDataPy {
+            times: fit_data.times,
+            coordinates: fit_data.coordinates,
+        },
+    )
+    .unwrap()
+}
+
 #[pymodule]
 fn sportgems(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(find_fastest_section))?;
     m.add_wrapped(wrap_pyfunction!(find_fastest_section_in_fit))?;
+    m.add_wrapped(wrap_pyfunction!(parse_fit_data))?;
     Ok(())
 }
