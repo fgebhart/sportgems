@@ -2,7 +2,14 @@ from typing import List, Tuple
 
 
 class FastestSection:
-    pass
+    valid_section: bool
+    start_index: int
+    end_index: int
+    velocity: float
+
+class FitData:
+    times: List[float]
+    coordinates: List[tuple[float]]
 
 class FitData:
     pass
