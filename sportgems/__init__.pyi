@@ -4,6 +4,9 @@ from typing import List, Tuple
 class FastestSection:
     pass
 
+class FitData:
+    pass
+
 
 def find_fastest_section(
     fastest_distance: int, times: List[float], coordinates: List[Tuple[float, float]]
@@ -29,7 +32,7 @@ def find_fastest_section(
     -------
     FastestSection
         Returns a Python object of type FastestSection, with the results given as
-        attributes: valid_section, start_index, end_index and velocity
+        attributes: valid_section, start_index, end_index and velocity.
     """
     ...
 
@@ -46,12 +49,32 @@ def find_fastest_section_in_fit(
     fastest_distance : int
         Length in meter of the fastest section to parse for.
     path_to_fit : str
-        Path to the fit file, which should be parsed by sportgems
+        Path to the fit file, which should be parsed by sportgems.
 
     Returns
     -------
     FastestSection
         Returns a Python object of type FastestSection, with the results given as
-        attributes: valid_section, start_index, end_index and velocity
+        attributes: valid_section, start_index, end_index and velocity.
+    """
+    ...
+
+
+def parse_fit_data(path_to_fit: str) -> FitData:
+    """
+    Takes path to fit file as argument and parses it. Will return a python object
+    with parsed data as attributes.
+
+    Parameters
+    ----------
+    path_to_fit : str
+        Path to the fit file, which should be parsed.
+
+    Returns
+    -------
+    FitData
+        Returns a Python object of type FitData, with the results given as
+        attributes: times as list of timestamps and coordinates as list of tuples
+        with latitude and longitude: (lat, lon).
     """
     ...
