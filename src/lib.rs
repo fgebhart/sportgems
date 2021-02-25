@@ -11,11 +11,11 @@ use pyo3::wrap_pyfunction;
 #[pyclass(name = "FastestSection", dict)]
 struct FastestSectionPy {
     #[pyo3(get)]
-    pub valid_section: bool,
+    pub valid: bool,
     #[pyo3(get)]
-    pub start_index: u32,
+    pub start: u32,
     #[pyo3(get)]
-    pub end_index: u32,
+    pub end: u32,
     #[pyo3(get)]
     pub velocity: f64,
 }
@@ -34,9 +34,9 @@ fn find_fastest_section(
     Py::new(
         py,
         FastestSectionPy {
-            valid_section: result.valid_section,
-            start_index: result.start_index,
-            end_index: result.end_index,
+            valid: result.valid,
+            start: result.start,
+            end: result.end,
             velocity: result.velocity,
         },
     )
@@ -57,9 +57,9 @@ fn find_fastest_section_in_fit(
     Py::new(
         py,
         FastestSectionPy {
-            valid_section: result.valid_section,
-            start_index: result.start_index,
-            end_index: result.end_index,
+            valid: result.valid,
+            start: result.start,
+            end: result.end,
             velocity: result.velocity,
         },
     )

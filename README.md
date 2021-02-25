@@ -32,10 +32,10 @@ result = find_fastest_section(fastest_1km, times, coordinates)
 ```
 The result will be a python object with the following attributes:
 ```python
-print(f'Found fastest section, from {result.start_index=} to {result.end_index=} with {result.velocity=} m/s')
+print(f'Found fastest section, from {result.start=} to {result.end=} with {result.velocity=} m/s')
 
 # which prints:
-# Found fastest section from result.start_index=1 to result.end_index=2 with result.velocity=743.0908195788583 m/s
+# Found fastest section from result.start=1 to result.end=2 with result.velocity=743.0908195788583 m/s
 ```
 
 ## How does it work?
