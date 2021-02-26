@@ -40,11 +40,33 @@ pub fn get_velocity(distance: f64, time: f64) -> f64 {
     }
 }
 
-pub fn update_section(distances: &geo::Distances, times: &geo::Times, section: &mut Section) {
+pub fn update_current_section(
+    distances: &geo::Distances,
+    times: &geo::Times,
+    section: &mut Section,
+) {
     section.distance =
         distances.values[section.end as usize] - distances.values[section.start as usize];
     section.duration = times.values[section.end as usize] - times.values[section.start as usize];
     section.velocity = get_velocity(section.distance, section.duration);
+}
+
+pub fn update_fastest_section(
+    fastest_distance: f64,
+    current_section: &Section,
+    fastest_section: &mut Section,
+) {
+    // update fastest section only in case the current
+    // distance is not larger than the required distance + 1%
+    if current_section.distance <= (fastest_distance) * 1.01 {
+        if current_section.velocity > fastest_section.velocity {
+            fastest_section.start = current_section.start;
+            fastest_section.end = current_section.end;
+            fastest_section.duration = current_section.duration;
+            fastest_section.distance = current_section.distance;
+            fastest_section.velocity = current_section.velocity;
+        }
+    }
 }
 
 impl GemFinder {
@@ -104,37 +126,23 @@ impl GemFinder {
             velocity: 0.0,
         };
         while curr_sec.end < self.distances.values.len() as u32 - 1 {
+            println!("{:?}", curr_sec);
             if curr_sec.distance < self.fastest_distance as f64 {
                 // build up section to get closer to the desired length of fastest_distance
                 curr_sec.end += 1;
-                update_section(&self.distances, &self.times, &mut curr_sec);
-
-                // update fastest section only in case the current
-                // distance is not larger than the required distance + 1%
-                if curr_sec.distance <= (self.fastest_distance as f64) * 1.01 {
-                    if curr_sec.velocity > fastest_sec.velocity {
-                        fastest_sec = curr_sec.clone();
-                    }
-                }
-            } else {
-                update_section(&self.distances, &self.times, &mut curr_sec);
-
-                // update fastest section only in case the current
-                // distance is not larger than the required distance + 1%
-                if curr_sec.distance <= (self.fastest_distance as f64) * 1.01 {
-                    if curr_sec.velocity > fastest_sec.velocity {
-                        fastest_sec = curr_sec.clone();
-                    }
-                }
-                // now move the start index further, but ensure that start index does not overtake end index
+            }
+            update_current_section(&self.distances, &self.times, &mut curr_sec);
+            update_fastest_section(self.fastest_distance as f64, &curr_sec, &mut fastest_sec);
+            // now move the start index further, but ensure that start index does not overtake end index
+            if curr_sec.distance >= self.fastest_distance as f64 {
                 if curr_sec.start < curr_sec.end {
                     curr_sec.start += 1;
                 } else {
                     curr_sec.end += 1;
                 }
             }
-            println!("{:?}", curr_sec);
         }
+        // after the while loop is finished, check that found fastest_section is valid and return
         if fastest_sec.velocity == 0.0 || fastest_sec.start == fastest_sec.end {
             println!("no valid section found: poor input data quality");
             INVALID_FASTEST_SECTION
