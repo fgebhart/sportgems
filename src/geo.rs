@@ -9,6 +9,7 @@ pub struct Times {
     pub values: Vec<f64>,
 }
 
+#[derive(Debug)]
 pub struct Distances {
     pub values: Vec<f64>,
 }

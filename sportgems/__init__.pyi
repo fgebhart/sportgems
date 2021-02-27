@@ -2,9 +2,9 @@ from typing import List, Tuple
 
 
 class FastestSection:
-    valid_section: bool
-    start_index: int
-    end_index: int
+    valid: bool
+    start: int
+    end: int
     velocity: float
 
 class FitData:
@@ -39,7 +39,7 @@ def find_fastest_section(
     -------
     FastestSection
         Returns a Python object of type FastestSection, with the results given as
-        attributes: valid_section, start_index, end_index and velocity.
+        attributes: valid, start, end and velocity.
     """
     ...
 
@@ -62,7 +62,7 @@ def find_fastest_section_in_fit(
     -------
     FastestSection
         Returns a Python object of type FastestSection, with the results given as
-        attributes: valid_section, start_index, end_index and velocity.
+        attributes: valid, start, end and velocity.
     """
     ...
 
