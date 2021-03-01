@@ -2,55 +2,23 @@ use crate::geo;
 use std::default::Default;
 
 #[derive(PartialEq, Debug)]
-pub struct FastestSection {
+pub struct TargetSection {
     pub valid: bool,
     pub start: u32,
     pub end: u32,
-    pub velocity: f64,
+    pub target_value: f64,      // to be maximized
 }
 
-impl Default for FastestSection {
-    fn default() -> FastestSection {
-        FastestSection {
+impl Default for TargetSection {
+    fn default() -> TargetSection {
+        TargetSection {
             valid: false,
             start: 0,
             end: 0,
-            velocity: 0.0,
+            target_value: 0.0,
         }
     }
 }
-
-pub const INVALID_FASTEST_SECTION: FastestSection = FastestSection {
-    valid: false,
-    start: 0,
-    end: 0,
-    velocity: 0.0,
-};
-#[derive(PartialEq, Debug)]
-pub struct PowerSection {
-    pub valid: bool,
-    pub start: u32,
-    pub end: u32,
-    pub power: f32,
-}
-
-impl Default for PowerSection {
-    fn default() -> PowerSection {
-        PowerSection {
-            valid: false,
-            start: 0,
-            end: 0,
-            power: 0.0,
-        }
-    }
-}
-
-pub const INVALID_POWER_SECTION: PowerSection = PowerSection {
-    valid: false,
-    start: 0,
-    end: 0,
-    power: 0.0,
-};
 
 #[derive(Debug, Clone)]
 pub struct WindowSection {
@@ -104,15 +72,15 @@ pub fn update_current_section(
 pub fn update_fastest_section(
     desired_distance: f64,
     current_section: &WindowSection,
-    fastest_section: &mut FastestSection,
+    fastest_section: &mut TargetSection,
 ) {
     // update fastest section only in case the current
     // distance is not larger than the required distance + 1%
     if current_section.distance <= (desired_distance) * 1.01 {
-        if current_section.velocity > fastest_section.velocity {
+        if current_section.velocity > fastest_section.target_value {
             fastest_section.start = current_section.start;
             fastest_section.end = current_section.end;
-            fastest_section.velocity = current_section.velocity;
+            fastest_section.target_value = current_section.velocity;
         }
     }
 }
@@ -132,21 +100,21 @@ impl InputData {
             heart_rates: vec![],
         }
     }
-    pub fn find_fastest_section(&mut self) -> FastestSection {
+    pub fn find_fastest_section(&mut self) -> TargetSection {
         let data_is_valid = self._prepare_data();
         if data_is_valid {
-            self._search_section()
+            self._search_section(update_fastest_section)
         } else {
-            INVALID_FASTEST_SECTION
+            TargetSection::default()
         }
     }
 
-    pub fn find_best_power_section(&mut self) -> PowerSection {
+    pub fn find_best_power_section(&mut self) -> TargetSection {
         let data_is_valid = self._prepare_data();
         if data_is_valid {
-            INVALID_POWER_SECTION       // TODO run _search_section here
+            TargetSection::default()        // self._search_section()
         } else {
-            INVALID_POWER_SECTION
+            TargetSection::default()
         }
     }
 
@@ -183,9 +151,10 @@ impl InputData {
             self.distances.values.push(distance);
         }
     }
-    pub fn _search_section(&mut self) -> FastestSection {
+    // implementation of the search algorithm, takes an update func (which depends on the use case) as input argument
+    pub fn _search_section(&mut self, update_func: fn(f64, &WindowSection, &mut TargetSection)) -> TargetSection {
         let mut curr_sec = WindowSection::default();
-        let mut fastest_sec = FastestSection::default();
+        let mut target_sec = TargetSection::default();
         while curr_sec.end < self.distances.values.len() as u32 - 1 {
             // println!("{:?}", curr_sec);
             if curr_sec.distance < self.desired_distance as f64 {
@@ -193,7 +162,8 @@ impl InputData {
                 curr_sec.end += 1;
             }
             update_current_section(&self.distances, &self.times, &mut curr_sec);
-            update_fastest_section(self.desired_distance as f64, &curr_sec, &mut fastest_sec);
+            update_func(self.desired_distance as f64, &curr_sec, &mut target_sec);
+            
             // now move the start index further, but ensure that start index does not overtake end index
             if curr_sec.distance >= self.desired_distance as f64 {
                 if curr_sec.start < curr_sec.end {
@@ -204,12 +174,12 @@ impl InputData {
             }
         }
         // after the while loop is finished, check that found fastest_section is valid and return
-        if fastest_sec.velocity == 0.0 || fastest_sec.start == fastest_sec.end {
+        if target_sec.target_value == 0.0 || target_sec.start == target_sec.end {
             println!("no valid section found: poor input data quality");
-            INVALID_FASTEST_SECTION
+            TargetSection::default()
         } else {
-            fastest_sec.valid = true;
-            fastest_sec
+            target_sec.valid = true;
+            target_sec
         }
     }
 }
@@ -244,7 +214,7 @@ mod test {
         // test case where desired distance is greater than the
         // total distance, see above: 10000 > 7448
         let fastest_section = finder.find_fastest_section();
-        assert_eq!(fastest_section, INVALID_FASTEST_SECTION);
+        assert_eq!(fastest_section, TargetSection::default());
     }
 
     #[test]
@@ -267,7 +237,7 @@ mod test {
 
         // in this scenario we expect no valid section to be found
         let fastest_section = finder.find_fastest_section();
-        assert_eq!(fastest_section, INVALID_FASTEST_SECTION);
+        assert_eq!(fastest_section, TargetSection::default());
     }
 
     #[test]
@@ -277,7 +247,7 @@ mod test {
 
         // in this scenario we expect no valid section to be found
         let fastest_section = finder.find_fastest_section();
-        assert_eq!(fastest_section, INVALID_FASTEST_SECTION);
+        assert_eq!(fastest_section, TargetSection::default());
     }
 
     #[test]
@@ -299,7 +269,7 @@ mod test {
         assert_eq!(fastest_section.valid, true);
         assert_eq!(fastest_section.start, 0);
         assert_eq!(fastest_section.end, 1);
-        assert_eq!(fastest_section.velocity.round(), 743.0);
+        assert_eq!(fastest_section.target_value.round(), 743.0);
     }
     #[test]
     fn test_find_fastest_section_nan_values() {
@@ -320,6 +290,6 @@ mod test {
         assert_eq!(fastest_section.valid, true);
         assert_eq!(fastest_section.start, 0);
         assert_eq!(fastest_section.end, 2);
-        assert_eq!(fastest_section.velocity.round(), 37.0);
+        assert_eq!(fastest_section.target_value.round(), 37.0);
     }
 }

@@ -29,7 +29,7 @@ struct PowerSectionPy {
     #[pyo3(get)]
     pub end: u32,
     #[pyo3(get)]
-    pub power: f32,
+    pub power: f64,
 }
 
 #[pyfunction]
@@ -49,7 +49,7 @@ fn find_fastest_section(
             valid: result.valid,
             start: result.start,
             end: result.end,
-            velocity: result.velocity,
+            velocity: result.target_value,
         },
     )
     .unwrap()
@@ -72,7 +72,7 @@ fn find_best_power_section(
             valid: result.valid,
             start: result.start,
             end: result.end,
-            power: result.power,
+            power: result.target_value,
         },
     )
     .unwrap()
@@ -95,7 +95,7 @@ fn find_fastest_section_in_fit(
             valid: result.valid,
             start: result.start,
             end: result.end,
-            velocity: result.velocity,
+            velocity: result.target_value,
         },
     )
     .unwrap()
