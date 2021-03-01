@@ -1,4 +1,5 @@
 use crate::geo;
+use std::default::Default;
 
 #[derive(PartialEq, Debug)]
 pub struct ResultSection {
@@ -22,6 +23,18 @@ pub struct Section {
     pub distance: f64,
     pub duration: f64,
     pub velocity: f64,
+}
+
+impl Default for Section {
+    fn default() -> Section {
+        Section {
+            start: 0,
+            end: 0,
+            distance: 0.0,
+            duration: 0.0,
+            velocity: 0.0,
+        }
+    }
 }
 
 pub struct GemFinder {
@@ -60,11 +73,7 @@ pub fn update_fastest_section(
     // distance is not larger than the required distance + 1%
     if current_section.distance <= (fastest_distance) * 1.01 {
         if current_section.velocity > fastest_section.velocity {
-            fastest_section.start = current_section.start;
-            fastest_section.end = current_section.end;
-            fastest_section.duration = current_section.duration;
-            fastest_section.distance = current_section.distance;
-            fastest_section.velocity = current_section.velocity;
+            *fastest_section = current_section.clone();
         }
     }
 }
@@ -111,20 +120,8 @@ impl GemFinder {
         }
     }
     pub fn search_section(&mut self) -> ResultSection {
-        let mut curr_sec: Section = Section {
-            start: 0,
-            end: 0,
-            distance: 0.0,
-            duration: 0.0,
-            velocity: 0.0,
-        };
-        let mut fastest_sec: Section = Section {
-            start: 0,
-            end: 0,
-            distance: 0.0,
-            duration: 0.0,
-            velocity: 0.0,
-        };
+        let mut curr_sec = Section::default();
+        let mut fastest_sec = Section::default();
         while curr_sec.end < self.distances.values.len() as u32 - 1 {
             // println!("{:?}", curr_sec);
             if curr_sec.distance < self.fastest_distance as f64 {
