@@ -2,14 +2,25 @@ use crate::geo;
 use std::default::Default;
 
 #[derive(PartialEq, Debug)]
-pub struct ResultSection {
+pub struct FastestSection {
     pub valid: bool,
     pub start: u32,
     pub end: u32,
     pub velocity: f64,
 }
 
-pub const INVALID_FASTEST_SECTION: ResultSection = ResultSection {
+impl Default for FastestSection {
+    fn default() -> FastestSection {
+        FastestSection {
+            valid: false,
+            start: 0,
+            end: 0,
+            velocity: 0.0,
+        }
+    }
+}
+
+pub const INVALID_FASTEST_SECTION: FastestSection = FastestSection {
     valid: false,
     start: 0,
     end: 0,
@@ -17,7 +28,7 @@ pub const INVALID_FASTEST_SECTION: ResultSection = ResultSection {
 };
 
 #[derive(Debug, Clone)]
-pub struct Section {
+pub struct WindowSection {
     pub start: u32,
     pub end: u32,
     pub distance: f64,
@@ -25,9 +36,9 @@ pub struct Section {
     pub velocity: f64,
 }
 
-impl Default for Section {
-    fn default() -> Section {
-        Section {
+impl Default for WindowSection {
+    fn default() -> WindowSection {
+        WindowSection {
             start: 0,
             end: 0,
             distance: 0.0,
@@ -38,7 +49,7 @@ impl Default for Section {
 }
 
 pub struct GemFinder {
-    pub fastest_distance: u32,
+    pub desired_distance: u32,
     pub coordinates: Vec<(f64, f64)>,
     pub times: geo::Times,
     pub distances: geo::Distances,
@@ -56,7 +67,7 @@ pub fn get_velocity(distance: f64, time: f64) -> f64 {
 pub fn update_current_section(
     distances: &geo::Distances,
     times: &geo::Times,
-    section: &mut Section,
+    section: &mut WindowSection,
 ) {
     section.distance =
         distances.values[section.end as usize] - distances.values[section.start as usize];
@@ -65,36 +76,38 @@ pub fn update_current_section(
 }
 
 pub fn update_fastest_section(
-    fastest_distance: f64,
-    current_section: &Section,
-    fastest_section: &mut Section,
+    desired_distance: f64,
+    current_section: &WindowSection,
+    fastest_section: &mut FastestSection,
 ) {
     // update fastest section only in case the current
     // distance is not larger than the required distance + 1%
-    if current_section.distance <= (fastest_distance) * 1.01 {
+    if current_section.distance <= (desired_distance) * 1.01 {
         if current_section.velocity > fastest_section.velocity {
-            *fastest_section = current_section.clone();
+            fastest_section.start = current_section.start;
+            fastest_section.end = current_section.end;
+            fastest_section.velocity = current_section.velocity;
         }
     }
 }
 
 impl GemFinder {
-    pub fn new(fastest_distance: u32, coordinates: Vec<(f64, f64)>, times: Vec<f64>) -> GemFinder {
+    pub fn new(desired_distance: u32, coordinates: Vec<(f64, f64)>, times: Vec<f64>) -> GemFinder {
         GemFinder {
-            fastest_distance,
+            desired_distance,
             coordinates,
             times: geo::Times { values: times },
             distances: geo::Distances { values: vec![] },
         }
     }
-    pub fn find_fastest_section(&mut self) -> ResultSection {
+    pub fn find_fastest_section(&mut self) -> FastestSection {
         assert!(
             self.coordinates.len() == self.times.values.len(),
             "Length of coordinates and times must be equal."
         );
         self.compute_vector_of_distances();
         let total_distance = self.distances.values.last().unwrap().clone();
-        if self.fastest_distance as f64 > total_distance {
+        if self.desired_distance as f64 > total_distance {
             println!("no valid section found: desired fastest distance is greater than the total distance of the activity");
             return INVALID_FASTEST_SECTION;
         } else {
@@ -119,19 +132,19 @@ impl GemFinder {
             self.distances.values.push(distance);
         }
     }
-    pub fn search_section(&mut self) -> ResultSection {
-        let mut curr_sec = Section::default();
-        let mut fastest_sec = Section::default();
+    pub fn search_section(&mut self) -> FastestSection {
+        let mut curr_sec = WindowSection::default();
+        let mut fastest_sec = FastestSection::default();
         while curr_sec.end < self.distances.values.len() as u32 - 1 {
             // println!("{:?}", curr_sec);
-            if curr_sec.distance < self.fastest_distance as f64 {
-                // build up section to get closer to the desired length of fastest_distance
+            if curr_sec.distance < self.desired_distance as f64 {
+                // build up section to get closer to the desired length of desired_distance
                 curr_sec.end += 1;
             }
             update_current_section(&self.distances, &self.times, &mut curr_sec);
-            update_fastest_section(self.fastest_distance as f64, &curr_sec, &mut fastest_sec);
+            update_fastest_section(self.desired_distance as f64, &curr_sec, &mut fastest_sec);
             // now move the start index further, but ensure that start index does not overtake end index
-            if curr_sec.distance >= self.fastest_distance as f64 {
+            if curr_sec.distance >= self.desired_distance as f64 {
                 if curr_sec.start < curr_sec.end {
                     curr_sec.start += 1;
                 } else {
@@ -144,12 +157,8 @@ impl GemFinder {
             println!("no valid section found: poor input data quality");
             INVALID_FASTEST_SECTION
         } else {
-            ResultSection {
-                valid: true,
-                start: fastest_sec.start,
-                end: fastest_sec.end,
-                velocity: fastest_sec.velocity,
-            }
+            fastest_sec.valid = true;
+            fastest_sec
         }
     }
 }
@@ -173,7 +182,7 @@ mod test {
     #[test]
     fn test_find_fastest_section_initialization() {
         let mut finder = GemFinder::new(10_000, vec![(48.0, 8.0), (48.0, 8.1)], vec![123.4, 124.6]);
-        assert_eq!(finder.fastest_distance, 10_000);
+        assert_eq!(finder.desired_distance, 10_000);
         assert_eq!(finder.coordinates, vec!((48.0, 8.0), (48.0, 8.1)));
         assert_eq!(finder.times.values, vec!(123.4, 124.6));
 
