@@ -20,6 +20,7 @@ impl Default for TargetSection {
     }
 }
 
+// window section used to scan through the activity
 #[derive(Debug, Clone)]
 pub struct WindowSection {
     pub start: u32,
@@ -58,32 +59,28 @@ pub fn get_velocity(distance: f64, time: f64) -> f64 {
     }
 }
 
-pub fn update_current_section(
+pub fn update_sections_max_velocity(
     distances: &geo::Distances,
     times: &geo::Times,
-    section: &mut WindowSection,
-) {
-    section.distance =
-        distances.values[section.end as usize] - distances.values[section.start as usize];
-    section.duration = times.values[section.end as usize] - times.values[section.start as usize];
-    section.velocity = get_velocity(section.distance, section.duration);
-}
-
-pub fn update_fastest_section(
     desired_distance: f64,
-    current_section: &WindowSection,
-    fastest_section: &mut TargetSection,
+    window_sec: &mut WindowSection,
+    fastest_sec: &mut TargetSection,
 ) {
+    window_sec.distance =
+        distances.values[window_sec.end as usize] - distances.values[window_sec.start as usize];
+    window_sec.duration = times.values[window_sec.end as usize] - times.values[window_sec.start as usize];
+    window_sec.velocity = get_velocity(window_sec.distance, window_sec.duration);
     // update fastest section only in case the current
     // distance is not larger than the required distance + 1%
-    if current_section.distance <= (desired_distance) * 1.01 {
-        if current_section.velocity > fastest_section.target_value {
-            fastest_section.start = current_section.start;
-            fastest_section.end = current_section.end;
-            fastest_section.target_value = current_section.velocity;
+    if window_sec.distance <= (desired_distance) * 1.01 {
+        if window_sec.velocity > fastest_sec.target_value {
+            fastest_sec.start = window_sec.start;
+            fastest_sec.end = window_sec.end;
+            fastest_sec.target_value = window_sec.velocity;
         }
     }
 }
+
 
 impl InputData {
     pub fn new(
@@ -103,7 +100,7 @@ impl InputData {
     pub fn find_fastest_section(&mut self) -> TargetSection {
         let data_is_valid = self._prepare_data();
         if data_is_valid {
-            self._search_section(update_fastest_section)
+            self._search_section(update_sections_max_velocity)
         } else {
             TargetSection::default()
         }
@@ -152,24 +149,24 @@ impl InputData {
         }
     }
     // implementation of the search algorithm, takes an update func (which depends on the use case) as input argument
-    pub fn _search_section(&mut self, update_func: fn(f64, &WindowSection, &mut TargetSection)) -> TargetSection {
-        let mut curr_sec = WindowSection::default();
+    pub fn _search_section(&mut self, update_func: fn(&geo::Distances, &geo::Times, f64, &mut WindowSection, &mut TargetSection)) -> TargetSection {
+        let mut window_sec = WindowSection::default();
         let mut target_sec = TargetSection::default();
-        while curr_sec.end < self.distances.values.len() as u32 - 1 {
+        while window_sec.end < self.distances.values.len() as u32 - 1 {
             // println!("{:?}", curr_sec);
-            if curr_sec.distance < self.desired_distance as f64 {
+            if window_sec.distance < self.desired_distance as f64 {
                 // build up section to get closer to the desired length of desired_distance
-                curr_sec.end += 1;
+                window_sec.end += 1;
             }
-            update_current_section(&self.distances, &self.times, &mut curr_sec);
-            update_func(self.desired_distance as f64, &curr_sec, &mut target_sec);
-            
+            // update_current_section(&self.distances, &self.times, &mut curr_sec);
+            update_func(&self.distances, &self.times, self.desired_distance as f64, &mut window_sec, &mut target_sec);
+
             // now move the start index further, but ensure that start index does not overtake end index
-            if curr_sec.distance >= self.desired_distance as f64 {
-                if curr_sec.start < curr_sec.end {
-                    curr_sec.start += 1;
+            if window_sec.distance >= self.desired_distance as f64 {
+                if window_sec.start < window_sec.end {
+                    window_sec.start += 1;
                 } else {
-                    curr_sec.end += 1;
+                    window_sec.end += 1;
                 }
             }
         }
