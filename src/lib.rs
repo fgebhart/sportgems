@@ -1,8 +1,12 @@
 extern crate pyo3;
 
+pub mod climb;
+pub mod dtypes;
 pub mod fit_reader;
 mod gem_finder;
 pub mod geo;
+pub mod math;
+pub mod velocity;
 
 use crate::gem_finder::InputData;
 use pyo3::prelude::*;
@@ -20,8 +24,8 @@ struct FastestSectionPy {
     pub velocity: f64,
 }
 
-#[pyclass(name = "PowerSection", dict)]
-struct PowerSectionPy {
+#[pyclass(name = "ClimbSection", dict)]
+struct ClimbSectionPy {
     #[pyo3(get)]
     pub valid: bool,
     #[pyo3(get)]
@@ -29,7 +33,7 @@ struct PowerSectionPy {
     #[pyo3(get)]
     pub end: u32,
     #[pyo3(get)]
-    pub power: f64,
+    pub climb: f64,
 }
 
 #[pyfunction]
@@ -39,8 +43,8 @@ fn find_fastest_section(
     times: Vec<f64>,
     coordinates: Vec<(f64, f64)>,
 ) -> Py<FastestSectionPy> {
-    let mut finder = InputData::new(fastest_distance, coordinates, times);
-    let result = finder.find_fastest_section();
+    let mut finder = InputData::new(fastest_distance, coordinates, times, None);
+    let result = finder.find_fastest_section().unwrap();
     let gil = Python::acquire_gil();
     let py = gil.python();
     Py::new(
@@ -56,23 +60,24 @@ fn find_fastest_section(
 }
 
 #[pyfunction]
-fn find_best_power_section(
+fn find_best_climb_section(
     _py: Python,
     fastest_distance: u32,
     times: Vec<f64>,
     coordinates: Vec<(f64, f64)>,
-) -> Py<PowerSectionPy> {
-    let mut finder = InputData::new(fastest_distance, coordinates, times);
-    let result = finder.find_best_power_section();
+    altitudes: Vec<f64>,
+) -> Py<ClimbSectionPy> {
+    let mut finder = InputData::new(fastest_distance, coordinates, times, Some(altitudes));
+    let result = finder.find_best_climb_section().unwrap();
     let gil = Python::acquire_gil();
     let py = gil.python();
     Py::new(
         py,
-        PowerSectionPy {
+        ClimbSectionPy {
             valid: result.valid,
             start: result.start,
             end: result.end,
-            power: result.target_value,
+            climb: result.target_value,
         },
     )
     .unwrap()
@@ -85,8 +90,8 @@ fn find_fastest_section_in_fit(
     path_to_fit: &str,
 ) -> Py<FastestSectionPy> {
     let fit_data: fit_reader::FitData = fit_reader::parse_fit(path_to_fit);
-    let mut finder = InputData::new(fastest_distance, fit_data.coordinates, fit_data.times);
-    let result = finder.find_fastest_section();
+    let mut finder = InputData::new(fastest_distance, fit_data.coordinates, fit_data.times, None);
+    let result = finder.find_fastest_section().unwrap();
     let gil = Python::acquire_gil();
     let py = gil.python();
     Py::new(
@@ -127,7 +132,7 @@ fn parse_fit_data(_py: Python, path_to_fit: &str) -> Py<FitDataPy> {
 #[pymodule]
 fn sportgems(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(find_fastest_section))?;
-    m.add_wrapped(wrap_pyfunction!(find_best_power_section))?;
+    m.add_wrapped(wrap_pyfunction!(find_best_climb_section))?;
     m.add_wrapped(wrap_pyfunction!(find_fastest_section_in_fit))?;
     m.add_wrapped(wrap_pyfunction!(parse_fit_data))?;
     Ok(())

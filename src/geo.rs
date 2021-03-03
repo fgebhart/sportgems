@@ -1,24 +1,12 @@
+use crate::dtypes;
+
 pub const PI: f64 = 3.14159265358979323846264338327950288f64;
-
-pub struct Coordinate {
-    pub lat: f64,
-    pub lon: f64,
-}
-
-pub struct Times {
-    pub values: Vec<f64>,
-}
-
-#[derive(Debug)]
-pub struct Distances {
-    pub values: Vec<f64>,
-}
 
 pub fn to_rad(degree: f64) -> f64 {
     degree / 180.0 * PI
 }
 
-pub fn calculate_distance(coordinate1: Coordinate, coordinate2: Coordinate) -> f64 {
+pub fn calculate_distance(coordinate1: dtypes::Coordinate, coordinate2: dtypes::Coordinate) -> f64 {
     if coordinate1.lat == coordinate2.lat && coordinate1.lon == coordinate2.lon {
         return 0.0;
     } else {
@@ -49,22 +37,22 @@ mod test {
     #[test]
     fn test_calculate_distance() {
         // calculate distance of the same coordinates
-        let coordinate_a: Coordinate = Coordinate {
+        let coordinate_a: dtypes::Coordinate = dtypes::Coordinate {
             lat: 48.123,
             lon: 9.456,
         };
-        let coordinate_b: Coordinate = Coordinate {
+        let coordinate_b: dtypes::Coordinate = dtypes::Coordinate {
             lat: 48.123,
             lon: 9.456,
         };
         assert_eq!(calculate_distance(coordinate_a, coordinate_b), 0.0);
 
         // calculate distance of two arbitrary coordinates
-        let coordinate_a: Coordinate = Coordinate {
+        let coordinate_a: dtypes::Coordinate = dtypes::Coordinate {
             lat: 48.123,
             lon: 9.456,
         };
-        let coordinate_b: Coordinate = Coordinate {
+        let coordinate_b: dtypes::Coordinate = dtypes::Coordinate {
             lat: 49.678,
             lon: 9.567,
         };
@@ -74,11 +62,11 @@ mod test {
         );
 
         // only longitude is differing
-        let coordinate_a: Coordinate = Coordinate {
+        let coordinate_a: dtypes::Coordinate = dtypes::Coordinate {
             lat: 48.0,
             lon: 8.0,
         };
-        let coordinate_b: Coordinate = Coordinate {
+        let coordinate_b: dtypes::Coordinate = dtypes::Coordinate {
             lat: 48.0,
             lon: 8.1,
         };
@@ -88,11 +76,11 @@ mod test {
         );
 
         // only latitude is differing
-        let coordinate_a: Coordinate = Coordinate {
+        let coordinate_a: dtypes::Coordinate = dtypes::Coordinate {
             lat: 48.0,
             lon: 8.0,
         };
-        let coordinate_b: Coordinate = Coordinate {
+        let coordinate_b: dtypes::Coordinate = dtypes::Coordinate {
             lat: 48.1,
             lon: 8.0,
         };
@@ -104,11 +92,11 @@ mod test {
 
     #[test]
     fn test_edge_case() {
-        let coordinate_a: Coordinate = Coordinate {
+        let coordinate_a: dtypes::Coordinate = dtypes::Coordinate {
             lat: 49.09024318680168,
             lon: 7.9677597898989925,
         };
-        let coordinate_b: Coordinate = Coordinate {
+        let coordinate_b: dtypes::Coordinate = dtypes::Coordinate {
             lat: 49.09024335443974,
             lon: 7.967759286984802,
         };
