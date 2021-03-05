@@ -33,8 +33,9 @@ pub fn _velocity_equation(distance: &f64, time: &f64) -> f64 {
     }
 }
 
-pub fn _climb_equation(altitude: &f64, time: &f64) -> f64 {
-    let climb: f64 = altitude / time;
+pub fn _climb_equation(gained_altitude: &f64, time: &f64) -> f64 {
+    // time in minutes
+    let climb: f64 = gained_altitude / time;
     if !climb.is_normal() {
         0.0
     } else {
@@ -43,10 +44,14 @@ pub fn _climb_equation(altitude: &f64, time: &f64) -> f64 {
 }
 
 fn _get_average(vec: &Vec<f64>) -> f64 {
-    vec.iter().sum::<f64>() as f64 / vec.len() as f64
+    let mut new_vec = vec.clone();
+    // drop NAN values
+    new_vec.retain(|&i| i.is_normal());
+    // compute average and return
+    new_vec.iter().sum::<f64>() as f64 / new_vec.len() as f64
 }
 
-pub fn remove_outlier(input_vector: &Vec<f64>, percentage_threshold: f64) -> Vec<f64> {
+pub fn remove_outliers(input_vector: &Vec<f64>, percentage_threshold: f64) -> Vec<f64> {
     let avg: f64 = _get_average(&input_vector);
     let mut output_vector: Vec<f64> = vec![];
     for element in input_vector {
@@ -170,9 +175,8 @@ mod test_optimized_target_value_formulas {
     }
 }
 
-
 #[cfg(test)]
-mod test_remove_outlier {
+mod test_remove_outliers {
     use super::*;
 
     #[test]
@@ -181,11 +185,17 @@ mod test_remove_outlier {
         assert_eq!(_get_average(&vec![-10., 20., 20.]), 10.);
     }
 
+    #[test]
+    fn test_get_average_with_nan() {
+        assert_eq!(_get_average(&vec![1., 2., f64::NAN, 3.]), 2.);
+        assert_eq!(_get_average(&vec![f64::NAN, -10., 20., 20.]), 10.);
+    }
+
     // helper functions to compare two vectors containing f64::NAN to be equal
     fn eq_with_nan_eq(a: f64, b: f64) -> bool {
         (a.is_nan() && b.is_nan()) || (a == b)
     }
-    
+
     fn vec_compare(va: &[f64], vb: &[f64]) -> bool {
         (va.len() == vb.len()) &&  // zip stops at the shortest
          va.iter()
@@ -194,18 +204,29 @@ mod test_remove_outlier {
     }
 
     #[test]
-    fn test_remove_outlier_low_threshold() {
-        let result_vec = remove_outlier(&vec![1., 1., 1., 1., 5., 1., 1., 1., 1., 1.], 0.50);   // 50% threshold
+    fn test_remove_outliers_low_threshold() {
+        let result_vec = remove_outliers(&vec![1., 1., 1., 1., 5., 1., 1., 1., 1., 1.], 0.50); // 50% threshold
+
         // value of 5.0 is replace by NAN
         let expected_vec = vec![1., 1., 1., 1., f64::NAN, 1., 1., 1., 1., 1.];
         assert_eq!(vec_compare(&expected_vec, &result_vec), true)
     }
 
     #[test]
-    fn test_remove_outlier_threshold_too_large() {
-        let result_vec = remove_outlier(&vec![1., 1., 1., 1., 5., 1., 1., 1., 1., 1.], 3.00);   // 300% threshold
+    fn test_remove_outliers_threshold_too_large() {
+        let result_vec = remove_outliers(&vec![1., 1., 1., 1., 5., 1., 1., 1., 1., 1.], 3.00); // 300% threshold
+
         // value of 5.0 is not replaced
         let expected_vec = vec![1., 1., 1., 1., 5., 1., 1., 1., 1., 1.];
+        assert_eq!(vec_compare(&expected_vec, &result_vec), true)
+    }
+
+    #[test]
+    fn test_remove_outliers_with_nan() {
+        let result_vec = remove_outliers(&vec![1., f64::NAN, 1., 1., 5., 1., 1., 1., 1., 1.], 0.50);
+        println!("result_vec: {:?}", result_vec);
+        // value of 5.0 is replaced and original NAN value is kept
+        let expected_vec = vec![1., f64::NAN, 1., 1., f64::NAN, 1., 1., 1., 1., 1.];
         assert_eq!(vec_compare(&expected_vec, &result_vec), true)
     }
 }

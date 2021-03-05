@@ -13,13 +13,12 @@ fn _get_velocity(
 
 pub fn _update_sections_max_velocity(
     input_data: &gem_finder::InputData,
-    times: &dtypes::Times,
     window_sec: &mut dtypes::WindowSection,
     fastest_sec: &mut dtypes::TargetSection,
 ) {
     window_sec.distance = input_data.distances.values[window_sec.end as usize]
         - input_data.distances.values[window_sec.start as usize];
-    window_sec.velocity = _get_velocity(&window_sec, &window_sec.distance, &times);
+    window_sec.velocity = _get_velocity(&window_sec, &window_sec.distance, &input_data.times);
     // update fastest_sec only in case the current distance
     // is not larger than the required distance + 1%
     if window_sec.distance <= (input_data.desired_distance as f64) * 1.01 {

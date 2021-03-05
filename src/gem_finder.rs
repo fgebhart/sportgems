@@ -88,22 +88,17 @@ impl InputData {
     // implementation of the search algorithm, takes an update func (which depends on the use case) as input argument
     fn _search_section(
         &mut self,
-        update_func: fn(
-            &InputData,
-            &dtypes::Times,
-            &mut dtypes::WindowSection,
-            &mut dtypes::TargetSection,
-        ),
+        update_func: fn(&InputData, &mut dtypes::WindowSection, &mut dtypes::TargetSection),
     ) -> dtypes::TargetSection {
         let mut window_sec = dtypes::WindowSection::default();
         let mut target_sec = dtypes::TargetSection::default();
         while window_sec.end < self.distances.values.len() as u32 - 1 {
-            // println!("{:?}", window_sec);
+            println!("{:?}", window_sec);
             if window_sec.distance < self.desired_distance as f64 {
                 // build up section to get closer to the desired length of desired_distance
                 window_sec.end += 1;
             }
-            update_func(&self, &self.times, &mut window_sec, &mut target_sec); // TODO refactor to remove times as input
+            update_func(&self, &mut window_sec, &mut target_sec);
 
             // now move the start index further, but ensure that start index does not overtake end index
             if window_sec.distance >= self.desired_distance as f64 {
@@ -273,15 +268,15 @@ mod test_find_fastest_section {
     fn test_find_fastest_section_larger_data() {
         // add test with more values
         let mut finder = InputData::new(
-            250,        // TODO tweak distance to get proper test results
+            250,
             vec![
                 (48.0001, 9.001),
                 (48.0002, 9.002),
                 (48.0003, 9.003),
-                (48.0006, 9.004),       // increase distance here
+                (48.0006, 9.004), // increase distance here
                 (48.0009, 9.005),
                 (48.0012, 9.006),
-                (48.0015, 9.007),       // return back to lower pace here again
+                (48.0015, 9.007), // return back to lower pace here again
                 (48.0016, 9.008),
                 (48.0017, 9.009),
                 (48.0018, 9.010),
@@ -304,7 +299,7 @@ mod test_find_fastest_section {
         // in this scenario we expect a valid result section
         let fastest_section = finder.find_fastest_section();
         assert_eq!(fastest_section.valid, true);
-        assert_eq!(fastest_section.start, 2);       // at index 2 the step distance increases
+        assert_eq!(fastest_section.start, 2); // at index 2 the step distance increases
         assert_eq!(fastest_section.end, 5);
         assert_eq!(fastest_section.target_value.round(), 7.0);
     }

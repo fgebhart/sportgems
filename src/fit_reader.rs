@@ -2,6 +2,7 @@ extern crate fit;
 
 use crate::dtypes;
 use crate::gem_finder;
+use crate::math;
 use fit::Fit;
 use std::path::PathBuf;
 
@@ -24,7 +25,13 @@ fn _match_one_time_values(record: &fit::DataField, fit_data: &mut FitData) {
     }
 }
 
-fn _match_time_series_values(record: &fit::DataField, latitude: &mut f64, longitude: &mut f64, timestamp: &mut f64, altitude: &mut f64) {
+fn _match_time_series_values(
+    record: &fit::DataField,
+    latitude: &mut f64,
+    longitude: &mut f64,
+    timestamp: &mut f64,
+    altitude: &mut f64,
+) {
     // get latitude
     if record.field_num == 0 {
         match record.value {
@@ -56,7 +63,7 @@ fn _match_time_series_values(record: &fit::DataField, latitude: &mut f64, longit
     if record.field_num == 2 {
         match record.value {
             fit::Value::U16(val) => {
-                *altitude = val as f64 / 10.0;  // turn cm into meter
+                *altitude = val as f64 / 10.0; // turn cm into meter
             }
             _ => {}
         }
@@ -85,7 +92,13 @@ pub fn parse_fit(path_to_fit: &str) -> FitData {
         altitude = f64::NAN;
         for record in message.values {
             // get time series values, e.g. coordinates, timestamps and altitude
-            _match_time_series_values(&record, &mut latitude, &mut longitude, &mut timestamp, &mut altitude);
+            _match_time_series_values(
+                &record,
+                &mut latitude,
+                &mut longitude,
+                &mut timestamp,
+                &mut altitude,
+            );
             // get one time values, e.g. overall calories, ...
             _match_one_time_values(&record, &mut fit_data);
         }
@@ -119,8 +132,15 @@ pub fn find_best_climb_section_in_fit(
     path_to_fit: &str,
 ) -> dtypes::TargetSection {
     let fit_data: FitData = parse_fit(path_to_fit);
-    let mut finder =
-        gem_finder::InputData::new(fastest_distance, fit_data.coordinates, fit_data.times, Some(fit_data.altitudes));
+    println!("altitudes before filtering: {:?}", fit_data.altitudes);
+    let filtered_altitudes = math::remove_outliers(&fit_data.altitudes, 20.0);
+    println!("altitudes after filtering: {:?}", filtered_altitudes);
+    let mut finder = gem_finder::InputData::new(
+        fastest_distance,
+        fit_data.coordinates,
+        fit_data.times,
+        Some(filtered_altitudes),
+    );
     return finder.find_best_climb_section();
 }
 
@@ -139,9 +159,8 @@ mod test_fit_reader {
         assert_eq!(fit.times[100], (1568474841.0));
         assert_eq!(fit.altitudes[100], (254.9));
         assert_eq!(fit.calories, 432);
-        // TODO add altitude here
     }
-    
+
     #[test]
     fn test_find_fastest_section_in_fit() {
         let result = find_fastest_section_in_fit(1_000, FIT_FILE);
@@ -155,8 +174,8 @@ mod test_fit_reader {
     fn test_find_best_climb_section_in_fit() {
         let result = find_best_climb_section_in_fit(1_000, FIT_FILE);
         assert_eq!(result.valid, true);
-        assert_eq!(result.start, 951);
-        assert_eq!(result.end, 1224);
-        assert_eq!(result.target_value.round(), 10.0);      // TODO needs to be a larger value
+        assert_eq!(result.start, 344);
+        assert_eq!(result.end, 586);
+        assert_eq!(result.target_value.round(), 6.0);
     }
 }
