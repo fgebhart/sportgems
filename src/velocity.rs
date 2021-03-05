@@ -4,13 +4,11 @@ use crate::math;
 
 fn _get_velocity(
     section: &dtypes::WindowSection,
-    distances: &dtypes::Distances,
+    gained_distance: &f64,
     times: &dtypes::Times,
 ) -> f64 {
-    let gained_distance =
-        distances.values[section.end as usize] - distances.values[section.start as usize];
     let duration = times.values[section.end as usize] - times.values[section.start as usize];
-    math::_velocity_formula(&gained_distance, &duration)
+    math::_velocity_equation(&gained_distance, &duration)
 }
 
 pub fn _update_sections_max_velocity(
@@ -19,7 +17,9 @@ pub fn _update_sections_max_velocity(
     window_sec: &mut dtypes::WindowSection,
     fastest_sec: &mut dtypes::TargetSection,
 ) {
-    window_sec.velocity = _get_velocity(&window_sec, &input_data.distances, &times);
+    window_sec.distance = input_data.distances.values[window_sec.end as usize]
+        - input_data.distances.values[window_sec.start as usize];
+    window_sec.velocity = _get_velocity(&window_sec, &window_sec.distance, &times);
     // update fastest_sec only in case the current distance
     // is not larger than the required distance + 1%
     if window_sec.distance <= (input_data.desired_distance as f64) * 1.01 {
