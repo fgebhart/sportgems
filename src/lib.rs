@@ -127,9 +127,13 @@ fn find_best_climb_section_in_fit(
 #[pyclass(name = "FitData", dict)]
 struct PyFitData {
     #[pyo3(get)]
+    pub calories: u16,
+    #[pyo3(get)]
     pub times: Vec<f64>,
     #[pyo3(get)]
     pub coordinates: Vec<(f64, f64)>,
+    #[pyo3(get)]
+    pub altitudes: Vec<f64>,
 }
 
 #[pyfunction]
@@ -140,8 +144,10 @@ fn parse_fit_data(_py: Python, path_to_fit: &str) -> Py<PyFitData> {
     Py::new(
         py,
         PyFitData {
+            calories: fit_data.calories,
             times: fit_data.times,
             coordinates: fit_data.coordinates,
+            altitudes: fit_data.altitudes,
         },
     )
     .unwrap()

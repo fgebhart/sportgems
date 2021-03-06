@@ -93,7 +93,7 @@ impl InputData {
         let mut window_sec = dtypes::WindowSection::default();
         let mut target_sec = dtypes::TargetSection::default();
         while window_sec.end < self.distances.values.len() as u32 - 1 {
-            println!("{:?}", window_sec);
+            // println!("{:?}", window_sec);
             if window_sec.distance < self.desired_distance as f64 {
                 // build up section to get closer to the desired length of desired_distance
                 window_sec.end += 1;

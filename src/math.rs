@@ -224,7 +224,6 @@ mod test_remove_outliers {
     #[test]
     fn test_remove_outliers_with_nan() {
         let result_vec = remove_outliers(&vec![1., f64::NAN, 1., 1., 5., 1., 1., 1., 1., 1.], 0.50);
-        println!("result_vec: {:?}", result_vec);
         // value of 5.0 is replaced and original NAN value is kept
         let expected_vec = vec![1., f64::NAN, 1., 1., f64::NAN, 1., 1., 1., 1., 1.];
         assert_eq!(vec_compare(&expected_vec, &result_vec), true)
