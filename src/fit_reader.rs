@@ -1,8 +1,5 @@
 extern crate fit;
 
-use crate::dtypes;
-use crate::gem_finder;
-use crate::math;
 use fit::Fit;
 use std::path::PathBuf;
 
@@ -111,31 +108,6 @@ pub fn parse_fit(path_to_fit: &str) -> FitData {
     return fit_data;
 }
 
-pub fn find_fastest_section_in_fit(
-    fastest_distance: u32,
-    path_to_fit: &str,
-) -> dtypes::TargetSection {
-    let fit_data: FitData = parse_fit(path_to_fit);
-    let mut finder =
-        gem_finder::InputData::new(fastest_distance, fit_data.coordinates, fit_data.times, None);
-    return finder.find_fastest_section();
-}
-
-pub fn find_best_climb_section_in_fit(
-    fastest_distance: u32,
-    path_to_fit: &str,
-) -> dtypes::TargetSection {
-    let fit_data: FitData = parse_fit(path_to_fit);
-    let filtered_altitudes = math::remove_outliers(&fit_data.altitudes, 10.0); // = 1000 %
-    let mut finder = gem_finder::InputData::new(
-        fastest_distance,
-        fit_data.coordinates,
-        fit_data.times,
-        Some(filtered_altitudes),
-    );
-    return finder.find_best_climb_section();
-}
-
 #[cfg(test)]
 mod test_fit_reader {
     use super::*;
@@ -151,41 +123,5 @@ mod test_fit_reader {
         assert_eq!(fit.times[100], (1568474841.0));
         assert_eq!(fit.altitudes[100], (254.9));
         assert_eq!(fit.calories, 432);
-    }
-
-    #[test]
-    fn test_find_fastest_section_in_fit() {
-        let result = find_fastest_section_in_fit(1_000, FIT_FILE);
-        assert_eq!(result.valid, true);
-        assert_eq!(result.start, 635);
-        assert_eq!(result.end, 725);
-        assert_eq!(result.target_value.round(), 3.0);
-    }
-
-    #[test]
-    fn test_find_fastest_section_in_fit_larger_section() {
-        let result = find_fastest_section_in_fit(3_000, FIT_FILE);
-        assert_eq!(result.valid, true);
-        assert_eq!(result.start, 434);
-        assert_eq!(result.end, 945);
-        assert_eq!(result.target_value.round(), 2.0);
-    }
-
-    #[test]
-    fn test_find_best_climb_section_in_fit() {
-        let result = find_best_climb_section_in_fit(1_000, FIT_FILE);
-        assert_eq!(result.valid, true);
-        assert_eq!(result.start, 344);
-        assert_eq!(result.end, 586);
-        assert_eq!(result.target_value.round(), 6.0);
-    }
-
-    #[test]
-    fn test_find_best_climb_section_in_fit_larger_section() {
-        let result = find_best_climb_section_in_fit(3_000, FIT_FILE);
-        assert_eq!(result.valid, true);
-        assert_eq!(result.start, 63);
-        assert_eq!(result.end, 708);
-        assert_eq!(result.target_value.round(), 4.0);
     }
 }

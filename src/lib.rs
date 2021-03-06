@@ -2,14 +2,15 @@ extern crate pyo3;
 
 pub mod climb;
 pub mod dtypes;
+pub mod errors;
 pub mod fit_reader;
 mod gem_finder;
 pub mod math;
 pub mod velocity;
 
-use crate::gem_finder::InputData;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
+use pyo3::Python;
 
 #[pyclass(name = "FastestSection", dict)]
 struct PyFastestSection {
@@ -38,90 +39,152 @@ struct PyClimbSection {
 #[pyfunction]
 fn find_fastest_section(
     _py: Python,
-    fastest_distance: u32,
+    desired_distance: u32,
     times: Vec<f64>,
     coordinates: Vec<(f64, f64)>,
-) -> Py<PyFastestSection> {
-    let mut finder = InputData::new(fastest_distance, coordinates, times, None);
-    let result = finder.find_fastest_section();
+) -> PyResult<Py<PyFastestSection>> {
     let gil = Python::acquire_gil();
     let py = gil.python();
-    Py::new(
-        py,
-        PyFastestSection {
-            valid: result.valid,
-            start: result.start,
-            end: result.end,
-            velocity: result.target_value,
-        },
-    )
-    .unwrap()
+    match velocity::find_fastest_section(desired_distance, coordinates, times) {
+        Ok(result) => Ok(Py::new(
+            py,
+            PyFastestSection {
+                valid: result.valid,
+                start: result.start,
+                end: result.end,
+                velocity: result.target_value,
+            },
+        )
+        .unwrap()),
+        Err(errors::InputDataError::TooFewDataPoints) => {
+            Err(errors::TooFewDataPointsException::new_err(
+                "Input data must consist of at least 2 data points.",
+            ))
+        }
+        Err(errors::InputDataError::DistanceTooSmall) => {
+            Err(errors::DistanceTooSmallException::new_err(
+                "Distance of provided input data is too small for requested desired distance.",
+            ))
+        }
+        Err(errors::InputDataError::InconsistentLength) => {
+            Err(errors::InconsistentLengthException::new_err(
+                "Input data `coordinates` and `times` lists must be of equal length.",
+            ))
+        }
+    }
 }
 
 #[pyfunction]
 fn find_fastest_section_in_fit(
     _py: Python,
-    fastest_distance: u32,
+    desired_distance: u32,
     path_to_fit: &str,
-) -> Py<PyFastestSection> {
-    let result = fit_reader::find_fastest_section_in_fit(fastest_distance, path_to_fit);
+) -> PyResult<Py<PyFastestSection>> {
     let gil = Python::acquire_gil();
     let py = gil.python();
-    Py::new(
-        py,
-        PyFastestSection {
-            valid: result.valid,
-            start: result.start,
-            end: result.end,
-            velocity: result.target_value,
-        },
-    )
-    .unwrap()
+    match velocity::find_fastest_section_in_fit(desired_distance, path_to_fit) {
+        Ok(result) => Ok(Py::new(
+            py,
+            PyFastestSection {
+                valid: result.valid,
+                start: result.start,
+                end: result.end,
+                velocity: result.target_value,
+            },
+        )
+        .unwrap()),
+        Err(errors::InputDataError::TooFewDataPoints) => {
+            Err(errors::TooFewDataPointsException::new_err(
+                "Input data must consist of at least 2 data points.",
+            ))
+        }
+        Err(errors::InputDataError::DistanceTooSmall) => {
+            Err(errors::DistanceTooSmallException::new_err(
+                "Distance of provided input data is too small for requested desired distance.",
+            ))
+        }
+        Err(errors::InputDataError::InconsistentLength) => {
+            Err(errors::InconsistentLengthException::new_err(
+                "Input data `coordinates` and `times` lists must be of equal length.",
+            ))
+        }
+    }
 }
 
 #[pyfunction]
 fn find_best_climb_section(
     _py: Python,
-    fastest_distance: u32,
+    desired_distance: u32,
     times: Vec<f64>,
     coordinates: Vec<(f64, f64)>,
     altitudes: Vec<f64>,
-) -> Py<PyClimbSection> {
-    let mut finder = InputData::new(fastest_distance, coordinates, times, Some(altitudes));
-    let result = finder.find_best_climb_section();
+) -> PyResult<Py<PyClimbSection>> {
     let gil = Python::acquire_gil();
     let py = gil.python();
-    Py::new(
-        py,
-        PyClimbSection {
-            valid: result.valid,
-            start: result.start,
-            end: result.end,
-            climb: result.target_value,
-        },
-    )
-    .unwrap()
+    match climb::find_best_climb_section(desired_distance, coordinates, times, altitudes) {
+        Ok(result) => Ok(Py::new(
+            py,
+            PyClimbSection {
+                valid: result.valid,
+                start: result.start,
+                end: result.end,
+                climb: result.target_value,
+            },
+        )
+        .unwrap()),
+        Err(errors::InputDataError::TooFewDataPoints) => {
+            Err(errors::TooFewDataPointsException::new_err(
+                "Input data must consist of at least 2 data points.",
+            ))
+        }
+        Err(errors::InputDataError::DistanceTooSmall) => {
+            Err(errors::DistanceTooSmallException::new_err(
+                "Distance of provided input data is too small for requested desired distance.",
+            ))
+        }
+        Err(errors::InputDataError::InconsistentLength) => {
+            Err(errors::InconsistentLengthException::new_err(
+                "Input data `coordinates` and `times` lists must be of equal length.",
+            ))
+        }
+    }
 }
 
 #[pyfunction]
 fn find_best_climb_section_in_fit(
     _py: Python,
-    fastest_distance: u32,
+    desired_distance: u32,
     path_to_fit: &str,
-) -> Py<PyClimbSection> {
-    let result = fit_reader::find_best_climb_section_in_fit(fastest_distance, path_to_fit);
+) -> PyResult<Py<PyClimbSection>> {
     let gil = Python::acquire_gil();
     let py = gil.python();
-    Py::new(
-        py,
-        PyClimbSection {
-            valid: result.valid,
-            start: result.start,
-            end: result.end,
-            climb: result.target_value,
-        },
-    )
-    .unwrap()
+    match climb::find_best_climb_section_in_fit(desired_distance, path_to_fit) {
+        Ok(result) => Ok(Py::new(
+            py,
+            PyClimbSection {
+                valid: result.valid,
+                start: result.start,
+                end: result.end,
+                climb: result.target_value,
+            },
+        )
+        .unwrap()),
+        Err(errors::InputDataError::TooFewDataPoints) => {
+            Err(errors::TooFewDataPointsException::new_err(
+                "Input data must consist of at least 2 data points.",
+            ))
+        }
+        Err(errors::InputDataError::DistanceTooSmall) => {
+            Err(errors::DistanceTooSmallException::new_err(
+                "Distance of provided input data is too small for requested desired distance.",
+            ))
+        }
+        Err(errors::InputDataError::InconsistentLength) => {
+            Err(errors::InconsistentLengthException::new_err(
+                "Input data `coordinates` and `times` lists must be of equal length.",
+            ))
+        }
+    }
 }
 
 #[pyclass(name = "FitData", dict)]
@@ -138,9 +201,9 @@ struct PyFitData {
 
 #[pyfunction]
 fn parse_fit_data(_py: Python, path_to_fit: &str) -> Py<PyFitData> {
-    let fit_data: fit_reader::FitData = fit_reader::parse_fit(path_to_fit);
     let gil = Python::acquire_gil();
     let py = gil.python();
+    let fit_data: fit_reader::FitData = fit_reader::parse_fit(path_to_fit);
     Py::new(
         py,
         PyFitData {
@@ -160,5 +223,17 @@ fn sportgems(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(find_best_climb_section))?;
     m.add_wrapped(wrap_pyfunction!(find_best_climb_section_in_fit))?;
     m.add_wrapped(wrap_pyfunction!(parse_fit_data))?;
+    m.add(
+        "InconsistentLengthException",
+        _py.get_type::<errors::InconsistentLengthException>(),
+    )?;
+    m.add(
+        "TooFewDataPointsException",
+        _py.get_type::<errors::TooFewDataPointsException>(),
+    )?;
+    m.add(
+        "DistanceTooSmallException",
+        _py.get_type::<errors::DistanceTooSmallException>(),
+    )?;
     Ok(())
 }

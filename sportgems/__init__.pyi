@@ -1,6 +1,5 @@
 from typing import List, Tuple
 
-
 class FastestSection:
     valid: bool
     start: int
@@ -19,6 +18,14 @@ class FitData:
     coordinates: List[Tuple[float]]
     altitudes: List[float]
 
+class DistanceTooSmallException(Exception):
+    pass
+
+class InconsistentLengthException(Exception):
+    pass
+
+class TooFewDataPointsException(Exception):
+    pass
 
 def find_fastest_section(
     desired_distance: int, times: List[float], coordinates: List[Tuple[float, float]]

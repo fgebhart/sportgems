@@ -1,5 +1,8 @@
-from sportgems import find_best_climb_section
-from sportgems import find_best_climb_section_in_fit
+from sportgems import find_best_climb_section, find_best_climb_section_in_fit
+from sportgems import DistanceTooSmallException, InconsistentLengthException, TooFewDataPointsException
+
+import pytest
+
 
 def test_find_best_climb_section(track):
     # search for the best climb section in 1km (=1000m) with the above created track
@@ -8,6 +11,35 @@ def test_find_best_climb_section(track):
     assert result.start == 99
     assert result.end == 154
     assert round(result.climb, 3) == 117.818
+
+
+def test_find_fastest_section__errors(track):
+    # request too large desired distance and expect an exception to be raised
+    with pytest.raises(DistanceTooSmallException, match="Distance of provided input data is too small for requested desired distance."):
+        find_best_climb_section(5_000, track.times, track.coordinates, track.altitudes)
+    
+    # use inconsistent lengths of input lists
+    with pytest.raises(InconsistentLengthException, match="Input data `coordinates` and `times` lists must be of equal length."):
+        find_best_climb_section(1_000, [1.0, 2.0, 3.0], [(10.1, 40.2), (10.2, 40.3)], [123.4, 123.2, 345.3])
+    
+    # use too short input data
+    with pytest.raises(TooFewDataPointsException, match="Input data must consist of at least 2 data points."):
+        find_best_climb_section(1_000, [1.0], [(10.3, 42.1)], [123.4])
+    
+    with pytest.raises(TooFewDataPointsException, match="Input data must consist of at least 2 data points."):
+        find_best_climb_section(desired_distance=1, times=[], coordinates=[], altitudes=[])
+    
+    with pytest.raises(TypeError, match="missing required positional argument: desired_distance"):
+        find_best_climb_section()
+
+    with pytest.raises(TypeError, match="missing required positional argument: times"):
+        find_best_climb_section(desired_distance=1)
+    
+    with pytest.raises(TypeError, match="missing required positional argument: coordinates"):
+        find_best_climb_section(desired_distance=1, times=[])
+
+    with pytest.raises(TypeError, match="missing required positional argument: altitudes"):
+        find_best_climb_section(desired_distance=1, times=[], coordinates=[])
 
 
 def test_find_best_climb_section_in_fit(fit_file):
@@ -42,9 +74,6 @@ def test_find_best_climb_section_in_fit(fit_file):
     assert round(result.climb, 3) == 2.35
     
     # test fastest 10km
-    result = find_best_climb_section_in_fit(10_000, fit_file)
-    assert result.valid is False
-    assert result.start == 0
-    assert result.end == 0
-    assert result.climb == 0.0
+    with pytest.raises(DistanceTooSmallException, match="Distance of provided input data is too small for requested desired distance."):
+        result = find_best_climb_section_in_fit(10_000, fit_file)
 

@@ -1,4 +1,6 @@
 use crate::dtypes;
+use crate::errors;
+use crate::fit_reader;
 use crate::gem_finder;
 use crate::math;
 
@@ -52,13 +54,48 @@ pub fn update_sections_max_climb(
 
 pub fn specific_data_check(
     input_data: &gem_finder::InputData,
-) -> Result<(), gem_finder::InputDataError> {
+) -> Result<(), errors::InputDataError> {
     if input_data.altitudes.values.len() < 2 {
-        return Err(gem_finder::InputDataError::TooFewDataPoints);
+        return Err(errors::InputDataError::TooFewDataPoints);
     } else if input_data.coordinates.len() != input_data.altitudes.values.len() {
-        return Err(gem_finder::InputDataError::InconsistentLength);
+        return Err(errors::InputDataError::InconsistentLength);
     } else {
         return Ok(());
+    }
+}
+
+pub fn find_best_climb_section(
+    desired_distance: u32,
+    coordinates: Vec<(f64, f64)>,
+    times: Vec<f64>,
+    altitudes: Vec<f64>,
+) -> Result<dtypes::TargetSection, errors::InputDataError> {
+    match gem_finder::InputData::new(desired_distance, coordinates, times, Some(altitudes)) {
+        Err(e) => Err(e),
+        Ok(mut finder) => {
+            finder._compute_vector_of_distances();
+            match finder._check_if_total_distance_suffice() {
+                Ok(_) => return Ok(finder._search_section(update_sections_max_climb)),
+                Err(e) => return Err(e),
+            }
+        }
+    }
+}
+
+pub fn find_best_climb_section_in_fit(
+    desired_distance: u32,
+    path_to_fit: &str,
+) -> Result<dtypes::TargetSection, errors::InputDataError> {
+    let fit_data: fit_reader::FitData = fit_reader::parse_fit(path_to_fit);
+    let filtered_altitudes = math::remove_outliers(&fit_data.altitudes, 10.0); // = 1000 %
+    match find_best_climb_section(
+        desired_distance,
+        fit_data.coordinates,
+        fit_data.times,
+        filtered_altitudes,
+    ) {
+        Ok(result) => Ok(result),
+        Err(e) => Err(e),
     }
 }
 
@@ -98,5 +135,25 @@ mod test_climb {
         // expect 3.0 since the nan value will be dropped
         let expected = 3.0;
         assert_eq!(expected, result);
+    }
+
+    pub const FIT_FILE: &str = "tests/data/2019-09-14-17-22-05.fit";
+
+    #[test]
+    fn test_find_best_climb_section_in_fit() {
+        let result = find_best_climb_section_in_fit(1_000, FIT_FILE).unwrap();
+        assert_eq!(result.valid, true);
+        assert_eq!(result.start, 344);
+        assert_eq!(result.end, 586);
+        assert_eq!(result.target_value.round(), 6.0);
+    }
+
+    #[test]
+    fn test_find_best_climb_section_in_fit_larger_section() {
+        let result = find_best_climb_section_in_fit(3_000, FIT_FILE).unwrap();
+        assert_eq!(result.valid, true);
+        assert_eq!(result.start, 63);
+        assert_eq!(result.end, 708);
+        assert_eq!(result.target_value.round(), 4.0);
     }
 }

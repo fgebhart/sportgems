@@ -5,6 +5,7 @@ pub struct Coordinate {
     pub lon: f64,
 }
 
+#[derive(Debug)]
 pub struct Times {
     pub values: Vec<f64>,
 }
