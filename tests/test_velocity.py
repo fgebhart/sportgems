@@ -4,12 +4,12 @@ from sportgems import DistanceTooSmallException, InconsistentLengthException, To
 import pytest
 
 
-def test_find_fastest_section_synthetic_data(track):
+def test_find_fastest_section__synthetic_data(track):
     # search for the fastest 1km (=1000m) with the above created track
     result = find_fastest_section(1_000, track.times, track.coordinates)
     assert result.valid is True
     assert result.start == 131
-    assert result.end == 184
+    assert result.end == 185
     assert int(result.velocity) == 18
 
 

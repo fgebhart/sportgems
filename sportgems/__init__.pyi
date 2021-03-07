@@ -1,10 +1,13 @@
 from typing import List, Tuple
 
+TOLERANCE = 0.01
+
 class FastestSection:
     valid: bool
     start: int
     end: int
     velocity: float
+
 
 class ClimbSection:
     valid: bool
@@ -12,23 +15,28 @@ class ClimbSection:
     end: int
     climb: float
 
+
 class FitData:
     calories: int
     times: List[float]
     coordinates: List[Tuple[float]]
     altitudes: List[float]
 
+
 class DistanceTooSmallException(Exception):
     pass
+
 
 class InconsistentLengthException(Exception):
     pass
 
+
 class TooFewDataPointsException(Exception):
     pass
 
+
 def find_fastest_section(
-    desired_distance: int, times: List[float], coordinates: List[Tuple[float, float]]
+    desired_distance: int, times: List[float], coordinates: List[Tuple[float, float]], tolerance: float = TOLERANCE,
 ) -> FastestSection:
     """
     Parses the given input coordinates and times to find the fastest section of length
@@ -47,6 +55,13 @@ def find_fastest_section(
         A list of tuple of floats, where each tuple represents one coordinate. The first
         float represents the latitude and the second the longitude: (lat, lon).
 
+    tolerance : float
+        Percentage value to specify bounds in which the distance of a section is still
+        considered to be equal to the desired distance. Because due to the finite
+        resolution of activity data, not all sections are exactly e.g. 1000 meter long,
+        but with the default of 0.01 a section with 1010 meter will still be considered
+        as a 1000 meter section.
+
     Returns
     -------
     FastestSection
@@ -57,7 +72,7 @@ def find_fastest_section(
 
 
 def find_fastest_section_in_fit(
-    desired_distance: int, path_to_fit: str,
+    desired_distance: int, path_to_fit: str, tolerance: float = TOLERANCE,
 ) -> FastestSection:
     """
     Takes path to fit file as argument and parses it to find the fastest section of
@@ -69,6 +84,12 @@ def find_fastest_section_in_fit(
         Length in meter of the desired fastest section to parse for.
     path_to_fit : str
         Path to the fit file, which should be parsed by sportgems.
+    tolerance : float
+        Percentage value to specify bounds in which the distance of a section is still
+        considered to be equal to the desired distance. Because due to the finite
+        resolution of activity data, not all sections are exactly e.g. 1000 meter long,
+        but with the default of 0.01 a section with 1010 meter will still be considered
+        as a 1000 meter section.
 
     Returns
     -------
@@ -80,7 +101,7 @@ def find_fastest_section_in_fit(
 
 
 def find_best_climb_section(
-    desired_distance: int, times: List[float], coordinates: List[Tuple[float, float]], altitudes: List[float],
+    desired_distance: int, times: List[float], coordinates: List[Tuple[float, float]], altitudes: List[float], tolerance: float = TOLERANCE,
 ) -> ClimbSection:
     """
     Parses the given input coordinates, times and altitude values to find the section
@@ -99,6 +120,12 @@ def find_best_climb_section(
         float represents the latitude and the second the longitude: (lat, lon).
     altitudes : List[float]
         A list of floats containing the altitude values.
+    tolerance : float
+        Percentage value to specify bounds in which the distance of a section is still
+        considered to be equal to the desired distance. Because due to the finite
+        resolution of activity data, not all sections are exactly e.g. 1000 meter long,
+        but with the default of 0.01 a section with 1010 meter will still be considered
+        as a 1000 meter section.
 
     Returns
     -------
@@ -110,7 +137,7 @@ def find_best_climb_section(
 
 
 def find_best_climb_section_in_fit(
-    desired_distance: int, path_to_fit: str,
+    desired_distance: int, path_to_fit: str, tolerance: float = TOLERANCE,
 ) -> ClimbSection:
     """
     Takes path to fit file as argument and parses it to find the best climb section of
@@ -123,6 +150,12 @@ def find_best_climb_section_in_fit(
         Length in meter of the desired best climb section to parse for.
     path_to_fit : str
         Path to the fit file, which should be parsed by sportgems.
+    tolerance : float
+        Percentage value to specify bounds in which the distance of a section is still
+        considered to be equal to the desired distance. Because due to the finite
+        resolution of activity data, not all sections are exactly e.g. 1000 meter long,
+        but with the default of 0.01 a section with 1010 meter will still be considered
+        as a 1000 meter section.
 
     Returns
     -------

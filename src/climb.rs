@@ -41,14 +41,16 @@ pub fn update_sections_max_climb(
     window_sec.distance = input_data.distances.values[window_sec.end as usize]
         - input_data.distances.values[window_sec.start as usize];
     window_sec.climb = _get_climb(&window_sec, &input_data.altitudes, &input_data.times);
-    // update max_climb_sec only in case the current distance
-    // is not larger than the required distance + 1%
-    if window_sec.distance <= (input_data.desired_distance as f64) * 1.01 {
-        if window_sec.climb > max_climb_sec.target_value {
-            max_climb_sec.start = window_sec.start;
-            max_climb_sec.end = window_sec.end;
-            max_climb_sec.target_value = window_sec.climb;
-        }
+    // update fastest_sec only in case the current distance is equal to the desired distance +- 1% and velocity is larger
+    if gem_finder::distance_in_bounds(
+        window_sec.distance,
+        input_data.desired_distance,
+        input_data.tolerance,
+    ) && window_sec.climb > max_climb_sec.target_value
+    {
+        max_climb_sec.start = window_sec.start;
+        max_climb_sec.end = window_sec.end;
+        max_climb_sec.target_value = window_sec.climb;
     }
 }
 
@@ -65,12 +67,19 @@ pub fn specific_data_check(
 }
 
 pub fn find_best_climb_section(
-    desired_distance: u32,
+    desired_distance: f64,
     coordinates: Vec<(f64, f64)>,
     times: Vec<f64>,
     altitudes: Vec<f64>,
+    tolerance: Option<f64>,
 ) -> Result<dtypes::TargetSection, errors::InputDataError> {
-    match gem_finder::InputData::new(desired_distance, coordinates, times, Some(altitudes)) {
+    match gem_finder::InputData::new(
+        desired_distance,
+        coordinates,
+        times,
+        Some(altitudes),
+        tolerance,
+    ) {
         Err(e) => Err(e),
         Ok(mut finder) => {
             finder._compute_vector_of_distances();
@@ -83,8 +92,9 @@ pub fn find_best_climb_section(
 }
 
 pub fn find_best_climb_section_in_fit(
-    desired_distance: u32,
+    desired_distance: f64,
     path_to_fit: &str,
+    tolerance: Option<f64>,
 ) -> Result<dtypes::TargetSection, errors::InputDataError> {
     let fit_data: fit_reader::FitData = fit_reader::parse_fit(path_to_fit);
     let filtered_altitudes = math::remove_outliers(&fit_data.altitudes, 10.0); // = 1000 %
@@ -93,6 +103,7 @@ pub fn find_best_climb_section_in_fit(
         fit_data.coordinates,
         fit_data.times,
         filtered_altitudes,
+        tolerance,
     ) {
         Ok(result) => Ok(result),
         Err(e) => Err(e),
@@ -141,7 +152,7 @@ mod test_climb {
 
     #[test]
     fn test_find_best_climb_section_in_fit() {
-        let result = find_best_climb_section_in_fit(1_000, FIT_FILE).unwrap();
+        let result = find_best_climb_section_in_fit(1_000., FIT_FILE, Some(0.01)).unwrap();
         assert_eq!(result.valid, true);
         assert_eq!(result.start, 344);
         assert_eq!(result.end, 586);
@@ -150,7 +161,7 @@ mod test_climb {
 
     #[test]
     fn test_find_best_climb_section_in_fit_larger_section() {
-        let result = find_best_climb_section_in_fit(3_000, FIT_FILE).unwrap();
+        let result = find_best_climb_section_in_fit(3_000., FIT_FILE, Some(0.01)).unwrap();
         assert_eq!(result.valid, true);
         assert_eq!(result.start, 63);
         assert_eq!(result.end, 708);

@@ -39,13 +39,14 @@ struct PyClimbSection {
 #[pyfunction]
 fn find_fastest_section(
     _py: Python,
-    desired_distance: u32,
+    desired_distance: f64,
     times: Vec<f64>,
     coordinates: Vec<(f64, f64)>,
+    tolerance: Option<f64>,
 ) -> PyResult<Py<PyFastestSection>> {
     let gil = Python::acquire_gil();
     let py = gil.python();
-    match velocity::find_fastest_section(desired_distance, coordinates, times) {
+    match velocity::find_fastest_section(desired_distance, coordinates, times, tolerance) {
         Ok(result) => Ok(Py::new(
             py,
             PyFastestSection {
@@ -57,19 +58,13 @@ fn find_fastest_section(
         )
         .unwrap()),
         Err(errors::InputDataError::TooFewDataPoints) => {
-            Err(errors::TooFewDataPointsException::new_err(
-                "Input data must consist of at least 2 data points.",
-            ))
+            Err(errors::TooFewDataPointsException::new_err(errors::TOO_FEW_DATA_POINTS_MSG))
         }
         Err(errors::InputDataError::DistanceTooSmall) => {
-            Err(errors::DistanceTooSmallException::new_err(
-                "Distance of provided input data is too small for requested desired distance.",
-            ))
+            Err(errors::DistanceTooSmallException::new_err(errors::DISTANCE_TOO_SMALL_MSG))
         }
         Err(errors::InputDataError::InconsistentLength) => {
-            Err(errors::InconsistentLengthException::new_err(
-                "Input data `coordinates` and `times` lists must be of equal length.",
-            ))
+            Err(errors::InconsistentLengthException::new_err(errors::INCONSISTENT_LENGTH_MSG))
         }
     }
 }
@@ -77,12 +72,13 @@ fn find_fastest_section(
 #[pyfunction]
 fn find_fastest_section_in_fit(
     _py: Python,
-    desired_distance: u32,
+    desired_distance: f64,
     path_to_fit: &str,
+    tolerance: Option<f64>,
 ) -> PyResult<Py<PyFastestSection>> {
     let gil = Python::acquire_gil();
     let py = gil.python();
-    match velocity::find_fastest_section_in_fit(desired_distance, path_to_fit) {
+    match velocity::find_fastest_section_in_fit(desired_distance, path_to_fit, tolerance) {
         Ok(result) => Ok(Py::new(
             py,
             PyFastestSection {
@@ -94,19 +90,13 @@ fn find_fastest_section_in_fit(
         )
         .unwrap()),
         Err(errors::InputDataError::TooFewDataPoints) => {
-            Err(errors::TooFewDataPointsException::new_err(
-                "Input data must consist of at least 2 data points.",
-            ))
+            Err(errors::TooFewDataPointsException::new_err(errors::TOO_FEW_DATA_POINTS_MSG))
         }
         Err(errors::InputDataError::DistanceTooSmall) => {
-            Err(errors::DistanceTooSmallException::new_err(
-                "Distance of provided input data is too small for requested desired distance.",
-            ))
+            Err(errors::DistanceTooSmallException::new_err(errors::DISTANCE_TOO_SMALL_MSG))
         }
         Err(errors::InputDataError::InconsistentLength) => {
-            Err(errors::InconsistentLengthException::new_err(
-                "Input data `coordinates` and `times` lists must be of equal length.",
-            ))
+            Err(errors::InconsistentLengthException::new_err(errors::INCONSISTENT_LENGTH_MSG))
         }
     }
 }
@@ -114,14 +104,16 @@ fn find_fastest_section_in_fit(
 #[pyfunction]
 fn find_best_climb_section(
     _py: Python,
-    desired_distance: u32,
+    desired_distance: f64,
     times: Vec<f64>,
     coordinates: Vec<(f64, f64)>,
     altitudes: Vec<f64>,
+    tolerance: Option<f64>,
 ) -> PyResult<Py<PyClimbSection>> {
     let gil = Python::acquire_gil();
     let py = gil.python();
-    match climb::find_best_climb_section(desired_distance, coordinates, times, altitudes) {
+    match climb::find_best_climb_section(desired_distance, coordinates, times, altitudes, tolerance)
+    {
         Ok(result) => Ok(Py::new(
             py,
             PyClimbSection {
@@ -133,19 +125,13 @@ fn find_best_climb_section(
         )
         .unwrap()),
         Err(errors::InputDataError::TooFewDataPoints) => {
-            Err(errors::TooFewDataPointsException::new_err(
-                "Input data must consist of at least 2 data points.",
-            ))
+            Err(errors::TooFewDataPointsException::new_err(errors::TOO_FEW_DATA_POINTS_MSG))
         }
         Err(errors::InputDataError::DistanceTooSmall) => {
-            Err(errors::DistanceTooSmallException::new_err(
-                "Distance of provided input data is too small for requested desired distance.",
-            ))
+            Err(errors::DistanceTooSmallException::new_err(errors::DISTANCE_TOO_SMALL_MSG))
         }
         Err(errors::InputDataError::InconsistentLength) => {
-            Err(errors::InconsistentLengthException::new_err(
-                "Input data `coordinates` and `times` lists must be of equal length.",
-            ))
+            Err(errors::InconsistentLengthException::new_err(errors::INCONSISTENT_LENGTH_MSG))
         }
     }
 }
@@ -153,12 +139,13 @@ fn find_best_climb_section(
 #[pyfunction]
 fn find_best_climb_section_in_fit(
     _py: Python,
-    desired_distance: u32,
+    desired_distance: f64,
     path_to_fit: &str,
+    tolerance: Option<f64>,
 ) -> PyResult<Py<PyClimbSection>> {
     let gil = Python::acquire_gil();
     let py = gil.python();
-    match climb::find_best_climb_section_in_fit(desired_distance, path_to_fit) {
+    match climb::find_best_climb_section_in_fit(desired_distance, path_to_fit, tolerance) {
         Ok(result) => Ok(Py::new(
             py,
             PyClimbSection {
@@ -170,19 +157,13 @@ fn find_best_climb_section_in_fit(
         )
         .unwrap()),
         Err(errors::InputDataError::TooFewDataPoints) => {
-            Err(errors::TooFewDataPointsException::new_err(
-                "Input data must consist of at least 2 data points.",
-            ))
+            Err(errors::TooFewDataPointsException::new_err(errors::TOO_FEW_DATA_POINTS_MSG))
         }
         Err(errors::InputDataError::DistanceTooSmall) => {
-            Err(errors::DistanceTooSmallException::new_err(
-                "Distance of provided input data is too small for requested desired distance.",
-            ))
+            Err(errors::DistanceTooSmallException::new_err(errors::DISTANCE_TOO_SMALL_MSG))
         }
         Err(errors::InputDataError::InconsistentLength) => {
-            Err(errors::InconsistentLengthException::new_err(
-                "Input data `coordinates` and `times` lists must be of equal length.",
-            ))
+            Err(errors::InconsistentLengthException::new_err(errors::INCONSISTENT_LENGTH_MSG))
         }
     }
 }

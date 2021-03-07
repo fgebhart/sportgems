@@ -4,7 +4,7 @@ from sportgems import DistanceTooSmallException, InconsistentLengthException, To
 import pytest
 
 
-def test_find_best_climb_section(track):
+def test_find_best_climb_section__synthetic_data(track):
     # search for the best climb section in 1km (=1000m) with the above created track
     result = find_best_climb_section(1000, track.times, track.coordinates, track.altitudes)
     assert result.valid is True
