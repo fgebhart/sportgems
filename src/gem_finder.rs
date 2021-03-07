@@ -68,7 +68,7 @@ impl InputData {
     pub fn _search_section(
         &mut self,
         update_func: fn(&InputData, &mut dtypes::WindowSection, &mut dtypes::TargetSection),
-    ) -> dtypes::TargetSection {
+    ) -> Result<dtypes::TargetSection, errors::InputDataError> {
         let mut window_sec = dtypes::WindowSection::default();
         let mut target_sec = dtypes::TargetSection::default();
         while window_sec.end < self.distances.values.len() as u32 - 1 {
@@ -90,11 +90,10 @@ impl InputData {
         }
         // after the while loop is finished, check that found fastest_section is valid and return
         if target_sec.target_value == 0.0 || target_sec.start == target_sec.end {
-            println!("no valid section found, probably due to poor input data quality");
-            dtypes::TargetSection::default()
+            Err(errors::InputDataError::NoSectionFound)
         } else {
             target_sec.valid = true;
-            target_sec
+            Ok(target_sec)
         }
     }
 }

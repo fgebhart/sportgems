@@ -66,6 +66,9 @@ fn find_fastest_section(
         Err(errors::InputDataError::InconsistentLength) => {
             Err(errors::InconsistentLengthException::new_err(errors::INCONSISTENT_LENGTH_MSG))
         }
+        Err(errors::InputDataError::NoSectionFound) => {
+            Err(errors::NoSectionFoundException::new_err(errors::NO_SECTION_FOUND_MSG))
+        }
     }
 }
 
@@ -97,6 +100,9 @@ fn find_fastest_section_in_fit(
         }
         Err(errors::InputDataError::InconsistentLength) => {
             Err(errors::InconsistentLengthException::new_err(errors::INCONSISTENT_LENGTH_MSG))
+        }
+        Err(errors::InputDataError::NoSectionFound) => {
+            Err(errors::NoSectionFoundException::new_err(errors::NO_SECTION_FOUND_MSG))
         }
     }
 }
@@ -133,6 +139,9 @@ fn find_best_climb_section(
         Err(errors::InputDataError::InconsistentLength) => {
             Err(errors::InconsistentLengthException::new_err(errors::INCONSISTENT_LENGTH_MSG))
         }
+        Err(errors::InputDataError::NoSectionFound) => {
+            Err(errors::NoSectionFoundException::new_err(errors::NO_SECTION_FOUND_MSG))
+        }
     }
 }
 
@@ -164,6 +173,9 @@ fn find_best_climb_section_in_fit(
         }
         Err(errors::InputDataError::InconsistentLength) => {
             Err(errors::InconsistentLengthException::new_err(errors::INCONSISTENT_LENGTH_MSG))
+        }
+        Err(errors::InputDataError::NoSectionFound) => {
+            Err(errors::NoSectionFoundException::new_err(errors::NO_SECTION_FOUND_MSG))
         }
     }
 }

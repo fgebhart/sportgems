@@ -84,7 +84,12 @@ pub fn find_best_climb_section(
         Ok(mut finder) => {
             finder._compute_vector_of_distances();
             match finder._check_if_total_distance_suffice() {
-                Ok(_) => return Ok(finder._search_section(update_sections_max_climb)),
+                Ok(_) => {
+                    match finder._search_section(update_sections_max_climb) {
+                        Ok(result) => return Ok(result),
+                        Err(e) => return Err(e),
+                    }
+                }
                 Err(e) => return Err(e),
             }
         }
