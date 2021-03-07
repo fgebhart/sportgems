@@ -92,7 +92,6 @@ impl InputData {
         if target_sec.target_value == 0.0 || target_sec.start == target_sec.end {
             Err(errors::InputDataError::NoSectionFound)
         } else {
-            target_sec.valid = true;
             Ok(target_sec)
         }
     }

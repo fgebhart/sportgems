@@ -158,7 +158,6 @@ mod test_climb {
     #[test]
     fn test_find_best_climb_section_in_fit() {
         let result = find_best_climb_section_in_fit(1_000., FIT_FILE, Some(0.01)).unwrap();
-        assert_eq!(result.valid, true);
         assert_eq!(result.start, 344);
         assert_eq!(result.end, 586);
         assert_eq!(result.target_value.round(), 6.0);
@@ -167,7 +166,6 @@ mod test_climb {
     #[test]
     fn test_find_best_climb_section_in_fit_larger_section() {
         let result = find_best_climb_section_in_fit(3_000., FIT_FILE, Some(0.01)).unwrap();
-        assert_eq!(result.valid, true);
         assert_eq!(result.start, 63);
         assert_eq!(result.end, 708);
         assert_eq!(result.target_value.round(), 4.0);

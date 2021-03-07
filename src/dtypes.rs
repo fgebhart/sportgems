@@ -22,7 +22,6 @@ pub struct Altitudes {
 
 #[derive(PartialEq, Debug)]
 pub struct TargetSection {
-    pub valid: bool,
     pub start: u32,
     pub end: u32,
     pub target_value: f64, // to be maximized
@@ -31,7 +30,6 @@ pub struct TargetSection {
 impl Default for TargetSection {
     fn default() -> TargetSection {
         TargetSection {
-            valid: false,
             start: 0,
             end: 0,
             target_value: 0.0,

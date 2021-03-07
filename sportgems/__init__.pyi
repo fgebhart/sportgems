@@ -3,14 +3,12 @@ from typing import List, Tuple
 TOLERANCE = 0.01
 
 class FastestSection:
-    valid: bool
     start: int
     end: int
     velocity: float
 
 
 class ClimbSection:
-    valid: bool
     start: int
     end: int
     climb: float
@@ -66,7 +64,7 @@ def find_fastest_section(
     -------
     FastestSection
         Returns a Python object of type FastestSection, with the results given as
-        attributes: valid, start, end and velocity.
+        attributes: start, end and velocity.
     """
     ...
 
@@ -95,7 +93,7 @@ def find_fastest_section_in_fit(
     -------
     FastestSection
         Returns a Python object of type FastestSection, with the results given as
-        attributes: valid, start, end and velocity.
+        attributes: start, end and velocity.
     """
     ...
 
@@ -131,7 +129,7 @@ def find_best_climb_section(
     -------
     ClimbSection
         Returns a Python object of type ClimbSection, with the results given as
-        attributes: valid, start, end and climb.
+        attributes: start, end and climb.
     """
     ...
 
@@ -161,7 +159,7 @@ def find_best_climb_section_in_fit(
     -------
     ClimbSection
         Returns a Python object of type ClimbSection, with the results given as
-        attributes: valid, start, end and climb.
+        attributes: start, end and climb.
     """
     ...
 

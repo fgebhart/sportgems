@@ -15,8 +15,6 @@ use pyo3::Python;
 #[pyclass(name = "FastestSection", dict)]
 struct PyFastestSection {
     #[pyo3(get)]
-    pub valid: bool,
-    #[pyo3(get)]
     pub start: u32,
     #[pyo3(get)]
     pub end: u32,
@@ -26,8 +24,6 @@ struct PyFastestSection {
 
 #[pyclass(name = "ClimbSection", dict)]
 struct PyClimbSection {
-    #[pyo3(get)]
-    pub valid: bool,
     #[pyo3(get)]
     pub start: u32,
     #[pyo3(get)]
@@ -50,7 +46,6 @@ fn find_fastest_section(
         Ok(result) => Ok(Py::new(
             py,
             PyFastestSection {
-                valid: result.valid,
                 start: result.start,
                 end: result.end,
                 velocity: result.target_value,
@@ -85,7 +80,6 @@ fn find_fastest_section_in_fit(
         Ok(result) => Ok(Py::new(
             py,
             PyFastestSection {
-                valid: result.valid,
                 start: result.start,
                 end: result.end,
                 velocity: result.target_value,
@@ -123,7 +117,6 @@ fn find_best_climb_section(
         Ok(result) => Ok(Py::new(
             py,
             PyClimbSection {
-                valid: result.valid,
                 start: result.start,
                 end: result.end,
                 climb: result.target_value,
@@ -158,7 +151,6 @@ fn find_best_climb_section_in_fit(
         Ok(result) => Ok(Py::new(
             py,
             PyClimbSection {
-                valid: result.valid,
                 start: result.start,
                 end: result.end,
                 climb: result.target_value,

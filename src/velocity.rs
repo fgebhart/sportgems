@@ -104,7 +104,6 @@ mod test_find_fastest_section {
         // in this low resolution activity data)
         let fastest_section =
             find_fastest_section(desired_distance, coordinates, times, Some(0.5)).unwrap();
-        assert_eq!(fastest_section.valid, true);
         assert_eq!(fastest_section.start, 0);
         assert_eq!(fastest_section.end, 1);
         assert_eq!(fastest_section.target_value.round(), 743.0);
@@ -124,7 +123,6 @@ mod test_find_fastest_section {
         // in this scenario we expect a valid result section
         let fastest_section =
             find_fastest_section(desired_distance, coordinates, times, Some(0.5)).unwrap();
-        assert_eq!(fastest_section.valid, true);
         assert_eq!(fastest_section.start, 0);
         assert_eq!(fastest_section.end, 3);
         assert_eq!(fastest_section.target_value.round(), 50.0);
@@ -162,7 +160,6 @@ mod test_find_fastest_section {
         // in this scenario we expect a valid result section
         let fastest_section =
             find_fastest_section(desired_distance, coordinates, times, Some(10.0)).unwrap();
-        assert_eq!(fastest_section.valid, true);
         assert_eq!(fastest_section.start, 2); // at index 2 the step distance increases
         assert_eq!(fastest_section.end, 5);
         assert_eq!(fastest_section.target_value.round(), 7.0);
@@ -173,7 +170,6 @@ mod test_find_fastest_section {
     #[test]
     fn test_find_fastest_section_in_fit_one_km() {
         let result = find_fastest_section_in_fit(1_000., FIT_FILE, Some(0.01)).unwrap();
-        assert_eq!(result.valid, true);
         assert_eq!(result.start, 635);
         assert_eq!(result.end, 725);
         assert_eq!(result.target_value.round(), 3.0);
@@ -182,7 +178,6 @@ mod test_find_fastest_section {
     #[test]
     fn test_find_fastest_section_in_fit_two_km() {
         let result = find_fastest_section_in_fit(2_000., FIT_FILE, Some(0.01)).unwrap();
-        assert_eq!(result.valid, true);
         assert_eq!(result.start, 543);
         assert_eq!(result.end, 821);
         assert_eq!(result.target_value.round(), 2.0);
@@ -191,7 +186,6 @@ mod test_find_fastest_section {
     #[test]
     fn test_find_fastest_section_in_fit_three_km() {
         let result = find_fastest_section_in_fit(3_000., FIT_FILE, Some(0.01)).unwrap();
-        assert_eq!(result.valid, true);
         assert_eq!(result.start, 434);
         assert_eq!(result.end, 945);
         assert_eq!(result.target_value.round(), 2.0);
@@ -200,7 +194,6 @@ mod test_find_fastest_section {
     #[test]
     fn test_find_fastest_section_in_fit_four_km() {
         let result = find_fastest_section_in_fit(4_000., FIT_FILE, Some(0.01)).unwrap();
-        assert_eq!(result.valid, true);
         assert_eq!(result.start, 300);
         assert_eq!(result.end, 1095);
         assert_eq!(result.target_value.round(), 2.0);
