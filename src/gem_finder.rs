@@ -1,252 +1,232 @@
-use crate::geo;
-use std::default::Default;
+use crate::{dtypes, errors::InputDataError};
+use crate::errors;
+use crate::math;
 
-#[derive(PartialEq, Debug)]
-pub struct ResultSection {
-    pub valid: bool,
-    pub start: u32,
-    pub end: u32,
-    pub velocity: f64,
-}
+const DEFAULT_TOLERANCE: f64 = 0.01;
 
-pub const INVALID_FASTEST_SECTION: ResultSection = ResultSection {
-    valid: false,
-    start: 0,
-    end: 0,
-    velocity: 0.0,
-};
-
-#[derive(Debug, Clone)]
-pub struct Section {
-    pub start: u32,
-    pub end: u32,
-    pub distance: f64,
-    pub duration: f64,
-    pub velocity: f64,
-}
-
-impl Default for Section {
-    fn default() -> Section {
-        Section {
-            start: 0,
-            end: 0,
-            distance: 0.0,
-            duration: 0.0,
-            velocity: 0.0,
-        }
-    }
-}
-
-pub struct GemFinder {
-    pub fastest_distance: u32,
+#[derive(Debug, PartialEq)]
+pub struct InputData {
+    pub desired_distance: f64,
     pub coordinates: Vec<(f64, f64)>,
-    pub times: geo::Times,
-    pub distances: geo::Distances,
+    pub times: dtypes::Times,
+    pub distances: dtypes::Distances,
+    pub altitudes: dtypes::Altitudes,
+    pub tolerance: f64,
 }
 
-pub fn get_velocity(distance: f64, time: f64) -> f64 {
-    let velocity: f64 = distance / time;
-    if !velocity.is_normal() {
-        return 0.0;
-    } else {
-        return velocity;
-    }
-}
-
-pub fn update_current_section(
-    distances: &geo::Distances,
-    times: &geo::Times,
-    section: &mut Section,
-) {
-    section.distance =
-        distances.values[section.end as usize] - distances.values[section.start as usize];
-    section.duration = times.values[section.end as usize] - times.values[section.start as usize];
-    section.velocity = get_velocity(section.distance, section.duration);
-}
-
-pub fn update_fastest_section(
-    fastest_distance: f64,
-    current_section: &Section,
-    fastest_section: &mut Section,
-) {
-    // update fastest section only in case the current
-    // distance is not larger than the required distance + 1%
-    if current_section.distance <= (fastest_distance) * 1.01 {
-        if current_section.velocity > fastest_section.velocity {
-            *fastest_section = current_section.clone();
-        }
-    }
-}
-
-impl GemFinder {
-    pub fn new(fastest_distance: u32, coordinates: Vec<(f64, f64)>, times: Vec<f64>) -> GemFinder {
-        GemFinder {
-            fastest_distance,
-            coordinates,
-            times: geo::Times { values: times },
-            distances: geo::Distances { values: vec![] },
-        }
-    }
-    pub fn find_fastest_section(&mut self) -> ResultSection {
-        assert!(
-            self.coordinates.len() == self.times.values.len(),
-            "Length of coordinates and times must be equal."
-        );
-        self.compute_vector_of_distances();
-        let total_distance = self.distances.values.last().unwrap().clone();
-        if self.fastest_distance as f64 > total_distance {
-            println!("no valid section found: desired fastest distance is greater than the total distance of the activity");
-            return INVALID_FASTEST_SECTION;
+impl InputData {
+    pub fn new(
+        desired_distance: f64,
+        coordinates: Vec<(f64, f64)>,
+        times: Vec<f64>,
+        altitudes: Option<Vec<f64>>,
+        tolerance: Option<f64>,
+    ) -> Result<InputData, errors::InputDataError> {
+        if desired_distance <= 0.0 {
+            Err(InputDataError::InvalidDesiredDistance)
         } else {
-            self.search_section()
+            match _generic_data_checks(coordinates.len(), times.len()) {
+                Ok(_) => Ok(InputData {
+                    desired_distance,
+                    coordinates,
+                    times: dtypes::Times { values: times },
+                    distances: dtypes::Distances { values: vec![] },
+                    altitudes: dtypes::Altitudes {
+                        values: altitudes.unwrap_or(vec![]),
+                    },
+                    tolerance: tolerance.unwrap_or(DEFAULT_TOLERANCE),
+                }),
+                Err(e) => Err(e),
+            }
         }
     }
-    pub fn compute_vector_of_distances(&mut self) {
+
+    pub fn _check_if_total_distance_suffice(&self) -> Result<(), errors::InputDataError> {
+        let total_distance = self.distances.values.last().unwrap().clone();
+        if self.desired_distance > total_distance {
+            return Err(errors::InputDataError::DistanceTooSmall);
+        } else {
+            return Ok(());
+        }
+    }
+
+    pub fn _compute_vector_of_distances(&mut self) {
         let mut distance: f64 = 0.0;
         self.distances.values.push(distance);
 
         // loop through coordinates and calculate the distance from one coordinate to the next one
         for i in 0..self.coordinates.len() - 1 {
-            let coordinate = geo::Coordinate {
+            let coordinate = dtypes::Coordinate {
                 lat: self.coordinates[i].0,
                 lon: self.coordinates[i].1,
             };
-            let next_coordinate = geo::Coordinate {
+            let next_coordinate = dtypes::Coordinate {
                 lat: self.coordinates[i + 1].0,
                 lon: self.coordinates[i + 1].1,
             };
-            distance += geo::calculate_distance(coordinate, next_coordinate);
+            distance += math::calculate_distance(coordinate, next_coordinate);
             self.distances.values.push(distance);
         }
     }
-    pub fn search_section(&mut self) -> ResultSection {
-        let mut curr_sec = Section::default();
-        let mut fastest_sec = Section::default();
-        while curr_sec.end < self.distances.values.len() as u32 - 1 {
-            // println!("{:?}", curr_sec);
-            if curr_sec.distance < self.fastest_distance as f64 {
-                // build up section to get closer to the desired length of fastest_distance
-                curr_sec.end += 1;
+    // implementation of the search algorithm, takes an update func (which depends on the use case) as input argument
+    pub fn _search_section(
+        &mut self,
+        update_func: fn(&InputData, &mut dtypes::WindowSection, &mut dtypes::TargetSection),
+    ) -> Result<dtypes::TargetSection, errors::InputDataError> {
+        let mut window_sec = dtypes::WindowSection::default();
+        let mut target_sec = dtypes::TargetSection::default();
+        while window_sec.end < self.distances.values.len() as u32 - 1 {
+            // println!("{:?}", window_sec);
+            if window_sec.distance < self.desired_distance {
+                // build up section to get closer to the desired length of desired_distance
+                window_sec.end += 1;
             }
-            update_current_section(&self.distances, &self.times, &mut curr_sec);
-            update_fastest_section(self.fastest_distance as f64, &curr_sec, &mut fastest_sec);
+            update_func(&self, &mut window_sec, &mut target_sec);
+
             // now move the start index further, but ensure that start index does not overtake end index
-            if curr_sec.distance >= self.fastest_distance as f64 {
-                if curr_sec.start < curr_sec.end {
-                    curr_sec.start += 1;
+            if window_sec.distance >= self.desired_distance {
+                if window_sec.start < window_sec.end {
+                    window_sec.start += 1;
                 } else {
-                    curr_sec.end += 1;
+                    window_sec.end += 1;
                 }
             }
         }
         // after the while loop is finished, check that found fastest_section is valid and return
-        if fastest_sec.velocity == 0.0 || fastest_sec.start == fastest_sec.end {
-            println!("no valid section found: poor input data quality");
-            INVALID_FASTEST_SECTION
+        if target_sec.target_value == 0.0 || target_sec.start == target_sec.end {
+            Err(errors::InputDataError::NoSectionFound)
         } else {
-            ResultSection {
-                valid: true,
-                start: fastest_sec.start,
-                end: fastest_sec.end,
-                velocity: fastest_sec.velocity,
-            }
+            Ok(target_sec)
         }
     }
 }
 
+pub fn distance_in_bounds(
+    window_distance: f64,
+    desired_distance: f64,
+    percentage_threshold: f64,
+) -> bool {
+    if (window_distance <= (desired_distance * (1.0 + percentage_threshold)))
+        && (window_distance >= (desired_distance * (1.0 - percentage_threshold)))
+    {
+        true
+    } else {
+        false
+    }
+}
+
+fn _generic_data_checks(
+    coordinates_len: usize,
+    times_len: usize,
+) -> Result<(), errors::InputDataError> {
+    if coordinates_len < 2 {
+        return Err(errors::InputDataError::TooFewDataPoints);
+    } else if coordinates_len != times_len {
+        return Err(errors::InputDataError::InconsistentLength);
+    } else {
+        return Ok(());
+    }
+}
+
 #[cfg(test)]
-mod test {
+mod test_gem_finder {
     use super::*;
 
     #[test]
-    fn test_get_velocity() {
-        assert_eq!(get_velocity(16.0, 2.0), 8.0);
-        assert_eq!(get_velocity(5.0, 1.0), 5.0);
-        // division by zero should return zero
-        assert_eq!(get_velocity(3.0, 0.0), 0.0);
-        // in case either of the inputs is NAN we expect also 0.0
-        assert_eq!(get_velocity(f64::NAN, 7.0), 0.0);
-        assert_eq!(get_velocity(4.0, f64::NAN), 0.0);
-        assert_eq!(get_velocity(f64::NAN, f64::NAN), 0.0);
-    }
-
-    #[test]
-    fn test_find_fastest_section_initialization() {
-        let mut finder = GemFinder::new(10_000, vec![(48.0, 8.0), (48.0, 8.1)], vec![123.4, 124.6]);
-        assert_eq!(finder.fastest_distance, 10_000);
+    fn test_finder_initialization() {
+        let finder = InputData::new(
+            10_000.,
+            vec![(48.0, 8.0), (48.0, 8.1)],
+            vec![123.4, 124.6],
+            None,
+            Some(0.01),
+        )
+        .unwrap();
+        assert_eq!(finder.desired_distance, 10_000.);
         assert_eq!(finder.coordinates, vec!((48.0, 8.0), (48.0, 8.1)));
         assert_eq!(finder.times.values, vec!(123.4, 124.6));
+    }
 
-        // now compute the distances
-        finder.compute_vector_of_distances();
+    #[test]
+    fn test_invalid_desired_distance_zero() {
+        let finder = InputData::new(
+            0.,
+            vec![(48.0, 8.0), (48.0, 8.1)],
+            vec![123.4, 124.6],
+            None,
+            Some(0.01),
+        );
+        assert_eq!(finder, Err(errors::InputDataError::InvalidDesiredDistance));
+        
+    }
+
+    #[test]
+    fn test_invalid_desired_distance_negative() {
+        let finder = InputData::new(
+            -10.,
+            vec![(48.0, 8.0), (48.0, 8.1)],
+            vec![123.4, 124.6],
+            None,
+            Some(0.01),
+        );
+        assert_eq!(finder, Err(errors::InputDataError::InvalidDesiredDistance));
+        
+    }
+
+    #[test]
+    fn test_compute_vector_of_distances() {
+        let mut finder = InputData::new(
+            10_000.,
+            vec![(48.0, 8.0), (48.0, 8.1)],
+            vec![123.4, 124.6],
+            None,
+            Some(0.01),
+        )
+        .unwrap();
+
+        finder._compute_vector_of_distances();
         assert_eq!(finder.distances.values, vec!(0.0, 7448.684105664539));
-
-        // test case where fastest distance is greater than the
-        // total distance, see above: 10000 > 7448
-        let fastest_section = finder.find_fastest_section();
-        assert_eq!(fastest_section, INVALID_FASTEST_SECTION);
     }
+}
+
+#[cfg(test)]
+mod test_checks {
+    use super::*;
 
     #[test]
-    fn test_find_fastest_section_edge_case_no_change_in_time() {
-        // test case where coordinates are changing but time does not, this would lead to infinite velocity
-        let mut finder = GemFinder::new(1_000, vec![(48.0, 8.0), (48.0, 8.1)], vec![123.4, 123.4]);
-
-        // in this scenario we expect no valid section to be found
-        let fastest_section = finder.find_fastest_section();
-        assert_eq!(fastest_section, INVALID_FASTEST_SECTION);
-    }
-
-    #[test]
-    fn test_find_fastest_section_edge_case_no_change_in_coordinates() {
-        // test case where coordinates are not changing but time does
-        let mut finder = GemFinder::new(1_000, vec![(48.0, 8.0), (48.0, 8.0)], vec![123.4, 124.5]);
-
-        // in this scenario we expect no valid section to be found
-        let fastest_section = finder.find_fastest_section();
-        assert_eq!(fastest_section, INVALID_FASTEST_SECTION);
-    }
-
-    #[test]
-    fn test_find_fastest_section_dummy_values() {
-        // add test with dummy values
-        let mut finder = GemFinder::new(
-            1_000,
-            vec![
-                (48.123, 9.35),
-                (48.123, 9.36),
-                (48.123, 9.37),
-                (48.123, 9.38),
-            ],
-            vec![1608228953.8, 1608228954.8, 1608228955.8, 1608228956.8],
+    fn test_generic_data_checks_too_few_data_points() {
+        // generate data with only one data point and assert that the TooFewDataPoints error is returned
+        assert_eq!(
+            _generic_data_checks(1, 1),
+            Err(errors::InputDataError::TooFewDataPoints)
         );
-
-        // in this scenario we expect a valid result section
-        let fastest_section = finder.find_fastest_section();
-        assert_eq!(fastest_section.valid, true);
-        assert_eq!(fastest_section.start, 0);
-        assert_eq!(fastest_section.end, 1);
-        assert_eq!(fastest_section.velocity.round(), 743.0);
     }
-    #[test]
-    fn test_find_fastest_section_nan_values() {
-        // add test with dummy values
-        let mut finder = GemFinder::new(
-            1_000,
-            vec![
-                (f64::NAN, f64::NAN),
-                (48.123, 9.36),
-                (48.123, 9.37),
-                (48.123, 9.38),
-            ],
-            vec![1608228940.8, 1608228950.8, 1608228960.8, 1608228970.8],
-        );
 
-        // in this scenario we expect a valid result section
-        let fastest_section = finder.find_fastest_section();
-        assert_eq!(fastest_section.valid, true);
-        assert_eq!(fastest_section.start, 0);
-        assert_eq!(fastest_section.end, 2);
-        assert_eq!(fastest_section.velocity.round(), 37.0);
+    #[test]
+    fn test_generic_data_checks_inconsistent_length() {
+        // coordinates and times vector have different lengths and assert that the InconsistentLength error is raised
+        assert_eq!(
+            _generic_data_checks(34, 37),
+            Err(errors::InputDataError::InconsistentLength)
+        );
+    }
+
+    #[test]
+    fn test_check_if_total_distance_suffice() {
+        // generate data where the overall distance is smaller than the desired
+        // distance and assert that the DistanceTooSmall error is returned
+        let mut finder = InputData::new(
+            10_000.,
+            vec![(48.123, 9.380), (48.123, 9.381)],
+            vec![1608228940.8, 1608228941.8],
+            None,
+            Some(0.01),
+        )
+        .unwrap();
+        finder._compute_vector_of_distances();
+        assert_eq!(
+            finder._check_if_total_distance_suffice(),
+            Err(errors::InputDataError::DistanceTooSmall)
+        );
     }
 }
