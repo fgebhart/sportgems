@@ -1,5 +1,7 @@
 # sportgems
 
+[![PyPI](https://badge.fury.io/py/sportgems.svg)](https://badge.fury.io/py/workoutizer) [![Python](https://img.shields.io/pypi/pyversions/sportgems.svg?style=plastic)](https://badge.fury.io/py/sportgems) [![Build Status](https://github.com/fgebhart/sportgems/workflows/Test/badge.svg)](https://github.com/fgebhart/sportgems/actions?query=workflow%3ATest)
+
 Sportgems finds valuable gems 💎 in your tracked sport 🚴 activity!
 
 
@@ -16,7 +18,7 @@ in yellow:
 
 <img src="https://i.imgur.com/nOYiFm6.png" width="800">
 
-## Get Started
+## Installation
 Sportgems is bundled in a python package using [pyo3](https://pyo3.rs/). Simply
 install it using pip:
 ```
@@ -34,6 +36,9 @@ The following interfacing functions are available:
 | `parse_fit_data`                 | parse your activity `.fit` file to get e.g. `timestamps`, `coordinates`, `altitude` and `calories` |
 
 Have a look at the docstrings of these functions for more details.
+
+
+## How to use it?
 
 In order to search for gems 💎 in your activity, pass a path and desired distance to e.g.
 `find_fastest_section_in_fit` like:
