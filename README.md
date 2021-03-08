@@ -14,7 +14,7 @@ fastest 1km (and other 💎) in all your activities and visualize it. See for ex
 screenshot of an activity in workoutizer, with the fastest 3km section being highlighted
 in yellow:
 
-<img src="https://i.imgur.com/nOYiFm6.png" width="600">
+<img src="https://i.imgur.com/nOYiFm6.png" width="800">
 
 ## Get Started
 Sportgems is bundled in a python package using [pyo3](https://pyo3.rs/). Simply
@@ -60,6 +60,11 @@ Found fastest section, from result.start=635 to result.end=725 with result.veloc
 The following diagram illustrates how the core algorithm (implemented in `gem_finder.cpp`) works:
 
 <img src="https://i.imgur.com/Jwfyjsk.png" width="500">
+
+
+## Changelog
+
+See [CHANGELOG.md](https://github.com/fgebhart/sportgems/blob/main/CHANGELOG.md).
 
 ## Running the tests
 
