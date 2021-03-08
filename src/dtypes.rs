@@ -5,17 +5,17 @@ pub struct Coordinate {
     pub lon: f64,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Times {
     pub values: Vec<f64>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Distances {
     pub values: Vec<f64>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Altitudes {
     pub values: Vec<f64>,
 }

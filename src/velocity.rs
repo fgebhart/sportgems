@@ -45,12 +45,10 @@ pub fn find_fastest_section(
         Ok(mut finder) => {
             finder._compute_vector_of_distances();
             match finder._check_if_total_distance_suffice() {
-                Ok(_) => {
-                    match finder._search_section(_update_sections_max_velocity) {
-                        Ok(result) => return Ok(result),
-                        Err(e) => return Err(e),
-                    }
-                }
+                Ok(_) => match finder._search_section(_update_sections_max_velocity) {
+                    Ok(result) => return Ok(result),
+                    Err(e) => return Err(e),
+                },
                 Err(e) => return Err(e),
             }
         }
@@ -63,15 +61,12 @@ pub fn find_fastest_section_in_fit(
     tolerance: Option<f64>,
 ) -> Result<dtypes::TargetSection, errors::InputDataError> {
     let fit_data: fit_reader::FitData = fit_reader::parse_fit(path_to_fit);
-    match find_fastest_section(
+    find_fastest_section(
         desired_distance,
         fit_data.coordinates,
         fit_data.times,
         tolerance,
-    ) {
-        Err(e) => Err(e),
-        Ok(result) => Ok(result),
-    }
+    )
 }
 
 #[cfg(test)]
@@ -85,7 +80,10 @@ mod test_find_fastest_section {
         let times = vec![123.4, 123.4];
 
         // in this scenario we expect no valid section to be found
-        assert_eq!(find_fastest_section(desired_distance, coordinates, times, Some(0.01)), Err(errors::InputDataError::NoSectionFound));
+        assert_eq!(
+            find_fastest_section(desired_distance, coordinates, times, Some(0.01)),
+            Err(errors::InputDataError::NoSectionFound)
+        );
     }
 
     #[test]

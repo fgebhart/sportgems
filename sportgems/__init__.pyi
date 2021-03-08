@@ -33,6 +33,14 @@ class TooFewDataPointsException(Exception):
     pass
 
 
+class NoSectionFoundException(Exception):
+    pass
+
+
+class InvalidDesiredDistanceException(Exception):
+    pass
+
+
 def find_fastest_section(
     desired_distance: int, times: List[float], coordinates: List[Tuple[float, float]], tolerance: float = TOLERANCE,
 ) -> FastestSection:

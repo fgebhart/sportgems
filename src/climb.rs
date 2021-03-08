@@ -15,8 +15,6 @@ fn _get_climb(
         section.end as usize,
     );
     let duration = times.values[section.end as usize] - times.values[section.start as usize];
-    // println!("gained altitude: {:?}", gained_altitude_in_section);
-    // println!("duration: {:?}", duration);
     math::_climb_equation(&gained_altitude_in_section, &(duration / 60.))
 }
 
@@ -84,12 +82,10 @@ pub fn find_best_climb_section(
         Ok(mut finder) => {
             finder._compute_vector_of_distances();
             match finder._check_if_total_distance_suffice() {
-                Ok(_) => {
-                    match finder._search_section(update_sections_max_climb) {
-                        Ok(result) => return Ok(result),
-                        Err(e) => return Err(e),
-                    }
-                }
+                Ok(_) => match finder._search_section(update_sections_max_climb) {
+                    Ok(result) => return Ok(result),
+                    Err(e) => return Err(e),
+                },
                 Err(e) => return Err(e),
             }
         }
@@ -103,16 +99,13 @@ pub fn find_best_climb_section_in_fit(
 ) -> Result<dtypes::TargetSection, errors::InputDataError> {
     let fit_data: fit_reader::FitData = fit_reader::parse_fit(path_to_fit);
     let filtered_altitudes = math::remove_outliers(&fit_data.altitudes, 10.0); // = 1000 %
-    match find_best_climb_section(
+    find_best_climb_section(
         desired_distance,
         fit_data.coordinates,
         fit_data.times,
         filtered_altitudes,
         tolerance,
-    ) {
-        Ok(result) => Ok(result),
-        Err(e) => Err(e),
-    }
+    )
 }
 
 #[cfg(test)]

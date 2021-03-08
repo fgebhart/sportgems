@@ -1,5 +1,5 @@
 from sportgems import find_best_climb_section, find_best_climb_section_in_fit
-from sportgems import DistanceTooSmallException, InconsistentLengthException, TooFewDataPointsException
+from sportgems import DistanceTooSmallException, InconsistentLengthException, TooFewDataPointsException, InvalidDesiredDistanceException
 
 import pytest
 
@@ -24,6 +24,10 @@ def test_find_fastest_section__errors(track):
     # use too short input data
     with pytest.raises(TooFewDataPointsException, match="Input data must consist of at least 2 data points."):
         find_best_climb_section(1_000, [1.0], [(10.3, 42.1)], [123.4])
+
+    # use too low input data quality by having all data points being equal, and setting desired distance to 0
+    with pytest.raises(InvalidDesiredDistanceException, match="desired_distance must be greater than 0."):
+        find_best_climb_section(0, [1., 1., 1., 1.], [(10.3, 42.1), (10.3, 42.1), (10.3, 42.1), (10.3, 42.1)], [123.4, 123.4, 123.4, 123.4])
     
     with pytest.raises(TooFewDataPointsException, match="Input data must consist of at least 2 data points."):
         find_best_climb_section(desired_distance=1, times=[], coordinates=[], altitudes=[])

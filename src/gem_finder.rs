@@ -1,10 +1,10 @@
-use crate::dtypes;
+use crate::{dtypes, errors::InputDataError};
 use crate::errors;
 use crate::math;
 
 const DEFAULT_TOLERANCE: f64 = 0.01;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct InputData {
     pub desired_distance: f64,
     pub coordinates: Vec<(f64, f64)>,
@@ -22,18 +22,22 @@ impl InputData {
         altitudes: Option<Vec<f64>>,
         tolerance: Option<f64>,
     ) -> Result<InputData, errors::InputDataError> {
-        match _generic_data_checks(coordinates.len(), times.len()) {
-            Ok(_) => Ok(InputData {
-                desired_distance,
-                coordinates,
-                times: dtypes::Times { values: times },
-                distances: dtypes::Distances { values: vec![] },
-                altitudes: dtypes::Altitudes {
-                    values: altitudes.unwrap_or(vec![]),
-                },
-                tolerance: tolerance.unwrap_or(DEFAULT_TOLERANCE),
-            }),
-            Err(e) => Err(e),
+        if desired_distance <= 0.0 {
+            Err(InputDataError::InvalidDesiredDistance)
+        } else {
+            match _generic_data_checks(coordinates.len(), times.len()) {
+                Ok(_) => Ok(InputData {
+                    desired_distance,
+                    coordinates,
+                    times: dtypes::Times { values: times },
+                    distances: dtypes::Distances { values: vec![] },
+                    altitudes: dtypes::Altitudes {
+                        values: altitudes.unwrap_or(vec![]),
+                    },
+                    tolerance: tolerance.unwrap_or(DEFAULT_TOLERANCE),
+                }),
+                Err(e) => Err(e),
+            }
         }
     }
 
@@ -141,6 +145,32 @@ mod test_gem_finder {
         assert_eq!(finder.desired_distance, 10_000.);
         assert_eq!(finder.coordinates, vec!((48.0, 8.0), (48.0, 8.1)));
         assert_eq!(finder.times.values, vec!(123.4, 124.6));
+    }
+
+    #[test]
+    fn test_invalid_desired_distance_zero() {
+        let finder = InputData::new(
+            0.,
+            vec![(48.0, 8.0), (48.0, 8.1)],
+            vec![123.4, 124.6],
+            None,
+            Some(0.01),
+        );
+        assert_eq!(finder, Err(errors::InputDataError::InvalidDesiredDistance));
+        
+    }
+
+    #[test]
+    fn test_invalid_desired_distance_negative() {
+        let finder = InputData::new(
+            -10.,
+            vec![(48.0, 8.0), (48.0, 8.1)],
+            vec![123.4, 124.6],
+            None,
+            Some(0.01),
+        );
+        assert_eq!(finder, Err(errors::InputDataError::InvalidDesiredDistance));
+        
     }
 
     #[test]

@@ -10,10 +10,17 @@ from .sportgems import (
     # general fit parsing
     parse_fit_data,
 
+    # classes
+    FastestSection,
+    ClimbSection,
+    FitData,
+
     # exceptions
     DistanceTooSmallException,
     InconsistentLengthException,
     TooFewDataPointsException,
+    NoSectionFoundException,
+    InvalidDesiredDistanceException,
 )
 
 __all__ = [
@@ -22,7 +29,12 @@ __all__ = [
     'find_best_climb_section',
     'find_best_climb_section_in_fit',
     'parse_fit_data',
+    'FastestSection',
+    'ClimbSection',
+    'FitData',
     'DistanceTooSmallException',
     'InconsistentLengthException',
     'TooFewDataPointsException',
+    'NoSectionFoundException',
+    'InvalidDesiredDistanceException',
 ]

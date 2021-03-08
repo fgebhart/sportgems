@@ -52,18 +52,21 @@ fn find_fastest_section(
             },
         )
         .unwrap()),
-        Err(errors::InputDataError::TooFewDataPoints) => {
-            Err(errors::TooFewDataPointsException::new_err(errors::TOO_FEW_DATA_POINTS_MSG))
-        }
-        Err(errors::InputDataError::DistanceTooSmall) => {
-            Err(errors::DistanceTooSmallException::new_err(errors::DISTANCE_TOO_SMALL_MSG))
-        }
-        Err(errors::InputDataError::InconsistentLength) => {
-            Err(errors::InconsistentLengthException::new_err(errors::INCONSISTENT_LENGTH_MSG))
-        }
-        Err(errors::InputDataError::NoSectionFound) => {
-            Err(errors::NoSectionFoundException::new_err(errors::NO_SECTION_FOUND_MSG))
-        }
+        Err(errors::InputDataError::TooFewDataPoints) => Err(
+            errors::TooFewDataPointsException::new_err(errors::TOO_FEW_DATA_POINTS_MSG),
+        ),
+        Err(errors::InputDataError::DistanceTooSmall) => Err(
+            errors::DistanceTooSmallException::new_err(errors::DISTANCE_TOO_SMALL_MSG),
+        ),
+        Err(errors::InputDataError::InconsistentLength) => Err(
+            errors::InconsistentLengthException::new_err(errors::INCONSISTENT_LENGTH_MSG),
+        ),
+        Err(errors::InputDataError::NoSectionFound) => Err(
+            errors::NoSectionFoundException::new_err(errors::NO_SECTION_FOUND_MSG),
+        ),
+        Err(errors::InputDataError::InvalidDesiredDistance) => Err(
+            errors::InvalidDesiredDistanceException::new_err(errors::INVALID_DESIRED_DISTANCE_MSG),
+        ),
     }
 }
 
@@ -86,18 +89,21 @@ fn find_fastest_section_in_fit(
             },
         )
         .unwrap()),
-        Err(errors::InputDataError::TooFewDataPoints) => {
-            Err(errors::TooFewDataPointsException::new_err(errors::TOO_FEW_DATA_POINTS_MSG))
-        }
-        Err(errors::InputDataError::DistanceTooSmall) => {
-            Err(errors::DistanceTooSmallException::new_err(errors::DISTANCE_TOO_SMALL_MSG))
-        }
-        Err(errors::InputDataError::InconsistentLength) => {
-            Err(errors::InconsistentLengthException::new_err(errors::INCONSISTENT_LENGTH_MSG))
-        }
-        Err(errors::InputDataError::NoSectionFound) => {
-            Err(errors::NoSectionFoundException::new_err(errors::NO_SECTION_FOUND_MSG))
-        }
+        Err(errors::InputDataError::TooFewDataPoints) => Err(
+            errors::TooFewDataPointsException::new_err(errors::TOO_FEW_DATA_POINTS_MSG),
+        ),
+        Err(errors::InputDataError::DistanceTooSmall) => Err(
+            errors::DistanceTooSmallException::new_err(errors::DISTANCE_TOO_SMALL_MSG),
+        ),
+        Err(errors::InputDataError::InconsistentLength) => Err(
+            errors::InconsistentLengthException::new_err(errors::INCONSISTENT_LENGTH_MSG),
+        ),
+        Err(errors::InputDataError::NoSectionFound) => Err(
+            errors::NoSectionFoundException::new_err(errors::NO_SECTION_FOUND_MSG),
+        ),
+        Err(errors::InputDataError::InvalidDesiredDistance) => Err(
+            errors::InvalidDesiredDistanceException::new_err(errors::INVALID_DESIRED_DISTANCE_MSG),
+        ),
     }
 }
 
@@ -123,18 +129,21 @@ fn find_best_climb_section(
             },
         )
         .unwrap()),
-        Err(errors::InputDataError::TooFewDataPoints) => {
-            Err(errors::TooFewDataPointsException::new_err(errors::TOO_FEW_DATA_POINTS_MSG))
-        }
-        Err(errors::InputDataError::DistanceTooSmall) => {
-            Err(errors::DistanceTooSmallException::new_err(errors::DISTANCE_TOO_SMALL_MSG))
-        }
-        Err(errors::InputDataError::InconsistentLength) => {
-            Err(errors::InconsistentLengthException::new_err(errors::INCONSISTENT_LENGTH_MSG))
-        }
-        Err(errors::InputDataError::NoSectionFound) => {
-            Err(errors::NoSectionFoundException::new_err(errors::NO_SECTION_FOUND_MSG))
-        }
+        Err(errors::InputDataError::TooFewDataPoints) => Err(
+            errors::TooFewDataPointsException::new_err(errors::TOO_FEW_DATA_POINTS_MSG),
+        ),
+        Err(errors::InputDataError::DistanceTooSmall) => Err(
+            errors::DistanceTooSmallException::new_err(errors::DISTANCE_TOO_SMALL_MSG),
+        ),
+        Err(errors::InputDataError::InconsistentLength) => Err(
+            errors::InconsistentLengthException::new_err(errors::INCONSISTENT_LENGTH_MSG),
+        ),
+        Err(errors::InputDataError::NoSectionFound) => Err(
+            errors::NoSectionFoundException::new_err(errors::NO_SECTION_FOUND_MSG),
+        ),
+        Err(errors::InputDataError::InvalidDesiredDistance) => Err(
+            errors::InvalidDesiredDistanceException::new_err(errors::INVALID_DESIRED_DISTANCE_MSG),
+        ),
     }
 }
 
@@ -157,18 +166,21 @@ fn find_best_climb_section_in_fit(
             },
         )
         .unwrap()),
-        Err(errors::InputDataError::TooFewDataPoints) => {
-            Err(errors::TooFewDataPointsException::new_err(errors::TOO_FEW_DATA_POINTS_MSG))
-        }
-        Err(errors::InputDataError::DistanceTooSmall) => {
-            Err(errors::DistanceTooSmallException::new_err(errors::DISTANCE_TOO_SMALL_MSG))
-        }
-        Err(errors::InputDataError::InconsistentLength) => {
-            Err(errors::InconsistentLengthException::new_err(errors::INCONSISTENT_LENGTH_MSG))
-        }
-        Err(errors::InputDataError::NoSectionFound) => {
-            Err(errors::NoSectionFoundException::new_err(errors::NO_SECTION_FOUND_MSG))
-        }
+        Err(errors::InputDataError::TooFewDataPoints) => Err(
+            errors::TooFewDataPointsException::new_err(errors::TOO_FEW_DATA_POINTS_MSG),
+        ),
+        Err(errors::InputDataError::DistanceTooSmall) => Err(
+            errors::DistanceTooSmallException::new_err(errors::DISTANCE_TOO_SMALL_MSG),
+        ),
+        Err(errors::InputDataError::InconsistentLength) => Err(
+            errors::InconsistentLengthException::new_err(errors::INCONSISTENT_LENGTH_MSG),
+        ),
+        Err(errors::InputDataError::NoSectionFound) => Err(
+            errors::NoSectionFoundException::new_err(errors::NO_SECTION_FOUND_MSG),
+        ),
+        Err(errors::InputDataError::InvalidDesiredDistance) => Err(
+            errors::InvalidDesiredDistanceException::new_err(errors::INVALID_DESIRED_DISTANCE_MSG),
+        ),
     }
 }
 
@@ -208,6 +220,9 @@ fn sportgems(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(find_best_climb_section))?;
     m.add_wrapped(wrap_pyfunction!(find_best_climb_section_in_fit))?;
     m.add_wrapped(wrap_pyfunction!(parse_fit_data))?;
+    m.add_class::<PyFastestSection>()?;
+    m.add_class::<PyClimbSection>()?;
+    m.add_class::<PyFitData>()?;
     m.add(
         "InconsistentLengthException",
         _py.get_type::<errors::InconsistentLengthException>(),
@@ -219,6 +234,14 @@ fn sportgems(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add(
         "DistanceTooSmallException",
         _py.get_type::<errors::DistanceTooSmallException>(),
+    )?;
+    m.add(
+        "NoSectionFoundException",
+        _py.get_type::<errors::NoSectionFoundException>(),
+    )?;
+    m.add(
+        "InvalidDesiredDistanceException",
+        _py.get_type::<errors::InvalidDesiredDistanceException>(),
     )?;
     Ok(())
 }
