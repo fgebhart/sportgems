@@ -1,6 +1,6 @@
 # sportgems
 
-[![PyPI](https://badge.fury.io/py/sportgems.svg)](https://badge.fury.io/py/workoutizer) [![Python](https://img.shields.io/pypi/pyversions/sportgems.svg?style=plastic)](https://badge.fury.io/py/sportgems) [![Build Status](https://github.com/fgebhart/sportgems/workflows/Test/badge.svg)](https://github.com/fgebhart/sportgems/actions?query=workflow%3ATest)
+[![PyPI](https://badge.fury.io/py/sportgems.svg)](https://badge.fury.io/py/sportgems) [![Python](https://img.shields.io/pypi/pyversions/sportgems.svg?style=plastic)](https://badge.fury.io/py/sportgems) [![Build Status](https://github.com/fgebhart/sportgems/workflows/Test/badge.svg)](https://github.com/fgebhart/sportgems/actions?query=workflow%3ATest)
 
 Sportgems finds valuable gems 💎 in your tracked sport 🚴 activity!
 
