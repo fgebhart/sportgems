@@ -1,6 +1,6 @@
 # Sportgems Changelog
 
-## sportgems 0.4.1 (2021-MM-DD)
+## sportgems 0.4.1 (2021-03-11)
 ### Bugfixes
 * GH20: Fix faulty treatment of null values in input coordinates. `fill_nans` now
         applies a forward (and backward) filling to fill null values with existing
