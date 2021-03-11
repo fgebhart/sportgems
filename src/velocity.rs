@@ -4,23 +4,23 @@ use crate::fit_reader;
 use crate::gem_finder;
 use crate::math;
 
-fn _get_velocity(
+fn get_velocity(
     section: &dtypes::WindowSection,
     gained_distance: &f64,
     times: &dtypes::Times,
 ) -> f64 {
     let duration = times.values[section.end as usize] - times.values[section.start as usize];
-    math::_velocity_equation(&gained_distance, &duration)
+    math::velocity_equation(&gained_distance, &duration)
 }
 
-pub fn _update_sections_max_velocity(
+pub fn update_sections_max_velocity(
     input_data: &gem_finder::InputData,
     window_sec: &mut dtypes::WindowSection,
     fastest_sec: &mut dtypes::TargetSection,
 ) {
     window_sec.distance = input_data.distances.values[window_sec.end as usize]
         - input_data.distances.values[window_sec.start as usize];
-    window_sec.velocity = _get_velocity(&window_sec, &window_sec.distance, &input_data.times);
+    window_sec.velocity = get_velocity(&window_sec, &window_sec.distance, &input_data.times);
     // update fastest_sec only in case the current distance is equal to the desired distance +- 1% and velocity is larger
     if gem_finder::distance_in_bounds(
         window_sec.distance,
@@ -43,9 +43,10 @@ pub fn find_fastest_section(
     match gem_finder::InputData::new(desired_distance, coordinates, times, None, tolerance) {
         Err(e) => Err(e),
         Ok(mut finder) => {
-            finder._compute_vector_of_distances();
-            match finder._check_if_total_distance_suffice() {
-                Ok(_) => match finder._search_section(_update_sections_max_velocity) {
+            math::fill_nans(&mut finder.coordinates);
+            finder.compute_vector_of_distances();
+            match finder.check_if_total_distance_suffice() {
+                Ok(_) => match finder.search_section(update_sections_max_velocity) {
                     Ok(result) => return Ok(result),
                     Err(e) => return Err(e),
                 },
@@ -177,14 +178,14 @@ mod test_find_fastest_section {
     fn test_find_fastest_section_in_fit_two_km() {
         let result = find_fastest_section_in_fit(2_000., FIT_FILE, Some(0.01)).unwrap();
         assert_eq!(result.start, 543);
-        assert_eq!(result.end, 821);
+        assert_eq!(result.end, 820);
         assert_eq!(result.target_value.round(), 2.0);
     }
 
     #[test]
     fn test_find_fastest_section_in_fit_three_km() {
         let result = find_fastest_section_in_fit(3_000., FIT_FILE, Some(0.01)).unwrap();
-        assert_eq!(result.start, 434);
+        assert_eq!(result.start, 438);
         assert_eq!(result.end, 945);
         assert_eq!(result.target_value.round(), 2.0);
     }
@@ -192,8 +193,8 @@ mod test_find_fastest_section {
     #[test]
     fn test_find_fastest_section_in_fit_four_km() {
         let result = find_fastest_section_in_fit(4_000., FIT_FILE, Some(0.01)).unwrap();
-        assert_eq!(result.start, 300);
-        assert_eq!(result.end, 1095);
+        assert_eq!(result.start, 288);
+        assert_eq!(result.end, 1076);
         assert_eq!(result.target_value.round(), 2.0);
     }
 }
