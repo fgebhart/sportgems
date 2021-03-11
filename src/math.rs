@@ -24,7 +24,7 @@ pub fn calculate_distance(coordinate1: dtypes::Coordinate, coordinate2: dtypes::
     }
 }
 
-pub fn _velocity_equation(distance: &f64, time: &f64) -> f64 {
+pub fn velocity_equation(distance: &f64, time: &f64) -> f64 {
     let velocity: f64 = distance / time;
     if !velocity.is_normal() {
         0.0
@@ -33,7 +33,7 @@ pub fn _velocity_equation(distance: &f64, time: &f64) -> f64 {
     }
 }
 
-pub fn _climb_equation(gained_altitude: &f64, time: &f64) -> f64 {
+pub fn climb_equation(gained_altitude: &f64, time: &f64) -> f64 {
     // time in minutes
     let climb: f64 = gained_altitude / time;
     if !climb.is_normal() {
@@ -43,7 +43,7 @@ pub fn _climb_equation(gained_altitude: &f64, time: &f64) -> f64 {
     }
 }
 
-fn _get_average(vec: &Vec<f64>) -> f64 {
+fn get_average(vec: &Vec<f64>) -> f64 {
     let mut new_vec = vec.clone();
     // drop NAN values
     new_vec.retain(|&i| i.is_normal());
@@ -52,7 +52,7 @@ fn _get_average(vec: &Vec<f64>) -> f64 {
 }
 
 pub fn remove_outliers(input_vector: &Vec<f64>, percentage_threshold: f64) -> Vec<f64> {
-    let avg: f64 = _get_average(&input_vector);
+    let avg: f64 = get_average(&input_vector);
     let mut output_vector: Vec<f64> = vec![];
     for element in input_vector {
         if element > &(avg * (1. + percentage_threshold)) {
@@ -64,6 +64,41 @@ pub fn remove_outliers(input_vector: &Vec<f64>, percentage_threshold: f64) -> Ve
         }
     }
     return output_vector;
+}
+
+fn coordinate_is_normal(coordinate: &(f64, f64)) -> bool {
+    coordinate.0.is_normal() && coordinate.1.is_normal()
+}
+
+fn coordinate_is_nan(coordinate: &(f64, f64)) -> bool {
+    coordinate.0.is_nan() || coordinate.1.is_nan()
+}
+
+pub fn fill_nans(vec: &mut Vec<(f64, f64)>) {
+    let mut beg_is_null: bool;
+    // check if beginning is null
+    if coordinate_is_normal(&vec[0]) {
+        beg_is_null = false;
+    } else {
+        beg_is_null = true;
+    }
+    for i in 0..vec.len() {
+        if !beg_is_null {
+            // default treatment for forward fill
+            if coordinate_is_nan(&vec[i]) {
+                vec[i] = vec[i - 1];
+            }
+        } else {
+            if coordinate_is_normal(&vec[i]) {
+                // first normal entry found - now set all previous elements to that value (= backwards fill)
+                let first_normal = vec[i];
+                for p in 0..i {
+                    vec[p] = first_normal;
+                }
+                beg_is_null = false;
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -152,26 +187,26 @@ mod test_optimized_target_value_formulas {
 
     #[test]
     fn test_velocity_equation() {
-        assert_eq!(_velocity_equation(&16.0, &2.0), 8.0);
-        assert_eq!(_velocity_equation(&5.0, &1.0), 5.0);
+        assert_eq!(velocity_equation(&16.0, &2.0), 8.0);
+        assert_eq!(velocity_equation(&5.0, &1.0), 5.0);
         // division by zero should return zero
-        assert_eq!(_velocity_equation(&3.0, &0.0), 0.0);
+        assert_eq!(velocity_equation(&3.0, &0.0), 0.0);
         // in case either of the inputs is NAN we expect also 0.0
-        assert_eq!(_velocity_equation(&f64::NAN, &7.0), 0.0);
-        assert_eq!(_velocity_equation(&4.0, &f64::NAN), 0.0);
-        assert_eq!(_velocity_equation(&f64::NAN, &f64::NAN), 0.0)
+        assert_eq!(velocity_equation(&f64::NAN, &7.0), 0.0);
+        assert_eq!(velocity_equation(&4.0, &f64::NAN), 0.0);
+        assert_eq!(velocity_equation(&f64::NAN, &f64::NAN), 0.0)
     }
 
     #[test]
     fn test_climb_equation() {
-        assert_eq!(_climb_equation(&16.0, &2.0), 8.0);
-        assert_eq!(_climb_equation(&5.0, &1.0), 5.0);
+        assert_eq!(climb_equation(&16.0, &2.0), 8.0);
+        assert_eq!(climb_equation(&5.0, &1.0), 5.0);
         // division by zero should return zero
-        assert_eq!(_climb_equation(&3.0, &0.0), 0.0);
+        assert_eq!(climb_equation(&3.0, &0.0), 0.0);
         // in case either of the inputs is NAN we expect also 0.0
-        assert_eq!(_climb_equation(&f64::NAN, &7.0), 0.0);
-        assert_eq!(_climb_equation(&4.0, &f64::NAN), 0.0);
-        assert_eq!(_climb_equation(&f64::NAN, &f64::NAN), 0.0)
+        assert_eq!(climb_equation(&f64::NAN, &7.0), 0.0);
+        assert_eq!(climb_equation(&4.0, &f64::NAN), 0.0);
+        assert_eq!(climb_equation(&f64::NAN, &f64::NAN), 0.0)
     }
 }
 
@@ -181,14 +216,14 @@ mod test_remove_outliers {
 
     #[test]
     fn test_get_average() {
-        assert_eq!(_get_average(&vec![1., 2., 3.]), 2.);
-        assert_eq!(_get_average(&vec![-10., 20., 20.]), 10.);
+        assert_eq!(get_average(&vec![1., 2., 3.]), 2.);
+        assert_eq!(get_average(&vec![-10., 20., 20.]), 10.);
     }
 
     #[test]
     fn test_get_average_with_nan() {
-        assert_eq!(_get_average(&vec![1., 2., f64::NAN, 3.]), 2.);
-        assert_eq!(_get_average(&vec![f64::NAN, -10., 20., 20.]), 10.);
+        assert_eq!(get_average(&vec![1., 2., f64::NAN, 3.]), 2.);
+        assert_eq!(get_average(&vec![f64::NAN, -10., 20., 20.]), 10.);
     }
 
     // helper functions to compare two vectors containing f64::NAN to be equal
@@ -227,5 +262,111 @@ mod test_remove_outliers {
         // value of 5.0 is replaced and original NAN value is kept
         let expected_vec = vec![1., f64::NAN, 1., 1., f64::NAN, 1., 1., 1., 1., 1.];
         assert_eq!(vec_compare(&expected_vec, &result_vec), true)
+    }
+}
+
+#[cfg(test)]
+mod test_fill_nans {
+    use super::*;
+
+    #[test]
+    fn test_fill_nans_forward_fill() {
+        let mut my_vec = vec![
+            (3.3, 3.3),
+            (4.4, 4.4),
+            (f64::NAN, f64::NAN),
+            (6.6, 6.6),
+            (f64::NAN, f64::NAN),
+            (f64::NAN, f64::NAN),
+            (7.7, 7.7),
+        ];
+        fill_nans(&mut my_vec);
+        let expected_vec = vec![
+            (3.3, 3.3),
+            (4.4, 4.4),
+            (4.4, 4.4),
+            (6.6, 6.6),
+            (6.6, 6.6),
+            (6.6, 6.6),
+            (7.7, 7.7),
+        ];
+        assert_eq!(expected_vec, my_vec);
+    }
+
+    #[test]
+    fn test_fill_nans_beginning_is_null() {
+        let mut my_vec = vec![
+            (f64::NAN, f64::NAN),
+            (4.4, 4.4),
+            (f64::NAN, f64::NAN),
+            (6.6, 6.6),
+            (f64::NAN, f64::NAN),
+            (f64::NAN, f64::NAN),
+            (7.7, 7.7),
+        ];
+        fill_nans(&mut my_vec);
+        let expected_vec = vec![
+            (4.4, 4.4),
+            (4.4, 4.4),
+            (4.4, 4.4),
+            (6.6, 6.6),
+            (6.6, 6.6),
+            (6.6, 6.6),
+            (7.7, 7.7),
+        ];
+        assert_eq!(expected_vec, my_vec);
+    }
+
+    #[test]
+    fn test_fill_nans_multiple_elements_at_beginning_are_null() {
+        let mut my_vec = vec![
+            (f64::NAN, f64::NAN),
+            (f64::NAN, f64::NAN),
+            (4.4, 4.4),
+            (f64::NAN, f64::NAN),
+            (6.6, 6.6),
+            (f64::NAN, f64::NAN),
+            (f64::NAN, f64::NAN),
+            (7.7, 7.7),
+        ];
+        fill_nans(&mut my_vec);
+        let expected_vec = vec![
+            (4.4, 4.4),
+            (4.4, 4.4),
+            (4.4, 4.4),
+            (4.4, 4.4),
+            (6.6, 6.6),
+            (6.6, 6.6),
+            (6.6, 6.6),
+            (7.7, 7.7),
+        ];
+        assert_eq!(expected_vec, my_vec);
+    }
+
+    #[test]
+    fn test_fill_nans_partly_nan_coordinates() {
+        // partly nan coordinates are treated as nan and will be replaced by not nan values
+        let mut my_vec = vec![
+            (3.3, f64::NAN),
+            (f64::NAN, f64::NAN),
+            (4.4, 4.4),
+            (f64::NAN, 5.5),
+            (6.6, 6.6),
+            (f64::NAN, 1.1),
+            (f64::NAN, f64::NAN),
+            (7.7, 7.7),
+        ];
+        fill_nans(&mut my_vec);
+        let expected_vec = vec![
+            (4.4, 4.4),
+            (4.4, 4.4),
+            (4.4, 4.4),
+            (4.4, 4.4),
+            (6.6, 6.6),
+            (6.6, 6.6),
+            (6.6, 6.6),
+            (7.7, 7.7),
+        ];
+        assert_eq!(expected_vec, my_vec);
     }
 }

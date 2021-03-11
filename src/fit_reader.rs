@@ -10,7 +10,7 @@ pub struct FitData {
     pub altitudes: Vec<f64>,
 }
 
-fn _match_one_time_values(record: &fit::DataField, fit_data: &mut FitData) {
+fn match_one_time_values(record: &fit::DataField, fit_data: &mut FitData) {
     // get calories
     if record.field_num == 11 {
         match record.value {
@@ -22,7 +22,7 @@ fn _match_one_time_values(record: &fit::DataField, fit_data: &mut FitData) {
     }
 }
 
-fn _match_time_series_values(
+fn match_time_series_values(
     record: &fit::DataField,
     latitude: &mut f64,
     longitude: &mut f64,
@@ -89,7 +89,7 @@ pub fn parse_fit(path_to_fit: &str) -> FitData {
         altitude = f64::NAN;
         for record in message.values {
             // get time series values, e.g. coordinates, timestamps and altitude
-            _match_time_series_values(
+            match_time_series_values(
                 &record,
                 &mut latitude,
                 &mut longitude,
@@ -97,7 +97,7 @@ pub fn parse_fit(path_to_fit: &str) -> FitData {
                 &mut altitude,
             );
             // get one time values, e.g. overall calories, ...
-            _match_one_time_values(&record, &mut fit_data);
+            match_one_time_values(&record, &mut fit_data);
         }
         fit_data.times.push(timestamp);
         fit_data.altitudes.push(altitude);
