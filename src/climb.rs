@@ -87,7 +87,12 @@ pub fn find_best_climb_section(
             finder.compute_vector_of_distances();
             match finder.check_if_total_distance_suffice() {
                 Ok(_) => match specific_data_check(&finder) {
-                    Ok(_) => return finder.search_section(update_sections_max_climb),
+                    Ok(_) => {
+                        return {
+                            math::fill_nans(&mut finder.altitudes.values); // TODO fill nans in altitude
+                            finder.search_section(update_sections_max_climb)
+                        }
+                    }
                     Err(e) => return Err(e),
                 },
                 Err(e) => return Err(e),
