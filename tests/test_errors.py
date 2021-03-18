@@ -14,7 +14,7 @@ import pytest
 
 TOO_FEW_DATA_POINTS_MSG = "Input data must consist of at least 2 not null data points."
 DISTANCE_TOO_SMALL_MSG = "Distance of provided input data is too small for requested desired distance."
-INCONSISTENT_LENGTH_MSG = "Input data `coordinates` and `times` lists must be of equal length."
+INCONSISTENT_LENGTH_MSG = "Input data lists must be of equal length."
 INVALID_DESIRED_DISTANCE_MSG = "desired_distance must be greater than 0."
 NO_SECTION_FOUND_MSG = "Could not find proper section, check quality of input data or increase tolerance."
 
