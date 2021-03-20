@@ -1,6 +1,6 @@
 [package]
 name = "sportgems"
-version = "0.4.1"
+version = "0.4.2"
 edition = "2018"
 authors = ["Fabian Gebhart"]
 description = "Find valuable gems 💎 in your tracked sport 🚴 activity!"
