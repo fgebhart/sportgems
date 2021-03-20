@@ -66,18 +66,26 @@ pub fn remove_outliers(input_vector: &Vec<f64>, percentage_threshold: f64) -> Ve
     return output_vector;
 }
 
-fn coordinate_is_normal(coordinate: &(f64, f64)) -> bool {
-    coordinate.0.is_normal() && coordinate.1.is_normal()
+pub trait IsNaN {
+    fn nan(&self) -> bool;
 }
 
-fn coordinate_is_nan(coordinate: &(f64, f64)) -> bool {
-    coordinate.0.is_nan() || coordinate.1.is_nan()
+impl IsNaN for (f64, f64) {
+    fn nan(&self) -> bool {
+        self.0.is_nan() || self.1.is_nan()
+    }
 }
 
-pub fn fill_nans(vec: &mut Vec<(f64, f64)>) {
+impl IsNaN for f64 {
+    fn nan(&self) -> bool {
+        self.is_nan()
+    }
+}
+
+pub fn fill_nans<T: IsNaN + Copy>(vec: &mut [T]) {
     let mut beg_is_null: bool;
     // check if beginning is null
-    if coordinate_is_normal(&vec[0]) {
+    if !vec[0].nan() {
         beg_is_null = false;
     } else {
         beg_is_null = true;
@@ -85,11 +93,11 @@ pub fn fill_nans(vec: &mut Vec<(f64, f64)>) {
     for i in 0..vec.len() {
         if !beg_is_null {
             // default treatment for forward fill
-            if coordinate_is_nan(&vec[i]) {
+            if vec[i].nan() {
                 vec[i] = vec[i - 1];
             }
         } else {
-            if coordinate_is_normal(&vec[i]) {
+            if !vec[i].nan() {
                 // first normal entry found - now set all previous elements to that value (= backwards fill)
                 let first_normal = vec[i];
                 for p in 0..i {
@@ -266,7 +274,7 @@ mod test_remove_outliers {
 }
 
 #[cfg(test)]
-mod test_fill_nans {
+mod test_fill_nans_coordinates {
     use super::*;
 
     #[test]
@@ -367,6 +375,60 @@ mod test_fill_nans {
             (6.6, 6.6),
             (7.7, 7.7),
         ];
+        assert_eq!(expected_vec, my_vec);
+    }
+}
+
+#[cfg(test)]
+mod test_fill_nans_altitudes {
+    use super::*;
+
+    #[test]
+    fn test_fill_nans_forward_fill() {
+        let mut my_vec = vec![
+            (3.3),
+            (4.4),
+            (f64::NAN),
+            (6.6),
+            (f64::NAN),
+            (f64::NAN),
+            (7.7),
+        ];
+        fill_nans(&mut my_vec);
+        let expected_vec = vec![(3.3), (4.4), (4.4), (6.6), (6.6), (6.6), (7.7)];
+        assert_eq!(expected_vec, my_vec);
+    }
+
+    #[test]
+    fn test_fill_nans_beginning_is_null() {
+        let mut my_vec = vec![
+            (f64::NAN),
+            (4.4),
+            (f64::NAN),
+            (6.6),
+            (f64::NAN),
+            (f64::NAN),
+            (7.7),
+        ];
+        fill_nans(&mut my_vec);
+        let expected_vec = vec![(4.4), (4.4), (4.4), (6.6), (6.6), (6.6), (7.7)];
+        assert_eq!(expected_vec, my_vec);
+    }
+
+    #[test]
+    fn test_fill_nans_multiple_elements_at_beginning_are_null() {
+        let mut my_vec = vec![
+            (f64::NAN),
+            (f64::NAN),
+            (4.4),
+            (f64::NAN),
+            (6.6),
+            (f64::NAN),
+            (f64::NAN),
+            (7.7),
+        ];
+        fill_nans(&mut my_vec);
+        let expected_vec = vec![(4.4), (4.4), (4.4), (4.4), (6.6), (6.6), (6.6), (7.7)];
         assert_eq!(expected_vec, my_vec);
     }
 }

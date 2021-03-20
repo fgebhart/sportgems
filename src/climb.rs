@@ -19,16 +19,18 @@ fn get_climb(
 }
 
 fn get_gained_altitude_in_section(altitudes: &Vec<f64>, start: usize, end: usize) -> f64 {
-    let mut section = altitudes[start..end].to_vec();
-    // drop NAN values
-    section.retain(|&i| i.is_normal());
-    let mut altitude_increments: Vec<f64> = vec![];
-    for i in 0..section.len() - 1 {
-        altitude_increments.push(section[i + 1] - section[i]);
+    let section = altitudes[start..end].to_vec();
+    if section.len() <= 1 {
+        0.0
+    } else {
+        let mut altitude_increments: Vec<f64> = vec![];
+        for i in 0..section.len() - 1 {
+            altitude_increments.push(section[i + 1] - section[i]);
+        }
+        // only keep positive elements
+        altitude_increments.retain(|&i| i > 0.);
+        altitude_increments.iter().sum()
     }
-    // only keep positive elements
-    altitude_increments.retain(|&i| i > 0.);
-    return altitude_increments.iter().sum();
 }
 
 pub fn update_sections_max_climb(
@@ -87,7 +89,12 @@ pub fn find_best_climb_section(
             finder.compute_vector_of_distances();
             match finder.check_if_total_distance_suffice() {
                 Ok(_) => match specific_data_check(&finder) {
-                    Ok(_) => return finder.search_section(update_sections_max_climb),
+                    Ok(_) => {
+                        return {
+                            math::fill_nans(&mut finder.altitudes.values);
+                            finder.search_section(update_sections_max_climb)
+                        }
+                    }
                     Err(e) => return Err(e),
                 },
                 Err(e) => return Err(e),
@@ -142,11 +149,38 @@ mod test_climb {
     }
 
     #[test]
-    fn test_get_gained_altitude_in_section_including_nan() {
-        let altitudes = vec![1.0, 2.0, 3.0, f64::NAN, 4.0];
+    fn test_get_gained_altitude_in_section_all_values_same() {
+        let altitudes = vec![1., 1., 1., 1., 1.];
         let result = get_gained_altitude_in_section(&altitudes, 0, altitudes.len());
         // expect 3.0 since the nan value will be dropped
-        let expected = 3.0;
+        let expected = 0.0;
+        assert_eq!(expected, result);
+    }
+
+    #[test]
+    fn test_get_gained_altitude_in_section_len_of_1() {
+        let altitudes = vec![1.0];
+        let result = get_gained_altitude_in_section(&altitudes, 0, altitudes.len());
+        // expect 3.0 since the nan value will be dropped
+        let expected = 0.0;
+        assert_eq!(expected, result);
+    }
+
+    #[test]
+    fn test_get_gained_altitude_in_section_slice_has_len_of_1() {
+        let altitudes = vec![1., 2., 3., 4.];
+        let result = get_gained_altitude_in_section(&altitudes, 3, altitudes.len());
+        // expect 3.0 since the nan value will be dropped
+        let expected = 0.0;
+        assert_eq!(expected, result);
+    }
+
+    #[test]
+    fn test_get_gained_altitude_in_section_slice_has_len_of_0() {
+        let altitudes = vec![1., 2., 3., 4.];
+        let result = get_gained_altitude_in_section(&altitudes, 4, altitudes.len());
+        // expect 3.0 since the nan value will be dropped
+        let expected = 0.0;
         assert_eq!(expected, result);
     }
 
