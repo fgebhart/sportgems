@@ -1,7 +1,7 @@
 # Sportgems Changelog
 
 
-## sportgems 0.5.0 (2021-XX-XX)
+## sportgems 0.5.0 (2021-04-03)
 
 ### Changes
 * Slightly shift the start index by +1 when computing the distance of a section in

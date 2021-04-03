@@ -1,6 +1,6 @@
 folium
 ipython
 jupyter
-maturin
+maturin==0.9.4
 numpy
 pytest
