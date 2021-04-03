@@ -1,6 +1,13 @@
 # Sportgems Changelog
 
 
+## sportgems 0.5.0 (2021-XX-XX)
+
+### Changes
+* Slightly shift the start index by +1 when computing the distance of a section in
+  order to handle target value spikes in situations with poor gps quality.
+
+
 ## sportgems 0.4.2 (2021-03-20)
 ### Bugfixes
 * Fill null values in altitude vector and properly treat sections lengths of <=1
