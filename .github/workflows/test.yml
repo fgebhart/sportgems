@@ -24,7 +24,7 @@ jobs:
         python-version: 3.8
 
     - name: Install python dependencies for building
-      run: python -m pip install --upgrade pip maturin wheel
+      run: python -m pip install --upgrade pip maturin==0.9.4 wheel
 
     - name: Build python wheel
       run: maturin build
