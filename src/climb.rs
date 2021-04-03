@@ -38,8 +38,11 @@ pub fn update_sections_max_climb(
     window_sec: &mut dtypes::WindowSection,
     max_climb_sec: &mut dtypes::TargetSection,
 ) {
-    window_sec.distance = input_data.distances.values[window_sec.end as usize]
-        - input_data.distances.values[window_sec.start as usize];
+    window_sec.distance = gem_finder::get_distance(
+        &input_data.distances.values,
+        window_sec.start as usize,
+        window_sec.end as usize,
+    );
     window_sec.climb = get_climb(&window_sec, &input_data.altitudes, &input_data.times);
     // update fastest_sec only in case the current distance is equal to the desired distance +- 1% and velocity is larger
     if gem_finder::distance_in_bounds(
@@ -198,7 +201,7 @@ mod test_climb {
     fn test_find_best_climb_section_in_fit_larger_section() {
         let result = find_best_climb_section_in_fit(3_000., FIT_FILE, Some(0.01)).unwrap();
         assert_eq!(result.start, 63);
-        assert_eq!(result.end, 705);
+        assert_eq!(result.end, 706);
         assert_eq!(result.target_value.round(), 4.0);
     }
 }

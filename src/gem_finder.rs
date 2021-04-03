@@ -77,20 +77,19 @@ impl InputData {
         let mut target_sec = dtypes::TargetSection::default();
         while window_sec.end < self.distances.values.len() as u32 - 1 {
             // println!("{:?}", window_sec);
+
             if window_sec.distance < self.desired_distance {
                 // build up section to get closer to the desired length of desired_distance
                 window_sec.end += 1;
-            }
-            update_func(&self, &mut window_sec, &mut target_sec);
-
-            // now move the start index further, but ensure that start index does not overtake end index
-            if window_sec.distance >= self.desired_distance {
+            } else {
+                // now move the start index further, but ensure that start index does not overtake end index
                 if window_sec.start < window_sec.end {
                     window_sec.start += 1;
                 } else {
                     window_sec.end += 1;
                 }
             }
+            update_func(&self, &mut window_sec, &mut target_sec);
         }
         // after the while loop is finished, check that found fastest_section is valid and return
         if target_sec.target_value == 0.0 || target_sec.start == target_sec.end {
@@ -113,6 +112,10 @@ pub fn distance_in_bounds(
     } else {
         false
     }
+}
+
+pub fn get_distance(distances: &Vec<f64>, start: usize, end: usize) -> f64 {
+    distances[end] - distances[start + 1]
 }
 
 fn generic_data_checks(
