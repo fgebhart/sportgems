@@ -1,13 +1,27 @@
 site_name: sportgems
-repo_url: https://github.com/fgebhart/sportgems/
 
-nav:
-    - Getting Started: index.md
-    - Fastest: fastest.md
-    - Climb: climb.md
+repo_url: https://github.com/fgebhart/sportgems/
+repo_name: fgebhart/sportgems
+edit_uri: edit/master/docs
+site_author: Fabian Gebhart
+site_description: Library to find valuable gems in your activities.
 
 theme:
   name: material
+  palette:
+  - scheme: default
+    toggle:
+      icon: material/toggle-switch-off-outline
+      name: Switch to dark mode
+  - scheme: slate
+    toggle:
+      icon: material/toggle-switch
+      name: Switch to light mode
+
+nav:
+  - Getting Started: index.md
+  - Module Reference: module_reference.md
+  - Changelog: changelog.md
 
 plugins:
 - search:
@@ -26,6 +40,7 @@ plugins:
         rendering:
           show_root_heading: true
           show_source: false
+          heading_level: 3
 
 markdown_extensions:
   - pymdownx.highlight

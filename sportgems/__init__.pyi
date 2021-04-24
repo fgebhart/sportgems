@@ -3,18 +3,43 @@ from typing import List, Tuple
 TOLERANCE = 0.01
 
 class FastestSection:
+    """
+    Result of parsing activity data for fastest section.
+
+    Attributes:
+        start (int): Start index of fastest section.
+        end (int): End index of fastest section.
+        velocity (float): Found max velocity of given section.
+    """
     start: int
     end: int
     velocity: float
 
 
 class ClimbSection:
+    """
+    Result of parsing activity data for best climb section.
+
+    Attributes:
+        start (int): Start index of best climb section.
+        end (int): End index of best climb section.
+        climb (float): Found max climb value of given section.
+    """
     start: int
     end: int
     climb: float
 
 
 class FitData:
+    """
+    Data container returned by e.g. `parse_fit_data` holding the parsed results as attributes.
+
+    Attributes:
+        calories (int): Calories parsed from input data given in kcal.
+        times (List[float]): List of timestamps since unix epoch.
+        coordinates (List[Tuple[float]]): List of tuples of floats containing the parsed coordinates as `(lat, lon)`.
+        altitudes (List[float]): List of floats containing the parsed altitude values in meters.
+    """
     calories: int
     times: List[float]
     coordinates: List[Tuple[float]]
@@ -69,8 +94,8 @@ def find_fastest_section(
 
     Returns:
         FastestSection:
-            Returns a Python object of type FastestSection, with the results given as attributes:
-            start, end and velocity.
+            Returns a Python object of type [`FastestSection`][sportgems.FastestSection], with
+            the results given as attributes: `start`, `end` and `velocity`.
     """
     ...
 
@@ -96,8 +121,8 @@ def find_fastest_section_in_fit(
 
     Returns:
         FastestSection:
-            Returns a Python object of type FastestSection, with the results given as
-            attributes: start, end and velocity.
+            Returns a Python object of type [`FastestSection`][sportgems.FastestSection], with
+            the results given as attributes: `start`, `end` and `velocity`.
     """
     ...
 
@@ -130,8 +155,8 @@ def find_best_climb_section(
 
     Returns:
         ClimbSection:
-            Returns a Python object of type ClimbSection, with the results given as
-            attributes: start, end and climb.
+            Returns a Python object of type [`ClimbSection`][sportgems.ClimbSection], with the
+            results given as attributes: `start`, `end` and `climb`.
     """
     ...
 
@@ -158,8 +183,8 @@ def find_best_climb_section_in_fit(
 
     Returns:
         ClimbSection:
-            Returns a Python object of type ClimbSection, with the results given as
-            attributes: start, end and climb.
+            Returns a Python object of type [`ClimbSection`][sportgems.ClimbSection], with the
+            results given as attributes: `start`, `end` and `climb`.
     """
     ...
 
@@ -174,9 +199,7 @@ def parse_fit_data(path_to_fit: str) -> FitData:
 
     Returns:
         FitData:
-            Returns a Python object of type FitData, with the results given as
-            attributes: times as list of timestamps, coordinates as list of tuples
-            with latitude and longitude: (lat, lon), altitudes as list of floats
-            and calories as integers.
+            Returns a Python object of type [`FitData`][sportgems.FitData], with the results
+            given as attributes.
     """
     ...

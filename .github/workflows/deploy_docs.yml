@@ -1,0 +1,7 @@
+name: Deploy MkDocs
+
+on: push
+  branches:    
+    - main
+
+uses: mhausenblas/mkdocs-deploy-gh-pages@1.16

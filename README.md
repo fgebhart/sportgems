@@ -2,7 +2,7 @@
 
 [![PyPI](https://badge.fury.io/py/sportgems.svg)](https://badge.fury.io/py/sportgems) [![Python](https://img.shields.io/pypi/pyversions/sportgems.svg?style=plastic)](https://badge.fury.io/py/sportgems) [![Build Status](https://github.com/fgebhart/sportgems/workflows/Test/badge.svg)](https://github.com/fgebhart/sportgems/actions?query=workflow%3ATest)
 
-Sportgems finds valuable gems 💎 in your tracked sport 🚴 activity!
+Sportgems finds valuable gems 💎 in your tracked 🚴 activity!
 
 
 ## What is it?
@@ -19,7 +19,7 @@ in yellow:
 <img src="https://i.imgur.com/nOYiFm6.png" width="800">
 
 ## Installation
-Sportgems is bundled in a python package using [pyo3](https://pyo3.rs/). Simply
+Sportgems is written in rust but bundled in a python package using [pyo3](https://pyo3.rs/). Simply
 install it using pip:
 ```
 pip install sportgems
@@ -59,13 +59,6 @@ which prints:
 ```
 Found fastest section, from result.start=635 to result.end=725 with result.velocity=2.898669803146783 m/s
 ```
-
-## How does it work?
-
-The following diagram illustrates how the core algorithm (implemented in `gem_finder.cpp`) works:
-
-<img src="https://i.imgur.com/Jwfyjsk.png" width="500">
-
 
 ## Changelog
 
