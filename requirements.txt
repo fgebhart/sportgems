@@ -4,5 +4,6 @@ jupyter
 maturin==0.9.4
 mkdocs
 mkdocs-material
+mkdocstrings
 numpy
 pytest

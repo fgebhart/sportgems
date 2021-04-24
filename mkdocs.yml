@@ -1,8 +1,32 @@
-site_name: sportgems docs
+site_name: sportgems
+repo_url: https://github.com/fgebhart/sportgems/
 
 nav:
-    - Home: index.md
-    - About: about.md
+    - Getting Started: index.md
+    - Fastest: fastest.md
+    - Climb: climb.md
 
 theme:
   name: material
+
+plugins:
+- search:
+    min_search_length: 2
+- mkdocstrings:
+    default_handler: python
+    handlers:
+      python:
+        setup_commands:
+            - import sys, shutil
+            - sys.path.remove("")
+            - sys.path.insert(0, "docs")
+            - shutil.copyfile('sportgems/__init__.pyi', 'docs/sportgems/__init__.py')
+        selection:
+          docstring_style: "google"
+        rendering:
+          show_root_heading: true
+          show_source: false
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
