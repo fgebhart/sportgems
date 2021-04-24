@@ -2,7 +2,7 @@
 
 [![PyPI](https://badge.fury.io/py/sportgems.svg)](https://badge.fury.io/py/sportgems) [![Python](https://img.shields.io/pypi/pyversions/sportgems.svg?style=plastic)](https://badge.fury.io/py/sportgems) [![Build Status](https://github.com/fgebhart/sportgems/workflows/Test/badge.svg)](https://github.com/fgebhart/sportgems/actions?query=workflow%3ATest)
 
-Sportgems finds valuable gems 💎 in your tracked sport 🚴 activity!
+Sportgems finds valuable gems 💎 in your activities 🚴
 
 
 ## What is it?
@@ -19,24 +19,14 @@ in yellow:
 <img src="https://i.imgur.com/nOYiFm6.png" width="800">
 
 ## Installation
-Sportgems is bundled in a python package using [pyo3](https://pyo3.rs/). Simply
+Sportgems is written in rust and bundled in a python package using [pyo3](https://pyo3.rs/). Simply
 install it using pip:
 ```
 pip install sportgems
 ```
 
-The following interfacing functions are available:
-
-| function name                    | purpose                                                         |
-|----------------------------------|-----------------------------------------------------------------|
-| `find_fastest_section`           | parse your activity data to find the fastest section            |
-| `find_fastest_section_in_fit`    | parse your activity `.fit` file to find the fastest section     |
-| `find_best_climb_section`        | parse your activity data to find the best climb section         |
-| `find_best_climb_section_in_fit` | parse your activity `.fit` file to find the best climb section  |
-| `parse_fit_data`                 | parse your activity `.fit` file to get e.g. `timestamps`, `coordinates`, `altitude` and `calories` |
-
-Have a look at the docstrings of these functions for more details.
-
+## Documentation
+https://fgebhart.github.io/sportgems/
 
 ## How to use it?
 
@@ -60,16 +50,8 @@ which prints:
 Found fastest section, from result.start=635 to result.end=725 with result.velocity=2.898669803146783 m/s
 ```
 
-## How does it work?
-
-The following diagram illustrates how the core algorithm (implemented in `gem_finder.cpp`) works:
-
-<img src="https://i.imgur.com/Jwfyjsk.png" width="500">
-
-
 ## Changelog
-
-See [CHANGELOG.md](https://github.com/fgebhart/sportgems/blob/main/CHANGELOG.md).
+https://fgebhart.github.io/sportgems/changelog/
 
 ## Running the tests
 
