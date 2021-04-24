@@ -15,4 +15,4 @@ spike/
 .html
 map.html
 site/
-docs/sportgems
+docs/sportgems/__init__.py
