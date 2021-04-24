@@ -8,6 +8,7 @@ site_description: Library to find valuable gems in your activities.
 
 theme:
   name: material
+  favicon: images/gem-stone_1f48e.png
   palette:
   - scheme: default
     toggle:
