@@ -203,3 +203,4 @@ def parse_fit_data(path_to_fit: str) -> FitData:
             given as attributes.
     """
     ...
+    

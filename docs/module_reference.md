@@ -5,7 +5,7 @@
 ::: sportgems.find_fastest_section_in_fit
 ::: sportgems.FastestSection
 
-## Best Climb Sections 🧗‍♂️
+## Best Climb Sections 🏔
 ::: sportgems.find_best_climb_section
 ::: sportgems.find_best_climb_section_in_fit
 ::: sportgems.ClimbSection
