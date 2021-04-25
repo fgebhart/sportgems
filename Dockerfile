@@ -40,8 +40,8 @@ RUN /bin/bash -c 'source $VIRTUAL_ENV_PATH/bin/activate && pip install -r /tmp/r
 
 # add convenience aliases
 RUN echo "alias cargotest='cargo test --no-default-features'" >> /etc/zsh/zshrc
-RUN echo "alias maturinbuild-pipinstall='maturin build && pip install --force pip install target/wheels/sportgems-*-cp38-cp38-manylinux*_x86_64.whl'" >> /etc/zsh/zshrc
-RUN echo "alias maturinpytest='maturin build && pip install --force pip install target/wheels/sportgems-*-cp38-cp38-manylinux*_x86_64.whl && pytest tests/ -v'" >> /etc/zsh/zshrc
+RUN echo "alias maturinbuild-pipinstall='maturin build && pip install --force target/wheels/sportgems-*-cp38-cp38-manylinux*_x86_64.whl'" >> /etc/zsh/zshrc
+RUN echo "alias maturinpytest='maturin build && pip install --force target/wheels/sportgems-*-cp38-cp38-manylinux*_x86_64.whl && pytest tests/ -v'" >> /etc/zsh/zshrc
 
 COPY . /sportgems
 WORKDIR /workspaces/sportgems

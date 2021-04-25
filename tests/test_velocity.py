@@ -1,4 +1,6 @@
-from sportgems import find_fastest_section, find_fastest_section_in_fit, DistanceTooSmallException
+from sportgems import find_fastest_section, find_fastest_section_in_fit
+from sportgems.exc import DistanceTooSmallException
+# from sportgems import exceptions
 
 import pytest
 
@@ -39,4 +41,4 @@ def test_find_fastest_section_in_fit(fit_file):
     
     # test fastest 10km
     with pytest.raises(DistanceTooSmallException, match="Distance of provided input data is too small for requested desired distance."):
-        result = find_fastest_section_in_fit(10_000, fit_file)
+        find_fastest_section_in_fit(10_000, fit_file)

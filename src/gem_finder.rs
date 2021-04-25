@@ -1,6 +1,6 @@
-use crate::errors;
+use crate::exc;
 use crate::math;
-use crate::{dtypes, errors::InputDataError};
+use crate::{dtypes, exc::InputDataError};
 
 pub const DEFAULT_TOLERANCE: f64 = 0.01;
 
@@ -21,7 +21,7 @@ impl InputData {
         times: Vec<f64>,
         altitudes: Option<Vec<f64>>,
         tolerance: Option<f64>,
-    ) -> Result<InputData, errors::InputDataError> {
+    ) -> Result<InputData, exc::InputDataError> {
         if desired_distance <= 0.0 {
             Err(InputDataError::InvalidDesiredDistance)
         } else {
@@ -41,10 +41,10 @@ impl InputData {
         }
     }
 
-    pub fn check_if_total_distance_suffice(&self) -> Result<(), errors::InputDataError> {
+    pub fn check_if_total_distance_suffice(&self) -> Result<(), exc::InputDataError> {
         let total_distance = self.distances.values.last().unwrap().clone();
         if self.desired_distance > total_distance {
-            return Err(errors::InputDataError::DistanceTooSmall);
+            return Err(exc::InputDataError::DistanceTooSmall);
         } else {
             return Ok(());
         }
@@ -72,7 +72,7 @@ impl InputData {
     pub fn search_section(
         &mut self,
         update_func: fn(&InputData, &mut dtypes::WindowSection, &mut dtypes::TargetSection),
-    ) -> Result<dtypes::TargetSection, errors::InputDataError> {
+    ) -> Result<dtypes::TargetSection, exc::InputDataError> {
         let mut window_sec = dtypes::WindowSection::default();
         let mut target_sec = dtypes::TargetSection::default();
         while window_sec.end < self.distances.values.len() as u32 - 1 {
@@ -93,7 +93,7 @@ impl InputData {
         }
         // after the while loop is finished, check that found fastest_section is valid and return
         if target_sec.target_value == 0.0 || target_sec.start == target_sec.end {
-            Err(errors::InputDataError::NoSectionFound)
+            Err(exc::InputDataError::NoSectionFound)
         } else {
             Ok(target_sec)
         }
@@ -121,16 +121,16 @@ pub fn get_distance(distances: &Vec<f64>, start: usize, end: usize) -> f64 {
 fn generic_data_checks(
     coordinates: &Vec<(f64, f64)>,
     times: &Vec<f64>,
-) -> Result<(), errors::InputDataError> {
+) -> Result<(), exc::InputDataError> {
     if coordinates.len() != times.len() {
-        return Err(errors::InputDataError::InconsistentLength);
+        return Err(exc::InputDataError::InconsistentLength);
     }
     let mut coordinates_normal = coordinates.clone();
     let mut times_normal = times.clone();
     coordinates_normal.retain(|&i| (i.0.is_normal() && i.1.is_normal()));
     times_normal.retain(|&i| i.is_normal());
     if coordinates_normal.len() < 2 || times_normal.len() < 2 {
-        return Err(errors::InputDataError::TooFewDataPoints);
+        return Err(exc::InputDataError::TooFewDataPoints);
     } else {
         return Ok(());
     }
@@ -164,7 +164,7 @@ mod test_gem_finder {
             None,
             Some(0.01),
         );
-        assert_eq!(finder, Err(errors::InputDataError::InvalidDesiredDistance));
+        assert_eq!(finder, Err(exc::InputDataError::InvalidDesiredDistance));
     }
 
     #[test]
@@ -176,7 +176,7 @@ mod test_gem_finder {
             None,
             Some(0.01),
         );
-        assert_eq!(finder, Err(errors::InputDataError::InvalidDesiredDistance));
+        assert_eq!(finder, Err(exc::InputDataError::InvalidDesiredDistance));
     }
 
     #[test]
@@ -204,7 +204,7 @@ mod test_checks {
         // generate data with only one data point and assert that the TooFewDataPoints error is returned
         assert_eq!(
             generic_data_checks(&vec![(1., 1.)], &vec![1.]),
-            Err(errors::InputDataError::TooFewDataPoints)
+            Err(exc::InputDataError::TooFewDataPoints)
         );
     }
 
@@ -213,7 +213,7 @@ mod test_checks {
         // coordinates and times vector have different lengths and assert that the InconsistentLength error is raised
         assert_eq!(
             generic_data_checks(&vec![(1., 1.), (2., 2.)], &vec![1., 2., 3.]),
-            Err(errors::InputDataError::InconsistentLength)
+            Err(exc::InputDataError::InconsistentLength)
         );
     }
 
@@ -225,7 +225,7 @@ mod test_checks {
                 &vec![(f64::NAN, f64::NAN), (f64::NAN, f64::NAN)],
                 &vec![1., 2.]
             ),
-            Err(errors::InputDataError::TooFewDataPoints)
+            Err(exc::InputDataError::TooFewDataPoints)
         );
     }
 
@@ -234,7 +234,7 @@ mod test_checks {
         // input times consist of nans only, TooFewDataPoints should be raised
         assert_eq!(
             generic_data_checks(&vec![(1., 1.), (2., 2.)], &vec![f64::NAN, f64::NAN]),
-            Err(errors::InputDataError::TooFewDataPoints)
+            Err(exc::InputDataError::TooFewDataPoints)
         );
     }
 
@@ -243,7 +243,7 @@ mod test_checks {
         // input times consist of one normal element only, TooFewDataPoints should be raised
         assert_eq!(
             generic_data_checks(&vec![(1., 1.), (2., 2.)], &vec![1., f64::NAN]),
-            Err(errors::InputDataError::TooFewDataPoints)
+            Err(exc::InputDataError::TooFewDataPoints)
         );
     }
 
@@ -271,7 +271,7 @@ mod test_checks {
         finder.compute_vector_of_distances();
         assert_eq!(
             finder.check_if_total_distance_suffice(),
-            Err(errors::InputDataError::DistanceTooSmall)
+            Err(exc::InputDataError::DistanceTooSmall)
         );
     }
 }

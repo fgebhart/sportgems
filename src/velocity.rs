@@ -1,4 +1,4 @@
-use crate::errors;
+use crate::exc;
 use crate::fit_reader;
 use crate::gem_finder;
 use crate::math;
@@ -44,7 +44,7 @@ pub fn find_fastest_section(
     coordinates: Vec<(f64, f64)>,
     times: Vec<f64>,
     tolerance: Option<f64>,
-) -> Result<dtypes::TargetSection, errors::InputDataError> {
+) -> Result<dtypes::TargetSection, exc::InputDataError> {
     match gem_finder::InputData::new(desired_distance, coordinates, times, None, tolerance) {
         Err(e) => Err(e),
         Ok(mut finder) => {
@@ -65,7 +65,7 @@ pub fn find_fastest_section_in_fit(
     desired_distance: f64,
     path_to_fit: &str,
     tolerance: Option<f64>,
-) -> Result<dtypes::TargetSection, errors::InputDataError> {
+) -> Result<dtypes::TargetSection, exc::InputDataError> {
     let fit_data: fit_reader::FitData = fit_reader::parse_fit(path_to_fit);
     find_fastest_section(
         desired_distance,
@@ -88,7 +88,7 @@ mod test_find_fastest_section {
         // in this scenario we expect no valid section to be found
         assert_eq!(
             find_fastest_section(desired_distance, coordinates, times, Some(0.01)),
-            Err(errors::InputDataError::NoSectionFound)
+            Err(exc::InputDataError::NoSectionFound)
         );
     }
 

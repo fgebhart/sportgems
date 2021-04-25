@@ -1,6 +1,8 @@
 from sportgems import (
     find_fastest_section,
     find_best_climb_section,
+)
+from sportgems.exc import (
     DistanceTooSmallException,
     InconsistentLengthException,
     TooFewDataPointsException,

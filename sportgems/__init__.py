@@ -14,8 +14,11 @@ from .sportgems import (
     FastestSection,
     ClimbSection,
     FitData,
-
+    
     # exceptions
+    # exceptions,
+)
+from .exc import (
     DistanceTooSmallException,
     InconsistentLengthException,
     TooFewDataPointsException,

@@ -1,5 +1,5 @@
 use crate::dtypes;
-use crate::errors;
+use crate::exc;
 use crate::fit_reader;
 use crate::gem_finder;
 use crate::math;
@@ -59,14 +59,14 @@ pub fn update_sections_max_climb(
 
 pub fn specific_data_check(
     input_data: &gem_finder::InputData,
-) -> Result<(), errors::InputDataError> {
+) -> Result<(), exc::InputDataError> {
     if input_data.coordinates.len() != input_data.altitudes.values.len() {
-        return Err(errors::InputDataError::InconsistentLength);
+        return Err(exc::InputDataError::InconsistentLength);
     }
     let mut altitudes_normal = input_data.altitudes.values.clone();
     altitudes_normal.retain(|&i| i.is_normal());
     if altitudes_normal.len() < 2 {
-        return Err(errors::InputDataError::TooFewDataPoints);
+        return Err(exc::InputDataError::TooFewDataPoints);
     } else {
         return Ok(());
     }
@@ -78,7 +78,7 @@ pub fn find_best_climb_section(
     times: Vec<f64>,
     altitudes: Vec<f64>,
     tolerance: Option<f64>,
-) -> Result<dtypes::TargetSection, errors::InputDataError> {
+) -> Result<dtypes::TargetSection, exc::InputDataError> {
     match gem_finder::InputData::new(
         desired_distance,
         coordinates,
@@ -110,7 +110,7 @@ pub fn find_best_climb_section_in_fit(
     desired_distance: f64,
     path_to_fit: &str,
     tolerance: Option<f64>,
-) -> Result<dtypes::TargetSection, errors::InputDataError> {
+) -> Result<dtypes::TargetSection, exc::InputDataError> {
     let fit_data: fit_reader::FitData = fit_reader::parse_fit(path_to_fit);
     let filtered_altitudes = math::remove_outliers(&fit_data.altitudes, 10.0); // = 1000 %
     find_best_climb_section(
@@ -223,7 +223,7 @@ mod test_checks {
                 altitudes,
                 Some(gem_finder::DEFAULT_TOLERANCE)
             ),
-            Err(errors::InputDataError::InconsistentLength)
+            Err(exc::InputDataError::InconsistentLength)
         )
     }
 
@@ -240,7 +240,7 @@ mod test_checks {
                 altitudes,
                 Some(gem_finder::DEFAULT_TOLERANCE)
             ),
-            Err(errors::InputDataError::TooFewDataPoints)
+            Err(exc::InputDataError::TooFewDataPoints)
         )
     }
 }

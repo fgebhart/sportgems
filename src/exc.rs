@@ -20,23 +20,49 @@ pub enum InputDataError {
 }
 
 create_exception!(
-    sportgems,
+    exc,
     InconsistentLengthException,
     exceptions::PyException
 );
 create_exception!(
-    sportgems,
+    exc,
     DistanceTooSmallException,
     exceptions::PyException
 );
 create_exception!(
-    sportgems,
+    exc,
     TooFewDataPointsException,
     exceptions::PyException
 );
 create_exception!(
-    sportgems,
+    exc,
     InvalidDesiredDistanceException,
     exceptions::PyException
 );
-create_exception!(sportgems, NoSectionFoundException, exceptions::PyException);
+create_exception!(exc, NoSectionFoundException, exceptions::PyException);
+
+
+// pub fn init_exceptions_submodule(_py: Python, _module: &PyModule) -> PyResult<()> {
+//     // m.add_function(wrap_pyfunction!(wkbbytes_with_ids_to_h3, m)?)?;
+//     _module.add(
+//         "InconsistentLengthException",
+//         _py.get_type::<InconsistentLengthException>(),
+//     )?;
+//     _module.add(
+//         "TooFewDataPointsException",
+//         _py.get_type::<TooFewDataPointsException>(),
+//     )?;
+//     _module.add(
+//         "DistanceTooSmallException",
+//         _py.get_type::<DistanceTooSmallException>(),
+//     )?;
+//     _module.add(
+//         "NoSectionFoundException",
+//         _py.get_type::<NoSectionFoundException>(),
+//     )?;
+//     _module.add(
+//         "InvalidDesiredDistanceException",
+//         _py.get_type::<InvalidDesiredDistanceException>(),
+//     )?;
+//     Ok(())
+// }
