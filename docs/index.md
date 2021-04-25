@@ -1,6 +1,8 @@
 # Find valuable gems 💎 in your activities 🚴
 
-`sportgems` is a library for parsing activity data. It can be used to either find the [fastest sections](module_reference.md#fastest-sections) or the [best climb sections](module_reference.md#best-climb-sections).
+`sportgems` is a library for parsing activity data. It can be used to either find the
+[fastest sections](code_reference.md#fastest-sections) or the
+[best climb sections](code_reference.md#best-climb-sections).
 
 ## Installation
 Sportgems is written in rust and bundled in a python package using [pyo3](https://pyo3.rs/). Simply

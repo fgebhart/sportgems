@@ -47,23 +47,41 @@ class FitData:
 
 
 class DistanceTooSmallException(Exception):
-    pass
+    """
+    Distance of provided input data is too smaller than the requested
+    `desired_distance`. Either descrease `desired_distance` or check
+    your input data.
+    """
+    ...
 
 
 class InconsistentLengthException(Exception):
-    pass
+    """
+    Length of input lists of e.g. `coordinates`, `times` and `altitudes`
+    needs to be equal.
+    """
+    ...
 
 
 class TooFewDataPointsException(Exception):
-    pass
+    """
+    The input data must consist of at least two (not null) data points.
+    """
+    ...
 
 
 class NoSectionFoundException(Exception):
-    pass
+    """
+    No section with `desired_distance` found, check quality of input data or increase `tolerance`.
+    """
+    ...
 
 
 class InvalidDesiredDistanceException(Exception):
-    pass
+    """
+    Value of `desired_distance` needs to be greater than zero.
+    """
+    ...
 
 
 def find_fastest_section(
@@ -96,6 +114,18 @@ def find_fastest_section(
         FastestSection:
             Returns a Python object of type [`FastestSection`][sportgems.FastestSection], with
             the results given as attributes: `start`, `end` and `velocity`.
+
+    Raises:
+        DistanceTooSmallException: If input distance is too small,
+            see [`DistanceTooSmallException`][sportgems.DistanceTooSmallException].
+        InconsistentLengthException: If length of input lists is not equal,
+            see [`InconsistentLengthException`][sportgems.InconsistentLengthException].
+        TooFewDataPointsException: If input data has too few data points,
+            see [`TooFewDataPointsException`][sportgems.TooFewDataPointsException].
+        NoSectionFoundException: If no section with `desired_distance` was found,
+            see [`NoSectionFoundException`][sportgems.NoSectionFoundException].
+        InvalidDesiredDistanceException: If given `desired_distance` is invalid,
+            see [`InvalidDesiredDistanceException`][sportgems.InvalidDesiredDistanceException].
     """
     ...
 
@@ -123,6 +153,16 @@ def find_fastest_section_in_fit(
         FastestSection:
             Returns a Python object of type [`FastestSection`][sportgems.FastestSection], with
             the results given as attributes: `start`, `end` and `velocity`.
+
+    Raises:
+        DistanceTooSmallException: If input distance is too small,
+            see [`DistanceTooSmallException`][sportgems.DistanceTooSmallException].
+        TooFewDataPointsException: If input data has too few data points,
+            see [`TooFewDataPointsException`][sportgems.TooFewDataPointsException].
+        NoSectionFoundException: If no section with `desired_distance` was found,
+            see [`NoSectionFoundException`][sportgems.NoSectionFoundException].
+        InvalidDesiredDistanceException: If given `desired_distance` is invalid,
+            see [`InvalidDesiredDistanceException`][sportgems.InvalidDesiredDistanceException].
     """
     ...
 
@@ -157,6 +197,18 @@ def find_best_climb_section(
         ClimbSection:
             Returns a Python object of type [`ClimbSection`][sportgems.ClimbSection], with the
             results given as attributes: `start`, `end` and `climb`.
+
+    Raises:
+        DistanceTooSmallException: If input distance is too small,
+            see [`DistanceTooSmallException`][sportgems.DistanceTooSmallException].
+        InconsistentLengthException: If length of input lists is not equal,
+            see [`InconsistentLengthException`][sportgems.InconsistentLengthException].
+        TooFewDataPointsException: If input data has too few data points,
+            see [`TooFewDataPointsException`][sportgems.TooFewDataPointsException].
+        NoSectionFoundException: If no section with `desired_distance` was found,
+            see [`NoSectionFoundException`][sportgems.NoSectionFoundException].
+        InvalidDesiredDistanceException: If given `desired_distance` is invalid,
+            see [`InvalidDesiredDistanceException`][sportgems.InvalidDesiredDistanceException].
     """
     ...
 
@@ -185,6 +237,16 @@ def find_best_climb_section_in_fit(
         ClimbSection:
             Returns a Python object of type [`ClimbSection`][sportgems.ClimbSection], with the
             results given as attributes: `start`, `end` and `climb`.
+
+    Raises:
+        DistanceTooSmallException: If input distance is too small,
+            see [`DistanceTooSmallException`][sportgems.DistanceTooSmallException].
+        TooFewDataPointsException: If input data has too few data points,
+            see [`TooFewDataPointsException`][sportgems.TooFewDataPointsException].
+        NoSectionFoundException: If no section with `desired_distance` was found,
+            see [`NoSectionFoundException`][sportgems.NoSectionFoundException].
+        InvalidDesiredDistanceException: If given `desired_distance` is invalid,
+            see [`InvalidDesiredDistanceException`][sportgems.InvalidDesiredDistanceException].
     """
     ...
 

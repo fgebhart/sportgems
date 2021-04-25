@@ -2,7 +2,7 @@ site_name: sportgems
 
 repo_url: https://github.com/fgebhart/sportgems/
 repo_name: fgebhart/sportgems
-edit_uri: edit/master/docs
+edit_uri: edit/main/docs
 site_author: Fabian Gebhart
 site_description: Library to find valuable gems in your activities.
 
@@ -21,12 +21,11 @@ theme:
 
 nav:
   - Getting Started: index.md
-  - Module Reference: module_reference.md
+  - Code Reference: code_reference.md
   - Changelog: changelog.md
 
 plugins:
-- search:
-    min_search_length: 2
+- search
 - mkdocstrings:
     default_handler: python
     handlers:
@@ -44,5 +43,5 @@ plugins:
           heading_level: 3
 
 markdown_extensions:
-  - pymdownx.highlight
-  - pymdownx.superfences
+- toc:
+    permalink: "¤"
