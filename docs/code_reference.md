@@ -1,14 +1,21 @@
 # sportgems Module reference
 
-## Fastest Sections 🏃‍♀️
+## Fastest 🏃‍♀️
 ::: sportgems.find_fastest_section
 ::: sportgems.find_fastest_section_in_fit
 ::: sportgems.FastestSection
 
-## Best Climb Sections 🏔
+## Climb 🏔
 ::: sportgems.find_best_climb_section
 ::: sportgems.find_best_climb_section_in_fit
 ::: sportgems.ClimbSection
+
+## Exceptions 🔥
+::: sportgems.DistanceTooSmallException
+::: sportgems.InconsistentLengthException
+::: sportgems.TooFewDataPointsException
+::: sportgems.NoSectionFoundException
+::: sportgems.InvalidDesiredDistanceException
 
 ## Misc 🤸‍♂️
 ::: sportgems.parse_fit_data
