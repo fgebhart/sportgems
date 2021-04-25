@@ -289,8 +289,8 @@
   
   
     <li class="md-nav__item">
-      <a href="module_reference/" class="md-nav__link">
-        Module Reference
+      <a href="code_reference/" class="md-nav__link">
+        Code Reference
       </a>
     </li>
   
@@ -362,34 +362,36 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/fgebhart/sportgems/edit/master/docs/index.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/fgebhart/sportgems/edit/main/docs/index.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
                 
-                <h1 id="find-valuable-gems-in-your-activities">Find valuable gems 💎 in your activities 🚴</h1>
-<p><code>sportgems</code> is a library for parsing activity data. It can be used to either find the <a href="module_reference/#fastest-sections">fastest sections</a> or the <a href="module_reference/#best-climb-sections">best climb sections</a>.</p>
-<h2 id="installation">Installation</h2>
+                <h1 id="find-valuable-gems-in-your-activities">Find valuable gems 💎 in your activities 🚴<a class="headerlink" href="#find-valuable-gems-in-your-activities" title="Permanent link">¤</a></h1>
+<p><code>sportgems</code> is a library for parsing activity data. It can be used to either find the
+<a href="code_reference/#fastest-sections">fastest sections</a> or the
+<a href="code_reference/#best-climb-sections">best climb sections</a>.</p>
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">¤</a></h2>
 <p>Sportgems is written in rust and bundled in a python package using <a href="https://pyo3.rs/">pyo3</a>. Simply
-install it using pip:
-<div class="highlight"><pre><span></span><code>pip install sportgems
-</code></pre></div></p>
-<h2 id="example-usage">Example Usage</h2>
+install it using pip:</p>
+<pre><code>pip install sportgems
+</code></pre>
+<h2 id="example-usage">Example Usage<a class="headerlink" href="#example-usage" title="Permanent link">¤</a></h2>
 <p>In order to search for gems 💎 in your activity, pass a path and desired distance to e.g.
 <code>find_fastest_section_in_fit</code> like:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">sportgems</span> <span class="kn">import</span> <span class="n">find_fastest_section_in_fit</span>
+<pre><code class="language-python">from sportgems import find_fastest_section_in_fit
 
-<span class="n">desired_distance</span> <span class="o">=</span> <span class="mi">1_000</span>  <span class="c1"># in meter</span>
-<span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;tests/data/2019-09-14-17-22-05.fit&quot;</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">find_fastest_section_in_fit</span><span class="p">(</span><span class="n">desired_distance</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+desired_distance = 1_000  # in meter
+path = &quot;tests/data/2019-09-14-17-22-05.fit&quot;
+result = find_fastest_section_in_fit(desired_distance, path)
 
-<span class="c1"># start and end index of fastest 1000m section:</span>
-<span class="n">result</span><span class="o">.</span><span class="n">start</span>            <span class="c1"># 635</span>
-<span class="n">result</span><span class="o">.</span><span class="n">end</span>              <span class="c1"># 725</span>
+# start and end index of fastest 1000m section:
+result.start            # 635
+result.end              # 725
 
-<span class="c1"># average velocity (in m/s) during that 1000m section:</span>
-<span class="n">result</span><span class="o">.</span><span class="n">velocity</span>         <span class="c1"># 2.898669803146783</span>
-</code></pre></div>
+# average velocity (in m/s) during that 1000m section:
+result.velocity         # 2.898669803146783
+</code></pre>
                 
               
               
@@ -409,13 +411,13 @@ install it using pip:
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
       
-        <a href="module_reference/" class="md-footer__link md-footer__link--next" rel="next">
+        <a href="code_reference/" class="md-footer__link md-footer__link--next" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Module Reference
+              Code Reference
             </div>
           </div>
           <div class="md-footer__button md-icon">
