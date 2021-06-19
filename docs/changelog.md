@@ -4,8 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [0.5.0](https://github.com/fgebhart/sportgems/releases/tag/0.5.0) - 2021-04-03
+## [0.6.0](https://github.com/fgebhart/sportgems/releases/tag/0.6.0) - 2021-06-19
+### Changed
+* Sportgems dropped support for Python3.6. But at the same time provides pre-compiled
+  wheels for armv7 for Python 3.7, 3.8 and 3.9, which is required when using
+  sportgems with Raspberry Pi.
 
+## [0.5.0](https://github.com/fgebhart/sportgems/releases/tag/0.5.0) - 2021-04-03
 ### Changed
 * Slightly shift the start index by +1 when computing the distance of a section in
   order to handle target value spikes in situations with poor gps quality.
