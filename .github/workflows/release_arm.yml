@@ -37,7 +37,7 @@ jobs:
           virtualenv -p 'python${{ matrix.python_version }}' venv
           source venv/bin/activate
           python --version
-          pip install maturin==0.9.4
+          pip install maturin==0.10.6
 
       - name: Install Rust
         run: |
@@ -94,4 +94,5 @@ jobs:
           maturin publish --username ${{ secrets.PYPI_USERNAME }} \
                           --no-sdist \
                           --target=armv7-unknown-linux-gnueabihf \
-                          --manylinux=off
+                          --manylinux=off \
+                          --skip-existing
