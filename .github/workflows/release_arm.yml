@@ -7,6 +7,12 @@ on:
 jobs:
   build_arm7:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python_version:
+          - 3.7
+          - 3.8
+          - 3.9
     steps:
       - uses: actions/checkout@v2
 
@@ -15,16 +21,20 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           export DEBIAN_FRONTEND='noninteractive'
+
+          sudo apt install -y software-properties-common
+          sudo add-apt-repository -y ppa:deadsnakes/ppa
+          
           sudo apt update && sudo apt install -y  gcc-arm-linux-gnueabihf \
                                                   wget \
-                                                  python3.8 \
+                                                  'python${{ matrix.python_version }}' \
                                                   python3-dev \
                                                   virtualenv \
                                                   python3-pip \
 
       - name: Set up Venv
         run: |
-          virtualenv -p python3.8 venv
+          virtualenv -p 'python${{ matrix.python_version }}' venv
           source venv/bin/activate
           python --version
           pip install maturin==0.9.4
@@ -44,8 +54,8 @@ jobs:
 
       - name: Download Python
         run: |
-          wget https://www.python.org/ftp/python/3.8.6/Python-3.8.6.tgz
-          tar -xvzf Python-3.8.6.tgz
+          wget 'https://www.python.org/ftp/python/${{ matrix.python_version }}.5/Python-${{ matrix.python_version }}.5.tgz'
+          tar -xvzf 'Python-${{ matrix.python_version }}.5.tgz'
 
       - name: Remove lsb_release
         run: |
@@ -53,9 +63,9 @@ jobs:
 
       - name: Build Python for ARM
         env:
-          TARGET_PYTHON: /tmp/Python-3.8
+          TARGET_PYTHON: '/tmp/Python-${{ matrix.python_version }}'
         run: |
-          cd Python-3.8.6
+          cd 'Python-${{ matrix.python_version }}.5'
           CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ AR=arm-linux-gnueabihf-ar \
               RANLIB=arm-linux-gnueabihf-ranlib \
               ./configure --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf \
@@ -63,23 +73,24 @@ jobs:
               --disable-ipv6 ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no \
               ac_cv_have_long_long_format=yes --enable-shared
 
-          make HOSTPYTHON=$HOME/raspberry/depsBuild/pythonhost/python \
+          sudo make HOSTPYTHON=$HOME/raspberry/depsBuild/pythonhost/python \
               BLDSHARED="arm-linux-gnueabihf-gcc -shared" CROSS-COMPILE=arm-linux-gnueabihf- \
               CROSS_COMPILE_TARGET=yes HOSTARCH=arm-linux BUILDARCH=arm-linux-gnueabihf
 
-          make altinstall HOSTPYTHON=$HOME/raspberry/depsBuild/pythonhost/python \
+          sudo make altinstall HOSTPYTHON=$HOME/raspberry/depsBuild/pythonhost/python \
               BLDSHARED="arm-linux-gnueabihf-gcc -shared" CROSS-COMPILE=arm-linux-gnueabihf- \
               CROSS_COMPILE_TARGET=yes HOSTARCH=arm-linux BUILDARCH=arm-linux-gnueabihf \
               prefix=$TARGET_PYTHON
 
       - name: Cross Compile & Publish
         env:
-          TARGET_PYTHON: /tmp/Python-3.8
+          TARGET_PYTHON: '/tmp/Python-${{ matrix.python_version }}'
           MATURIN_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
           source venv/bin/activate
           export PYO3_CROSS_INCLUDE_DIR="$TARGET_PYTHON/include"
           export PYO3_CROSS_LIB_DIR="$TARGET_PYTHON/lib"
+          
           maturin publish --username ${{ secrets.PYPI_USERNAME }} \
                           --no-sdist \
                           --target=armv7-unknown-linux-gnueabihf \
