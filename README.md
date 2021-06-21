@@ -51,7 +51,7 @@ Found fastest section, from result.start=635 to result.end=725 with result.veloc
 ```
 
 ## Changelog
-https://fgebhart.github.io/sportgems/changelog/
+https://fgebhart.github.io/sportgems/changelog.html
 
 ## Running the tests
 
