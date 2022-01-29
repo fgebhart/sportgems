@@ -7,7 +7,7 @@ on: push
   #   types: [published]
 
 jobs:
-  build_arm7:
+  build_arm6:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -49,9 +49,9 @@ jobs:
           source $HOME/.cargo/env
           rustup default nightly
           rustc -V
-          rustup target add arm-unknown-linux-gnueabihf
+          rustup target add arm-unknown-linux-gnueabi
           mkdir -p ~/.cargo
-          echo '[target.arm-unknown-linux-gnueabihf]
+          echo '[target.arm-unknown-linux-gnueabi]
           linker = "arm-linux-gnueabihf-gcc"' > ~/.cargo/config
 
       - name: Download Python
