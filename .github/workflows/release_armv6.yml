@@ -1,0 +1,100 @@
+# For Raspberry Pi 1
+
+name: Release ARMv6
+
+on: push
+  # release:
+  #   types: [published]
+
+jobs:
+  build_arm7:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python_version:
+          - 3.7
+          - 3.8
+          - 3.9
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          export DEBIAN_FRONTEND='noninteractive'
+
+          sudo apt install -y software-properties-common
+          sudo add-apt-repository -y ppa:deadsnakes/ppa
+          
+          sudo apt update && sudo apt install -y  gcc-arm-linux-gnueabihf \
+                                                  wget \
+                                                  'python${{ matrix.python_version }}' \
+                                                  python3-dev \
+                                                  virtualenv \
+                                                  python3-pip \
+
+      - name: Set up Venv
+        run: |
+          virtualenv -p 'python${{ matrix.python_version }}' venv
+          source venv/bin/activate
+          python --version
+          pip install maturin==0.10.6
+
+      - name: Install Rust
+        run: |
+          wget https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init
+          chmod +x rustup-init
+          printf '%s\n' 1 | ./rustup-init
+          source $HOME/.cargo/env
+          rustup default nightly
+          rustc -V
+          rustup target add arm-unknown-linux-gnueabihf
+          mkdir -p ~/.cargo
+          echo '[target.arm-unknown-linux-gnueabihf]
+          linker = "arm-linux-gnueabihf-gcc"' > ~/.cargo/config
+
+      - name: Download Python
+        run: |
+          wget 'https://www.python.org/ftp/python/${{ matrix.python_version }}.5/Python-${{ matrix.python_version }}.5.tgz'
+          tar -xvzf 'Python-${{ matrix.python_version }}.5.tgz'
+
+      - name: Remove lsb_release
+        run: |
+          sudo rm /usr/bin/lsb_release
+
+      - name: Build Python for ARM
+        env:
+          TARGET_PYTHON: '/tmp/Python-${{ matrix.python_version }}'
+        run: |
+          cd 'Python-${{ matrix.python_version }}.5'
+          CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ AR=arm-linux-gnueabihf-ar \
+              RANLIB=arm-linux-gnueabihf-ranlib \
+              ./configure --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf \
+              --build=x86_64-linux-gnu --prefix=$HOME/rapsberry/depsBuild/python \
+              --disable-ipv6 ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no \
+              ac_cv_have_long_long_format=yes --enable-shared
+
+          sudo make HOSTPYTHON=$HOME/raspberry/depsBuild/pythonhost/python \
+              BLDSHARED="arm-linux-gnueabihf-gcc -shared" CROSS-COMPILE=arm-linux-gnueabihf- \
+              CROSS_COMPILE_TARGET=yes HOSTARCH=arm-linux BUILDARCH=arm-linux-gnueabihf
+
+          sudo make altinstall HOSTPYTHON=$HOME/raspberry/depsBuild/pythonhost/python \
+              BLDSHARED="arm-linux-gnueabihf-gcc -shared" CROSS-COMPILE=arm-linux-gnueabihf- \
+              CROSS_COMPILE_TARGET=yes HOSTARCH=arm-linux BUILDARCH=arm-linux-gnueabihf \
+              prefix=$TARGET_PYTHON
+
+      - name: Cross Compile & Publish
+        env:
+          TARGET_PYTHON: '/tmp/Python-${{ matrix.python_version }}'
+          MATURIN_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          source venv/bin/activate
+          export PYO3_CROSS_INCLUDE_DIR="$TARGET_PYTHON/include"
+          export PYO3_CROSS_LIB_DIR="$TARGET_PYTHON/lib"
+          
+          maturin publish --username ${{ secrets.PYPI_USERNAME }} \
+                          --no-sdist \
+                          --target=arm-unknown-linux-gnueabihf \
+                          --manylinux=off \
+                          --skip-existing
