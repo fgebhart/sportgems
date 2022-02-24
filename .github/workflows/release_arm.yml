@@ -36,10 +36,8 @@ jobs:
 
       - name: Set up Venv
         run: |
-          python3.10 -c 'import sys; print(sys.version)'
-          # virtualenv -p python${{ matrix.python_version }} venv
-          python${{ matrix.python_version }} -m venv my-venv
-          source my-venv/bin/activate
+          virtualenv -p python3.8 venv
+          source venv/bin/activate
           python --version
           pip install maturin==0.10.6
 
@@ -96,6 +94,7 @@ jobs:
           export PYO3_CROSS_LIB_DIR="$TARGET_PYTHON/lib"
           
           maturin publish --username ${{ secrets.PYPI_USERNAME }} \
+                          --interpreter python${{ matrix.python-version }} \
                           --no-sdist \
                           --target=armv7-unknown-linux-gnueabihf \
                           --manylinux=off \
