@@ -7,7 +7,14 @@ env:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    name: Test
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.8, 3.9, 3.10]
+        os: [ubuntu-latest, macos-latest]
 
     steps:
     - uses: actions/checkout@v2
@@ -18,10 +25,10 @@ jobs:
     - name: Cargo test
       run: cargo test --verbose --no-default-features
     
-    - name: Set up Python
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
+        python-version: ${{ matrix.python-version }}
 
     - name: Install python dependencies for building
       run: python -m pip install --upgrade pip maturin==0.9.4 wheel

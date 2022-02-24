@@ -63,6 +63,14 @@ To run the python tests, you first need to install the requirements
 ```
 pip install -r requirements.txt
 ```
+and build and install sportgems itself, by compiling it using
+```
+maturin build
+```
+then installing the wheel with
+```
+pip install target/wheels/sportgems-*-cp38-cp38-manylinux2010_x86_64.whl
+```
 and subsequently run the tests
 ```
 pytest tests/
