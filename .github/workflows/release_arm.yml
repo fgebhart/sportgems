@@ -1,18 +1,19 @@
 name: Release ARMv7
 
-on:
-  release:
-    types: [published]
+on: push
+
+# on:
+#   release:
+#     types: [published]
 
 jobs:
   build_arm7:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python_version:
-          - "3.8"
-          - "3.9"
-          - "3.10"
+        python_version: ["3.8", "3.9", "3.10"]
+
     steps:
       - uses: actions/checkout@v2
 
@@ -30,10 +31,13 @@ jobs:
                                                   'python${{ matrix.python_version }}' \
                                                   python3-dev \
                                                   virtualenv \
-                                                  python3-pip \
+                                                  python3-pip
 
       - name: Set up Venv
         run: |
+          python3.8 --version
+          python3.9 --version
+          python3.10 --version
           virtualenv -p 'python${{ matrix.python_version }}' venv
           source venv/bin/activate
           python --version
