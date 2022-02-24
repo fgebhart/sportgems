@@ -36,11 +36,7 @@ jobs:
 
       - name: Set up Venv
         run: |
-          sudo apt update && sudo apt install -y python3.10
-          echo "checking python3.10 version .............."
-          python -c 'import sys; print(sys.version)'
-          # python3.10 -c 'import sys; print(sys.version)'
-          # python3.10 --version
+          python3.10 -c 'import sys; print(sys.version)'
           virtualenv -p python${{ matrix.python_version }} venv
           source venv/bin/activate
           python --version
