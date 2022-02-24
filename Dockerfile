@@ -4,21 +4,25 @@ FROM ubuntu:latest
 ENV DEBIAN_FRONTEND='noninteractive'
 
 RUN apt-get update && \
-    apt-get install -y python3-dev \
-                       python3-pip \
-                       python3.9 \
+    apt-get install -y software-properties-common \
                        vim \
                        git \
                        build-essential \
-                       zsh \
                        wget \
                        curl \
-                       tzdata \
-                       virtualenv \
-                       software-properties-common
+                       zsh \
+                       tzdata
 
-# install python3.10
-RUN add-apt-repository ppa:deadsnakes/ppa
+# add deadsnake repo for install python3.10
+RUN add-apt-repository ppa:deadsnakes/ppa -y
+
+RUN apt-get update && \
+    apt-get install -y python3-dev \
+                       python3-pip \
+                       virtualenv \
+                       python3.9 \
+                       python3.10
+
 
 # install oh-my-zsh
 RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
@@ -40,13 +44,13 @@ COPY requirements.txt /tmp/requirements.txt
 COPY entrypoint.sh /entrypoint.d/entrypoint.sh
 
 # install pip dependencies
-RUN virtualenv -p python3.9 $VIRTUAL_ENV_PATH
+RUN virtualenv -p python3.10 $VIRTUAL_ENV_PATH
 RUN /bin/bash -c 'source $VIRTUAL_ENV_PATH/bin/activate && pip install -r /tmp/requirements.txt'
 
 # add convenience aliases
 RUN echo "alias cargotest='cargo test --no-default-features'" >> /etc/zsh/zshrc
-RUN echo "alias maturinbuild-pipinstall='maturin build && pip install --force pip install target/wheels/sportgems-*-cp39-cp39-manylinux*_x86_64.whl'" >> /etc/zsh/zshrc
-RUN echo "alias maturinpytest='maturin build && pip install --force pip install target/wheels/sportgems-*-cp39-cp39-manylinux*_x86_64.whl && pytest tests/ -v'" >> /etc/zsh/zshrc
+RUN echo "alias maturinbuild-pipinstall='maturin build -i python3.10 && pip install --force pip install target/wheels/sportgems-*-manylinux*_x86_64.whl'" >> /etc/zsh/zshrc
+RUN echo "alias maturinpytest='maturin build -i python3.10 && pip install --force pip install target/wheels/sportgems-*-manylinux*_x86_64.whl && pytest tests/ -v'" >> /etc/zsh/zshrc
 
 COPY . /sportgems
 WORKDIR /workspaces/sportgems

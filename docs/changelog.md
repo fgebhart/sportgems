@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+
+## [0.7.0](https://github.com/fgebhart/sportgems/releases/tag/v0.7.0) - 2022-02-24
+### Changed
+* Dropped support for Python3.7 while add support for Python3.10. Python 3.8, 3.9
+  and 3.10 are officially supported now.
+
 ## [0.6.0](https://github.com/fgebhart/sportgems/releases/tag/v0.6.0) - 2021-06-19
 ### Changed
 * Sportgems dropped support for Python3.6. But at the same time provides pre-compiled
