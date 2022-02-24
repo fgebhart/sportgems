@@ -14,7 +14,11 @@ RUN apt-get update && \
                        wget \
                        curl \
                        tzdata \
-                       virtualenv
+                       virtualenv \
+                       software-properties-common
+
+# install python3.10
+RUN add-apt-repository ppa:deadsnakes/ppa
 
 # install oh-my-zsh
 RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true

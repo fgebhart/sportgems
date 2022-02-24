@@ -33,12 +33,12 @@ jobs:
       run: python -m pip install --upgrade pip maturin==0.9.4 wheel
 
     - name: Build python wheel
-      run: maturin build
+      run: maturin build -i python${{ matrix.python-version }}
     
     - name: Install sportgems wheel
       run: |
         ls -l target/wheels/
-        pip install target/wheels/sportgems-*-cp38-cp38-manylinux*_x86_64.whl
+        pip install target/wheels/sportgems-*-manylinux*_x86_64.whl
 
     - name: Install python dependencies for testing
       run: python -m pip install -r requirements.txt
