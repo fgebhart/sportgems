@@ -37,8 +37,9 @@ jobs:
       - name: Set up Venv
         run: |
           python3.10 -c 'import sys; print(sys.version)'
-          virtualenv -p python${{ matrix.python_version }} venv
-          source venv/bin/activate
+          # virtualenv -p python${{ matrix.python_version }} venv
+          python${{ matrix.python_version }} -m venv my-venv
+          source my-venv/bin/activate
           python --version
           pip install maturin==0.10.6
 
