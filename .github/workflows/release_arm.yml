@@ -56,8 +56,8 @@ jobs:
 
       - name: Download Python
         run: |
-          wget 'https://www.python.org/ftp/python/${{ matrix.python_version }}.5/Python-${{ matrix.python_version }}.5.tgz'
-          tar -xvzf 'Python-${{ matrix.python_version }}.5.tgz'
+          wget 'https://www.python.org/ftp/python/${{ matrix.python_version }}.2/Python-${{ matrix.python_version }}.2.tgz'
+          tar -xvzf 'Python-${{ matrix.python_version }}.2.tgz'
 
       - name: Remove lsb_release
         run: |
@@ -67,7 +67,7 @@ jobs:
         env:
           TARGET_PYTHON: '/tmp/Python-${{ matrix.python_version }}'
         run: |
-          cd 'Python-${{ matrix.python_version }}.5'
+          cd 'Python-${{ matrix.python_version }}.2'
           CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ AR=arm-linux-gnueabihf-ar \
               RANLIB=arm-linux-gnueabihf-ranlib \
               ./configure --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf \
