@@ -94,7 +94,7 @@ jobs:
           export PYO3_CROSS_LIB_DIR="$TARGET_PYTHON/lib"
           
           maturin publish --username ${{ secrets.PYPI_USERNAME }} \
-                          --interpreter python${{ matrix.python-version }} \
+                          --interpreter python${{ matrix.python_version }} \
                           --no-sdist \
                           --target=armv7-unknown-linux-gnueabihf \
                           --manylinux=off \
