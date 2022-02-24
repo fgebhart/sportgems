@@ -1,6 +1,6 @@
 [package]
 name = "sportgems"
-version = "0.6.0"
+version = "0.7.0"
 edition = "2018"
 authors = ["Fabian Gebhart"]
 description = "Find valuable gems 💎 in your tracked sport 🚴 activity!"
@@ -11,15 +11,15 @@ license = "MIT"
 keywords = ["sports", "activity", "parser", "rust", "sports-data"]
 
 [package.metadata.maturin]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 classifier = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: MacOS",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: POSIX :: Linux",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
     "Programming Language :: Rust",
 ]
 
