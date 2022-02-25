@@ -96,4 +96,5 @@ jobs:
                           --no-sdist \
                           --target=armv7-unknown-linux-gnueabihf \
                           --manylinux=off \
-                          --skip-existing
+                          --skip-existing \
+                          --skip-auditwheel
