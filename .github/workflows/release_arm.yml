@@ -39,7 +39,7 @@ jobs:
           virtualenv -p python3.8 venv
           source venv/bin/activate
           python --version
-          pip install maturin==0.10.6
+          pip install maturin==0.9.4
 
       - name: Install Rust
         run: |
@@ -99,3 +99,4 @@ jobs:
                           --target=armv7-unknown-linux-gnueabihf \
                           --manylinux=off \
                           --skip-existing
+                          --release
