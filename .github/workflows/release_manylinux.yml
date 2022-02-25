@@ -42,5 +42,4 @@ jobs:
                           --no-sdist \
                           --interpreter python${{matrix.python_version}} \
                           --manylinux=2014 \
-                          --skip-existing \
-                          --release
+                          --skip-existing
