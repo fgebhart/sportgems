@@ -31,14 +31,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip maturin==0.9.4
+          python -m pip install --upgrade pip maturin
 
       - name: Build & Publish to PyPi
         env:
           MATURIN_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
-          maturin publish --username ${{ secrets.PYPI_USERNAME }}
-                          --no-sdist
-                          --interpreter python${{matrix.python_version}}
-                          --manylinux=2014
-                          --release
+          maturin publish --username ${{ secrets.PYPI_USERNAME }} \
+                          --no-sdist \
+                          --interpreter python${{matrix.python_version}} \
+                          --manylinux=2014 \
+                          --skip-existing
