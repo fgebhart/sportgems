@@ -39,6 +39,5 @@ jobs:
           MATURIN_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
           maturin publish --username ${{ secrets.PYPI_USERNAME }} \
-                          --no-sdist \
                           --interpreter python${{ matrix.python-version }} \
                           --manylinux=2014
