@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.8", "3.9"]
         os: [ubuntu-latest, macos-latest, windows-latest]
     
     steps:
@@ -31,9 +31,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip maturin==0.9.4
+          python -m pip install --upgrade pip maturin
 
       - name: Build & Publish to PyPi
-        run: maturin publish --username ${{ secrets.PYPI_USERNAME }} --no-sdist --interpreter python${{matrix.python_version}} --manylinux=2014
         env:
           MATURIN_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          maturin publish --username ${{ secrets.PYPI_USERNAME }} \
+                          --no-sdist \
+                          --interpreter python${{matrix.python_version}} \
+                          --manylinux=2014

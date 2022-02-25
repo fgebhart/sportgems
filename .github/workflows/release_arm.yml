@@ -1,18 +1,20 @@
 name: Release ARMv7
 
-on:
-  release:
-    types: [published]
+on: push
+
+# on:
+#   release:
+#     types: [published]
 
 jobs:
   build_arm7:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python_version:
-          - "3.8"
-          - "3.9"
-          - "3.10"
+        # python_version: ["3.10"]
+        python_version: ["3.8", "3.9"]
+
     steps:
       - uses: actions/checkout@v2
 
@@ -27,17 +29,17 @@ jobs:
           
           sudo apt update && sudo apt install -y  gcc-arm-linux-gnueabihf \
                                                   wget \
-                                                  'python${{ matrix.python_version }}' \
+                                                  python${{ matrix.python_version }} \
                                                   python3-dev \
                                                   virtualenv \
-                                                  python3-pip \
+                                                  python3-pip
 
       - name: Set up Venv
         run: |
-          virtualenv -p 'python${{ matrix.python_version }}' venv
+          virtualenv -p python${{ matrix.python_version }} venv
           source venv/bin/activate
           python --version
-          pip install maturin==0.10.6
+          pip install --upgrade maturin
 
       - name: Install Rust
         run: |
@@ -92,6 +94,7 @@ jobs:
           export PYO3_CROSS_LIB_DIR="$TARGET_PYTHON/lib"
           
           maturin publish --username ${{ secrets.PYPI_USERNAME }} \
+                          --interpreter python${{ matrix.python_version }} \
                           --no-sdist \
                           --target=armv7-unknown-linux-gnueabihf \
                           --manylinux=off \
