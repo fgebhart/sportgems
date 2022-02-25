@@ -31,7 +31,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip maturin
+          python -m pip install --upgrade pip maturin==0.12.9
 
       - name: Build & Publish to PyPi
         env:

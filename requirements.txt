@@ -1,7 +1,7 @@
 folium
 ipython
 jupyter
-maturin==0.9.4
+maturin==0.12.9
 mkdocs
 mkdocs-material
 mkdocstrings

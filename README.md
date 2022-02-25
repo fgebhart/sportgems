@@ -65,11 +65,11 @@ pip install -r requirements.txt
 ```
 and build and install sportgems itself, by compiling it using
 ```
-maturin build
+maturin build --interpreter python3.10
 ```
 then installing the wheel with
 ```
-pip install target/wheels/sportgems-*-cp38-cp38-manylinux2010_x86_64.whl
+pip install target/wheels/sportgems-*-manylinux2010_x86_64.whl
 ```
 and subsequently run the tests
 ```

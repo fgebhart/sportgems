@@ -36,7 +36,7 @@ jobs:
           virtualenv -p python3.8 venv
           source venv/bin/activate
           python --version
-          pip install --upgrade maturin
+          pip install maturin==0.12.9
 
       - name: Install Rust
         run: |
