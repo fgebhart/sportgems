@@ -118,7 +118,7 @@ def test_find_best_climb_section__errors(track):
     with pytest.raises(TypeError, match="missing 2 required positional arguments: 'coordinates' and 'altitudes'"):
         find_best_climb_section(desired_distance=1, times=[])
 
-    with pytest.raises(TypeError, match="missing required positional argument: altitudes"):
+    with pytest.raises(TypeError, match="missing 1 required positional argument: 'altitudes'"):
         find_best_climb_section(desired_distance=1, times=[], coordinates=[])
 
 
