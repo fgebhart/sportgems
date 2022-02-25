@@ -40,7 +40,7 @@ jobs:
         run: |
           maturin publish --username ${{ secrets.PYPI_USERNAME }} \
                           --no-sdist \
-                          --interpreter python${{matrix.python_version}} \
-                          --manylinux=2014 \
+                          --interpreter python${{ matrix.python_version }} \
+                          --compatibility manylinux2014 \
                           --skip-existing \
                           --skip-auditwheel

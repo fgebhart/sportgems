@@ -1,9 +1,8 @@
 name: Release ARMv7
 
-on: push
-# on:
-#   release:
-#     types: [published]
+on:
+  release:
+    types: [published]
 
 jobs:
   build_arm7:
