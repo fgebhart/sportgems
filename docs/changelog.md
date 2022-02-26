@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 
 ## unreleased
-* Fix CI build pipeline for allow publishing arm and manylinux binary wheels to pypi.
+* Fix CI build pipeline to allow publishing arm and manylinux binary wheels to pypi.
+* Drop pushing windows wheel to pypi.
 
 ## [0.7.0](https://github.com/fgebhart/sportgems/releases/tag/v0.7.0) - 2022-02-24
 ### Changed
