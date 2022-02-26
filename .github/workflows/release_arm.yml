@@ -8,11 +8,10 @@ jobs:
   build_arm7:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python_version:
-          - "3.8"
-          - "3.9"
-          - "3.10"
+        python-version: ["3.8", "3.9", "3.10"]
+
     steps:
       - uses: actions/checkout@v2
 
@@ -27,17 +26,17 @@ jobs:
           
           sudo apt update && sudo apt install -y  gcc-arm-linux-gnueabihf \
                                                   wget \
-                                                  'python${{ matrix.python_version }}' \
+                                                  python${{ matrix.python-version }} \
                                                   python3-dev \
                                                   virtualenv \
-                                                  python3-pip \
+                                                  python3-pip
 
       - name: Set up Venv
         run: |
-          virtualenv -p 'python${{ matrix.python_version }}' venv
+          virtualenv -p python3.8 venv
           source venv/bin/activate
           python --version
-          pip install maturin==0.10.6
+          pip install maturin==0.12.9
 
       - name: Install Rust
         run: |
@@ -54,8 +53,8 @@ jobs:
 
       - name: Download Python
         run: |
-          wget 'https://www.python.org/ftp/python/${{ matrix.python_version }}.5/Python-${{ matrix.python_version }}.5.tgz'
-          tar -xvzf 'Python-${{ matrix.python_version }}.5.tgz'
+          wget 'https://www.python.org/ftp/python/${{ matrix.python-version }}.2/Python-${{ matrix.python-version }}.2.tgz'
+          tar -xvzf 'Python-${{ matrix.python-version }}.2.tgz'
 
       - name: Remove lsb_release
         run: |
@@ -63,9 +62,9 @@ jobs:
 
       - name: Build Python for ARM
         env:
-          TARGET_PYTHON: '/tmp/Python-${{ matrix.python_version }}'
+          TARGET_PYTHON: '/tmp/Python-${{ matrix.python-version }}'
         run: |
-          cd 'Python-${{ matrix.python_version }}.5'
+          cd 'Python-${{ matrix.python-version }}.2'
           CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ AR=arm-linux-gnueabihf-ar \
               RANLIB=arm-linux-gnueabihf-ranlib \
               ./configure --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf \
@@ -84,7 +83,7 @@ jobs:
 
       - name: Cross Compile & Publish
         env:
-          TARGET_PYTHON: '/tmp/Python-${{ matrix.python_version }}'
+          TARGET_PYTHON: '/tmp/Python-${{ matrix.python-version }}'
           MATURIN_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
           source venv/bin/activate
@@ -92,7 +91,9 @@ jobs:
           export PYO3_CROSS_LIB_DIR="$TARGET_PYTHON/lib"
           
           maturin publish --username ${{ secrets.PYPI_USERNAME }} \
+                          --interpreter python${{ matrix.python-version }} \
                           --no-sdist \
                           --target=armv7-unknown-linux-gnueabihf \
                           --manylinux=off \
-                          --skip-existing
+                          --skip-existing \
+                          --skip-auditwheel

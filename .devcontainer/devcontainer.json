@@ -22,7 +22,8 @@
 		"rust-lang.rust",
 		"ms-python.python",
 		"matklad.rust-analyzer",
-		"akamud.vscode-theme-onedark"
+		"akamud.vscode-theme-onedark",
+		"bungcip.better-toml",
 	]
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

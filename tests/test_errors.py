@@ -59,13 +59,13 @@ def test_find_fastest_section__errors(track):
     with pytest.raises(TooFewDataPointsException, match=TOO_FEW_DATA_POINTS_MSG):
         find_fastest_section(desired_distance=1, times=[], coordinates=[])
     
-    with pytest.raises(TypeError, match="missing required positional argument: desired_distance"):
+    with pytest.raises(TypeError, match="missing 3 required positional arguments: 'desired_distance', 'times', and 'coordinates'"):
         find_fastest_section()
 
-    with pytest.raises(TypeError, match="missing required positional argument: times"):
+    with pytest.raises(TypeError, match="missing 2 required positional arguments: 'times' and 'coordinates'"):
         find_fastest_section(desired_distance=1)
     
-    with pytest.raises(TypeError, match="missing required positional argument: coordinates"):
+    with pytest.raises(TypeError, match="missing 1 required positional argument: 'coordinates'"):
         find_fastest_section(desired_distance=1, times=[])
 
 
@@ -109,16 +109,16 @@ def test_find_best_climb_section__errors(track):
     with pytest.raises(TooFewDataPointsException, match=TOO_FEW_DATA_POINTS_MSG):
         find_best_climb_section(desired_distance=1, times=[], coordinates=[], altitudes=[])
     
-    with pytest.raises(TypeError, match="missing required positional argument: desired_distance"):
+    with pytest.raises(TypeError, match="missing 4 required positional arguments: 'desired_distance', 'times', 'coordinates', and 'altitudes'"):
         find_best_climb_section()
 
-    with pytest.raises(TypeError, match="missing required positional argument: times"):
+    with pytest.raises(TypeError, match="missing 3 required positional arguments: 'times', 'coordinates', and 'altitudes'"):
         find_best_climb_section(desired_distance=1)
     
-    with pytest.raises(TypeError, match="missing required positional argument: coordinates"):
+    with pytest.raises(TypeError, match="missing 2 required positional arguments: 'coordinates' and 'altitudes'"):
         find_best_climb_section(desired_distance=1, times=[])
 
-    with pytest.raises(TypeError, match="missing required positional argument: altitudes"):
+    with pytest.raises(TypeError, match="missing 1 required positional argument: 'altitudes'"):
         find_best_climb_section(desired_distance=1, times=[], coordinates=[])
 
 

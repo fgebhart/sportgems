@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+## unreleased
+* Fix CI build pipeline to allow publishing arm and manylinux binary wheels to pypi.
+* Drop pushing windows wheel to pypi.
+
 ## [0.7.0](https://github.com/fgebhart/sportgems/releases/tag/v0.7.0) - 2022-02-24
 ### Changed
 * Dropped support for Python3.7 while add support for Python3.10. Python 3.8, 3.9

@@ -20,6 +20,7 @@ RUN apt-get update && \
     apt-get install -y python3-dev \
                        python3-pip \
                        virtualenv \
+                       python3.8 \
                        python3.9 \
                        python3.10
 
@@ -44,13 +45,13 @@ COPY requirements.txt /tmp/requirements.txt
 COPY entrypoint.sh /entrypoint.d/entrypoint.sh
 
 # install pip dependencies
-RUN virtualenv -p python3.10 $VIRTUAL_ENV_PATH
+RUN virtualenv -p python3.8 $VIRTUAL_ENV_PATH
 RUN /bin/bash -c 'source $VIRTUAL_ENV_PATH/bin/activate && pip install -r /tmp/requirements.txt'
 
 # add convenience aliases
 RUN echo "alias cargotest='cargo test --no-default-features'" >> /etc/zsh/zshrc
-RUN echo "alias maturinbuild-pipinstall='maturin build -i python3.10 && pip install --force pip install target/wheels/sportgems-*-manylinux*_x86_64.whl'" >> /etc/zsh/zshrc
-RUN echo "alias maturinpytest='maturin build -i python3.10 && pip install --force pip install target/wheels/sportgems-*-manylinux*_x86_64.whl && pytest tests/ -v'" >> /etc/zsh/zshrc
+RUN echo "alias maturinbuild-pipinstall='maturin build -i python3.8 --skip-auditwheel && pip install --force pip install target/wheels/sportgems-*_x86_64.whl'" >> /etc/zsh/zshrc
+RUN echo "alias maturinpytest='maturin build -i python3.8 --skip-auditwheel && pip install --force pip install target/wheels/sportgems-*_x86_64.whl && pytest tests/ -v'" >> /etc/zsh/zshrc
 
 COPY . /sportgems
 WORKDIR /workspaces/sportgems

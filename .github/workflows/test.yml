@@ -45,4 +45,4 @@ jobs:
 
     - name: Test sportgems
       run: |
-        pytest tests/ -v
+        pytest tests/ -v --color=yes
