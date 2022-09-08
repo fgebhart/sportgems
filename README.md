@@ -26,7 +26,7 @@ pip install sportgems
 ```
 
 ## Documentation
-https://fgebhart.github.io/sportgems/
+[sportgems.fgebhart.dev](https://sportgems.fgebhart.dev/)
 
 ## How to use it?
 
