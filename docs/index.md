@@ -15,7 +15,7 @@ pip install sportgems
 In order to search for gems 💎 in your activity, pass a path and desired distance to e.g.
 `find_fastest_section_in_fit` like:
 
-``` python
+```python
 from sportgems import find_fastest_section_in_fit
 
 desired_distance = 1_000  # in meter
