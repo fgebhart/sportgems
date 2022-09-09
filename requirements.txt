@@ -2,8 +2,5 @@ folium
 ipython
 jupyter
 maturin==0.12.9
-mkdocs
-mkdocs-material
-mkdocstrings
 numpy
 pytest
