@@ -1,6 +1,6 @@
 [package]
 name = "sportgems"
-version = "0.7.1"
+version = "0.8.0"
 edition = "2018"
 authors = ["Fabian Gebhart"]
 description = "Find valuable gems 💎 in your tracked sport 🚴 activity!"
@@ -19,8 +19,8 @@ classifier = [
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.10",
     "Programming Language :: Rust",
 ]
 
